@@ -23,10 +23,6 @@ use Illuminate\Routing\Controller as BaseController;
  *  type="http",
  *  scheme="bearer"
  * )
- * @OA\Get(
- *     path="/api/resource.json",
- *     @OA\Response(response="200", description="An example resource")
- * )
  */
 
 class Controller extends BaseController

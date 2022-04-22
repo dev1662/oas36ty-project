@@ -83,15 +83,6 @@
                     }
                 ]
             }
-        },
-        "/api/resource.json": {
-            "get": {
-                "responses": {
-                    "200": {
-                        "description": "An example resource"
-                    }
-                }
-            }
         }
     },
     "components": {
