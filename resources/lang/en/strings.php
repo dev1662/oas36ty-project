@@ -18,6 +18,13 @@ return [
     'validation_failed' => 'Validation Error!',
     'something_wrong' => 'Something went wrong!',
 
+    'otp_sent_success' => 'OTP sent successfully!',
+    'otp_sending_failed' => 'OTP sending failed!',
+
+    'email_verified_success' => 'Email verified successfully!',
+    'email_verification_failed' => 'Email verification failed!',
+    'invalid_otp' => 'Invalid OTP!',
+
     'get_all_success' => 'Data fetched!',
     'get_all_failed' => 'Failed to fetch Data!',
     

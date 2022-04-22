@@ -28,4 +28,6 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public $response = array("status" => false, "message" => "Something went wrong!");
 }

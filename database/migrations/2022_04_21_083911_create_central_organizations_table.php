@@ -22,7 +22,7 @@ class CreateCentralOrganizationsTable extends Migration
             $table->string('otp', 8)->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->enum('status', ['pending', 'active', 'inactive', 'blocked'])->default('pending');
+            $table->enum('status', ['pending', 'active', 'inactive'])->default('pending');
             
             $table->foreign('tenant_id')->references('id')->on('tenants')->onUpdate('cascade')->onDelete('cascade');
         });

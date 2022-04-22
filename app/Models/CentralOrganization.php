@@ -10,6 +10,10 @@ class CentralOrganization extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const STATUS_PENDING = 'pending';
+    const STATUS_ACTIVE = 'active';
+    const STATUS_INACTIVE = 'inactive';
+
     /**
      * The attributes that are mass assignable.
      *
