@@ -23,6 +23,7 @@ class CentralOrganization extends Model
         'tenant_id',
         'name',
         'email',
+        'sub_domain',
         'otp',
         'status',
     ];

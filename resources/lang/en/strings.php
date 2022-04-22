@@ -14,6 +14,9 @@ return [
 
     'register_success' => 'Registration Completed!',
     'register_failed' => 'Registration Failed!',
+
+    'register_organization_success' => 'Register Organization Success!',
+    'register_organization_failed' => 'Register Organization Failed!',
     
     'validation_failed' => 'Validation Error!',
     'something_wrong' => 'Something went wrong!',
