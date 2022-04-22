@@ -15,12 +15,14 @@ class CreateCentralOrganizationsTable extends Migration
     {
         Schema::create('central_organizations', function (Blueprint $table) {
             $table->id();
-            $table->string('tenant_id');
-            $table->string('name', 255);
+            $table->string('tenant_id')->nullable();
+            $table->string('name', 255)->nullable();
             $table->string('email', 64);
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('otp', 8)->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->enum('status', ['active', 'inactive', 'blocked'])->default('inactive');
+            $table->enum('status', ['pending', 'active', 'inactive', 'blocked'])->default('pending');
             
             $table->foreign('tenant_id')->references('id')->on('tenants')->onUpdate('cascade')->onDelete('cascade');
         });
