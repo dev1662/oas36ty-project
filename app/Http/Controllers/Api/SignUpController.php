@@ -212,7 +212,7 @@ class SignUpController extends Controller
             'signup_token' => 'required',
             'email' => 'required|email|max:64|exists:App\Models\CentralOrganization,email',
             'organization_name' => 'required|max:255',
-            'organization_url' => 'required|max:32',
+            'organization_url' => 'required|alpha_num|max:32',
         ]);
         if($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -228,14 +228,14 @@ class SignUpController extends Controller
             return response()->json($this->response, 401);
         }
         
-        $centralOrganization = CentralOrganization::where(['id' => $centralOrganizationID, 'email' => $request->input('email'), 'status' => CentralOrganization::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNull('sub_domain')->first();
+        $centralOrganization = CentralOrganization::where(['id' => $centralOrganizationID, 'email' => $request->input('email'), 'status' => CentralOrganization::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNull('subdomain')->first();
         if(!$centralOrganization){
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
 
         $centralOrganization->name = $request->input('organization_name');
-        $centralOrganization->sub_domain = $request->input('organization_url');
+        $centralOrganization->subdomain = $request->input('organization_url');
         if($centralOrganization->update()){
 
             $this->response["status"] = true;
@@ -246,6 +246,101 @@ class SignUpController extends Controller
             ];
         } else {
             $this->response["message"] = __('strings.register_organization_failed');
+            return response()->json($this->response, 401);
+        }
+        return response()->json($this->response);
+    }
+
+    /**
+     * @OA\Post(
+     *     tags={"auth"},
+     *     path="/signup/complete",
+     *     operationId="postSignupComplete",
+     *     summary="Signup Complete",
+     *     description="Signup Complete",
+     *     @OA\RequestBody(
+     *          required=true, 
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(property="signup_token", type="string", example="XXXXXXXXXXXXXXXXX"),
+     *              @OA\Property(property="email", type="string", example="naveen.w3master@gmail.com"),
+     *              @OA\Property(property="name", type="string", example="Naveen"),
+     *              @OA\Property(property="password", type="string", example="password"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=200, 
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
+     *          )
+     *     ),
+     * )
+     */
+
+    public function complete(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'signup_token' => 'required',
+            'email' => 'required|email|max:64|exists:App\Models\CentralOrganization,email',
+            'name' => 'required|max:32',
+            'password' => 'required|string|min:6|max:15',
+        ]);
+        if($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+
+        try {
+            $centralOrganizationID = Crypt::decryptString($request->input('signup_token'));
+        } catch (DecryptException $e) {
+            $this->response["message"] = __('strings.something_wrong');
+            return response()->json($this->response, 401);
+        }
+        
+        $centralOrganization = CentralOrganization::where(['id' => $centralOrganizationID, 'email' => $request->input('email'), 'status' => CentralOrganization::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNotNull('subdomain')->first();
+        if(!$centralOrganization){
+            $this->response["message"] = __('strings.something_wrong');
+            return response()->json($this->response, 401);
+        }
+
+        $tenant = Tenant::create(['id' => $centralOrganization->subdomain]);
+        // $tenant->domains()->create(['domain' => 'foo.localhost']);
+        // $tenant = $centralOrganization->tenant()->create(['id' => $centralOrganization->subdomain]);
+
+        if($tenant){
+
+            $centralOrganization->tenant_id = $tenant->id;
+            $centralOrganization->status = CentralOrganization::STATUS_ACTIVE;
+            if($centralOrganization->update()){
+    
+                tenancy()->initialize($tenant);
+
+                $user = new User();
+                $user->name = $request->input('name');
+                $user->email = $centralOrganization->email;
+                $user->password = Hash::make($request->input('password'));
+                $user->save();
+                
+                $this->response["status"] = true;
+                $this->response["message"] = __('strings.register_success');
+            } else {
+                $this->response["message"] = __('strings.register_failed');
+                return response()->json($this->response, 401);
+            }
+        } else {
+            $this->response["message"] = __('strings.register_failed');
             return response()->json($this->response, 401);
         }
         return response()->json($this->response);

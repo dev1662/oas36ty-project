@@ -20,5 +20,5 @@ Route::prefix('signup')->group(function(){
     Route::post('send-email', [SignUpController::class, 'sendEmail']);
     Route::post('verify-email', [SignUpController::class, 'verifyEmail']);
     Route::post('organization', [SignUpController::class, 'organization']);
-    Route::post('member', [SignUpController::class, 'member']);
+    Route::post('complete', [SignUpController::class, 'complete']);
 });

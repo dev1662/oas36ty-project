@@ -18,7 +18,7 @@ class CreateCentralOrganizationsTable extends Migration
             $table->string('tenant_id')->nullable();
             $table->string('name', 255)->nullable();
             $table->string('email', 64);
-            $table->string('sub_domain', 32)->nullable();
+            $table->string('subdomain', 32)->nullable();
             $table->string('otp', 8)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
