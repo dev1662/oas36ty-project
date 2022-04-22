@@ -20,7 +20,6 @@ class SignUpController extends Controller
 
     /**
      * @OA\Post(
-     *     security={{"bearerAuth":{}}},
      *     tags={"auth"},
      *     path="/signup/send-email",
      *     operationId="postSignupSendEmail",
