@@ -10,3 +10,4 @@ We always prioritize our customer’s security. Please do not share this OTP wit
 If you receive any suspicious email/SMS with a link to update your account information, please do NOT open the link-instead, report us for further investigation.
 
 Stay connected!
+@endcomponent
