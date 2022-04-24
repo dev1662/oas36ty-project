@@ -9,7 +9,11 @@ use Illuminate\Routing\Controller as BaseController;
 
 /**
  * @OA\Server(
- *  url="http://localhost:8000/api",
+ *  url="http://central-api.oas36ty.test:8000/v1",
+ *  description="Localhost"
+ * )
+ * @OA\Server(
+ *  url="http://api.oas36ty.test:8000/v1",
  *  description="Localhost"
  * )
  * @OA\Info(

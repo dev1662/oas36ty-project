@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+use Laravel\Passport\Passport;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\InitializeTenancyByRequestData;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -13,7 +17,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        Passport::routes(null, ['middleware' => [
+            // You can make this simpler by creating a tenancy route group
+            'universal',
+            InitializeTenancyByRequestData::class
+        ]]);
     }
 
     /**
@@ -23,6 +31,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Passport::loadKeysFrom(base_path(config('passport.key_path')));
     }
 }

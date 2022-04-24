@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\SignUpController;
+use App\Http\Controllers\Api\ChooseOrganizationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +23,6 @@ Route::prefix('signup')->group(function(){
     Route::post('organization', [SignUpController::class, 'organization']);
     Route::post('complete', [SignUpController::class, 'complete']);
 });
+
+Route::post('choose-organization', [ChooseOrganizationController::class, 'index']);
+// Route::post('login', [LoginController::class, 'index']);

@@ -212,7 +212,7 @@ class SignUpController extends Controller
             'signup_token' => 'required',
             'email' => 'required|email|max:64|exists:App\Models\CentralOrganization,email',
             'organization_name' => 'required|max:255',
-            'organization_url' => 'required|alpha_num|max:32',
+            'organization_url' => 'required|alpha_num|max:32|unique:App\Models\Tenant,id',
         ]);
         if($validator->fails()) {
             $this->response["code"] = "INVALID";

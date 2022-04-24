@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\InitializeTenancyByRequestData;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
+
+use App\Http\Controllers\Api\Tenant\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,11 +22,15 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 */
 
 Route::middleware([
-    'web',
-    InitializeTenancyByDomain::class,
+    'api',
+    InitializeTenancyByRequestData::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
+    Route::prefix('v1')->group(function(){
+        Route::post('login', [LoginController::class, 'index']);
     });
 });
+
+InitializeTenancyByRequestData::$onFail = function ($exception, $request, $next) {
+    return response()->json(['message' => 'Invalid Client!'], 400);
+};
