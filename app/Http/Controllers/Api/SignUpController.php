@@ -332,6 +332,8 @@ class SignUpController extends Controller
                 $user->email = $centralOrganization->email;
                 $user->password = Hash::make($request->input('password'));
                 $user->save();
+
+                $user->markEmailAsVerified();
                 
                 $this->response["status"] = true;
                 $this->response["message"] = __('strings.register_success');
