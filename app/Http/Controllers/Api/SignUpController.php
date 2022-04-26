@@ -12,7 +12,9 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Mail;
 
 use App\Models\Tenant;
+use App\Models\CentralOnboarding;
 use App\Models\CentralOrganization;
+use App\Models\CentralUser;
 use App\Models\User;
 
 use App\Mail\SingUpOTP as SingUpOTPMail;
@@ -67,18 +69,18 @@ class SignUpController extends Controller
         // Random OTP Generation
         $randomOTP = rand(100000, 999999);
 
-        $centralOrganization = new CentralOrganization($request->all());
-        $centralOrganization->otp = $randomOTP;
-        $centralOrganization->status = 'pending';
-        if($centralOrganization->save()){
+        $centralOnboarding = new CentralOnboarding($request->all());
+        $centralOnboarding->otp = $randomOTP;
+        $centralOnboarding->status = 'pending';
+        if($centralOnboarding->save()){
 
-            Mail::to($centralOrganization->email)->send(new SingUpOTPMail($randomOTP));
+            Mail::to($centralOnboarding->email)->send(new SingUpOTPMail($randomOTP));
             
             $this->response["status"] = true;
             $this->response["message"] = __('strings.otp_sent_success');
             $this->response["data"] = [
-                'email' => $centralOrganization->email,
-                'signup_token' => Crypt::encryptString($centralOrganization->id),
+                'email' => $centralOnboarding->email,
+                'signup_token' => Crypt::encryptString($centralOnboarding->id),
             ];
         } else {
             $this->response["message"] = __('strings.otp_sending_failed');
@@ -126,7 +128,7 @@ class SignUpController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'signup_token' => 'required',
-            'email' => 'required|email|max:64|exists:App\Models\CentralOrganization,email',
+            'email' => 'required|email|max:64|exists:App\Models\CentralOnboarding,email',
             'otp' => 'required|digits:6',
         ]);
         if($validator->fails()) {
@@ -137,31 +139,31 @@ class SignUpController extends Controller
         }
 
         try {
-            $centralOrganizationID = Crypt::decryptString($request->input('signup_token'));
+            $centralOnboardingID = Crypt::decryptString($request->input('signup_token'));
         } catch (DecryptException $e) {
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
         
-        $centralOrganization = CentralOrganization::where(['id' => $centralOrganizationID, 'email' => $request->input('email'), 'status' => CentralOrganization::STATUS_PENDING])->whereNull('email_verified_at')->first();
-        if(!$centralOrganization){
+        $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNull('email_verified_at')->first();
+        if(!$centralOnboarding){
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
 
-        if($centralOrganization->otp != $request->input('otp')){
+        if($centralOnboarding->otp != $request->input('otp')){
             $this->response["message"] = __('strings.invalid_otp');
             return response()->json($this->response, 401);
         }
 
-        $centralOrganization->email_verified_at = Carbon::now();
-        if($centralOrganization->update()){
+        $centralOnboarding->email_verified_at = Carbon::now();
+        if($centralOnboarding->update()){
 
             $this->response["status"] = true;
             $this->response["message"] = __('strings.email_verified_success');
             $this->response["data"] = [
-                'email' => $centralOrganization->email,
-                'signup_token' => Crypt::encryptString($centralOrganization->id),
+                'email' => $centralOnboarding->email,
+                'signup_token' => Crypt::encryptString($centralOnboarding->id),
             ];
         } else {
             $this->response["message"] = __('strings.email_verification_failed');
@@ -210,7 +212,7 @@ class SignUpController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'signup_token' => 'required',
-            'email' => 'required|email|max:64|exists:App\Models\CentralOrganization,email',
+            'email' => 'required|email|max:64|exists:App\Models\CentralOnboarding,email',
             'organization_name' => 'required|max:255',
             'organization_url' => 'required|alpha_num|max:32|unique:App\Models\Tenant,id',
         ]);
@@ -222,27 +224,27 @@ class SignUpController extends Controller
         }
 
         try {
-            $centralOrganizationID = Crypt::decryptString($request->input('signup_token'));
+            $centralOnboardingID = Crypt::decryptString($request->input('signup_token'));
         } catch (DecryptException $e) {
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
         
-        $centralOrganization = CentralOrganization::where(['id' => $centralOrganizationID, 'email' => $request->input('email'), 'status' => CentralOrganization::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNull('subdomain')->first();
-        if(!$centralOrganization){
+        $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNull('subdomain')->first();
+        if(!$centralOnboarding){
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
 
-        $centralOrganization->name = $request->input('organization_name');
-        $centralOrganization->subdomain = $request->input('organization_url');
-        if($centralOrganization->update()){
+        $centralOnboarding->organization_name = $request->input('organization_name');
+        $centralOnboarding->subdomain = $request->input('organization_url');
+        if($centralOnboarding->update()){
 
             $this->response["status"] = true;
             $this->response["message"] = __('strings.register_organization_success');
             $this->response["data"] = [
-                'email' => $centralOrganization->email,
-                'signup_token' => Crypt::encryptString($centralOrganization->id),
+                'email' => $centralOnboarding->email,
+                'signup_token' => Crypt::encryptString($centralOnboarding->id),
             ];
         } else {
             $this->response["message"] = __('strings.register_organization_failed');
@@ -291,7 +293,7 @@ class SignUpController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'signup_token' => 'required',
-            'email' => 'required|email|max:64|exists:App\Models\CentralOrganization,email',
+            'email' => 'required|email|max:64|exists:App\Models\CentralOnboarding,email',
             'name' => 'required|max:32',
             'password' => 'required|string|min:6|max:15',
         ]);
@@ -303,37 +305,66 @@ class SignUpController extends Controller
         }
 
         try {
-            $centralOrganizationID = Crypt::decryptString($request->input('signup_token'));
+            $centralOnboardingID = Crypt::decryptString($request->input('signup_token'));
         } catch (DecryptException $e) {
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
         
-        $centralOrganization = CentralOrganization::where(['id' => $centralOrganizationID, 'email' => $request->input('email'), 'status' => CentralOrganization::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNotNull('subdomain')->first();
-        if(!$centralOrganization){
+        $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNotNull('subdomain')->first();
+        if(!$centralOnboarding){
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
 
-        $tenant = Tenant::create(['id' => $centralOrganization->subdomain]);
+        $tenant = Tenant::create(['id' => $centralOnboarding->subdomain]);
         // $tenant->domains()->create(['domain' => 'foo.localhost']);
         // $tenant = $centralOrganization->tenant()->create(['id' => $centralOrganization->subdomain]);
 
         if($tenant){
 
-            $centralOrganization->tenant_id = $tenant->id;
-            $centralOrganization->status = CentralOrganization::STATUS_ACTIVE;
-            if($centralOrganization->update()){
+            $centralOrganization = new CentralOrganization([
+                'name' => $centralOnboarding->organization_name,
+                'subdomain' => $centralOnboarding->subdomain,
+                'status' => CentralOrganization::STATUS_ACTIVE
+            ]);
+            if($tenant->organization()->save($centralOrganization)){
     
-                tenancy()->initialize($tenant);
+                $centralUser = CentralUser::firstOrCreate(
+                    [
+                        'email' => $centralOnboarding->email
+                    ],
+                    [
+                        'name' => $request->input('name'),
+                        'password' => Hash::make($request->input('password')),
+                        'status' => CentralUser::STATUS_ACTIVE,
+                    ]
+                );
 
-                $user = new User();
-                $user->name = $request->input('name');
-                $user->email = $centralOrganization->email;
-                $user->password = Hash::make($request->input('password'));
-                $user->save();
+                // $centralUser = new CentralUser();
+                // $centralUser->name = $request->input('name');
+                // $centralUser->email = $centralOnboarding->email;
+                // $centralUser->password = Hash::make($request->input('password'));
+                // $centralUser->status = CentralUser::STATUS_ACTIVE;
+                // $centralUser->save();
 
-                $user->markEmailAsVerified();
+                // $centralUser->markEmailAsVerified();
+
+                $centralUser->tenants()->attach($tenant);
+                
+                // tenancy()->initialize($tenant);
+
+                // $user = new User();
+                // $user->name = $request->input('name');
+                // $user->email = $centralOnboarding->email;
+                // $user->password = Hash::make($request->input('password'));
+                // // $user->status = $centralUser->status;
+                // $user->save();
+
+                // $user->markEmailAsVerified();
+
+                $centralOnboarding->status = CentralOnboarding::STATUS_COMPLETED;
+                $centralOnboarding->update();
                 
                 $this->response["status"] = true;
                 $this->response["message"] = __('strings.register_success');

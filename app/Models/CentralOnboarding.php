@@ -6,15 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CentralOrganization extends Model
+class CentralOnboarding extends Model
 {
     use HasFactory, SoftDeletes;
 
     const STATUS_PENDING = 'pending';
-    const STATUS_ACTIVE = 'active';
-    const STATUS_INACTIVE = 'inactive';
+    const STATUS_COMPLETED = 'completed';
 
-    public $table = 'organizations';
+    public $table = 'onboardings';
 
     /**
      * The attributes that are mass assignable.
@@ -22,14 +21,19 @@ class CentralOrganization extends Model
      * @var array
      */
     protected $fillable = [
-        'tenant_id',
-        'name',
+        'email',
+        'otp',
+        'organization_name',
         'subdomain',
         'status',
     ];
 
-    public function tenant()
-    {
-        return $this->belongsTo(Tenant::class);
-    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 }

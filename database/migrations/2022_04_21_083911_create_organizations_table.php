@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCentralOrganizationsTable extends Migration
+class CreateOrganizationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,11 @@ class CreateCentralOrganizationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('central_organizations', function (Blueprint $table) {
+        Schema::create('organizations', function (Blueprint $table) {
             $table->id();
-            $table->string('tenant_id')->nullable();
-            $table->string('name', 255)->nullable();
-            $table->string('email', 64);
-            $table->string('subdomain', 32)->nullable();
-            $table->string('otp', 8)->nullable();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('tenant_id');
+            $table->string('name', 255);
+            $table->string('subdomain', 32)->unique();
             $table->timestamps();
             $table->softDeletes();
             $table->enum('status', ['pending', 'active', 'inactive'])->default('pending');
@@ -36,6 +33,6 @@ class CreateCentralOrganizationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('central_organizations');
+        Schema::dropIfExists('organizations');
     }
 }

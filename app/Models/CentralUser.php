@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
-use Stancl\Tenancy\Contracts\Syncable;
+use Illuminate\Database\Eloquent\Model;
+use Stancl\Tenancy\Contracts\SyncMaster;
 use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
+use Stancl\Tenancy\Database\Concerns\CentralConnection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Stancl\Tenancy\Database\Models\TenantPivot;
 
-class User extends Authenticatable implements Syncable
+class CentralUser extends Model implements SyncMaster
 {
-    use HasApiTokens, HasFactory, Notifiable, ResourceSyncing;
+    use HasFactory, ResourceSyncing, CentralConnection;
 
     const STATUS_PENDING = 'pending';
     const STATUS_ACTIVE = 'active';
@@ -20,6 +20,7 @@ class User extends Authenticatable implements Syncable
 
     protected $guarded = [];
     public $timestamps = false;
+    public $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -33,23 +34,16 @@ class User extends Authenticatable implements Syncable
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'remember_token',
-    ];
+    public function tenants(): BelongsToMany
+    {
+        return $this->belongsToMany(Tenant::class, 'tenant_users', 'global_user_id', 'tenant_id', 'global_id')
+            ->using(TenantPivot::class);
+    }
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function getTenantModelName(): string
+    {
+        return User::class;
+    }
 
     public function getGlobalIdentifierKey()
     {
@@ -63,7 +57,7 @@ class User extends Authenticatable implements Syncable
 
     public function getCentralModelName(): string
     {
-        return CentralUser::class;
+        return static::class;
     }
 
     public function getSyncedAttributeNames(): array
