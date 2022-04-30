@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Tenant;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -11,6 +11,7 @@ use Carbon\Carbon;
 
 use App\Models\Tenant;
 use App\Models\CentralOrganization;
+use App\Models\CentralUser;
 use App\Models\User;
 
 class LoginController extends Controller
@@ -22,7 +23,6 @@ class LoginController extends Controller
      *     operationId="postUserLogin",
      *     summary="Login",
      *     description="Login",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
      *     @OA\RequestBody(
      *          required=true, 
      *          @OA\JsonContent(
@@ -79,7 +79,13 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
         // $credentials = array_merge($credentials, ['status' => 'active']);
 
-        $user = User::where("email",$request->email)->first();
+        $centralUser = CentralUser::where("email", $request->email)->first();
+
+        $tenant = $centralUser->tenants()->first();
+            
+        tenancy()->initialize($tenant);
+
+        $user = User::where("email", $request->email)->first();
         if($user && Hash::check($request->password, $user->password)) {
 
             $result = array(

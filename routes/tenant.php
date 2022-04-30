@@ -7,7 +7,9 @@ use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\InitializeTenancyByRequestData;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-use App\Http\Controllers\Api\Tenant\LoginController;
+use Illuminate\Http\Request;
+
+use App\Http\Controllers\Api\Tenant\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +29,10 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
     Route::prefix('v1')->group(function(){
-        Route::post('login', [LoginController::class, 'index']);
+
+        Route::group(['middleware' => ['auth:api', 'verified']], function () {
+            Route::get('profile', [ProfileController::class, 'index']);
+        });
     });
 });
 

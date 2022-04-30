@@ -2,17 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 use Stancl\Tenancy\Contracts\SyncMaster;
 use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
 use Stancl\Tenancy\Database\Concerns\CentralConnection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Stancl\Tenancy\Database\Models\TenantPivot;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CentralUser extends Model implements SyncMaster
+class CentralUser extends Authenticatable implements SyncMaster
 {
-    use HasFactory, ResourceSyncing, CentralConnection;
+    use HasApiTokens, HasFactory, Notifiable, ResourceSyncing, CentralConnection, SoftDeletes;
 
     const STATUS_PENDING = 'pending';
     const STATUS_ACTIVE = 'active';
@@ -32,6 +37,26 @@ class CentralUser extends Model implements SyncMaster
         'name',
         'email',
         'password',
+        'status',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        // 'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
     ];
 
     public function tenants(): BelongsToMany
@@ -66,6 +91,8 @@ class CentralUser extends Model implements SyncMaster
             'name',
             'email',
             'password',
+            'email_verified_at',
+            'status',
         ];
     }
 }

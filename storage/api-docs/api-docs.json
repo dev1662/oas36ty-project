@@ -83,6 +83,111 @@
                 }
             }
         },
+        "/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login",
+                "description": "Login",
+                "operationId": "postUserLogin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "naveen.w3master@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success Message!"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "1|uDm2cTp9fiRYTEopir0X9mdy9CEC20JDPsaAGiiV"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Naveen"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "naveen.w3master@gmail.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation Error Message!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized Error Message!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/signup/send-email": {
             "post": {
                 "tags": [
@@ -387,14 +492,14 @@
                 }
             }
         },
-        "/login": {
-            "post": {
+        "/profile": {
+            "get": {
                 "tags": [
-                    "auth"
+                    "tenant"
                 ],
-                "summary": "Login",
-                "description": "Login",
-                "operationId": "postUserLogin",
+                "summary": "Profile",
+                "description": "Profile",
+                "operationId": "getUserProfile",
                 "parameters": [
                     {
                         "name": "X-Tenant",
@@ -403,26 +508,6 @@
                         "required": true
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "example": "naveen.w3master@gmail.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "password"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -437,23 +522,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Success Message!"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "token": {
-                                                    "type": "string",
-                                                    "example": "1|uDm2cTp9fiRYTEopir0X9mdy9CEC20JDPsaAGiiV"
-                                                },
-                                                "name": {
-                                                    "type": "string",
-                                                    "example": "Naveen"
-                                                },
-                                                "email": {
-                                                    "type": "string",
-                                                    "example": "naveen.w3master@gmail.com"
-                                                }
-                                            },
-                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -497,7 +565,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },

@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Stancl\Tenancy\Contracts\Syncable;
 use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable implements Syncable
 {
-    use HasApiTokens, HasFactory, Notifiable, ResourceSyncing;
+    use HasApiTokens, HasFactory, Notifiable, ResourceSyncing, SoftDeletes;
 
     const STATUS_PENDING = 'pending';
     const STATUS_ACTIVE = 'active';
@@ -31,6 +33,7 @@ class User extends Authenticatable implements Syncable
         'name',
         'email',
         'password',
+        'status',
     ];
 
     /**
@@ -39,6 +42,7 @@ class User extends Authenticatable implements Syncable
      * @var array<int, string>
      */
     protected $hidden = [
+        'password',
         'remember_token',
     ];
 
@@ -72,6 +76,8 @@ class User extends Authenticatable implements Syncable
             'name',
             'email',
             'password',
+            'email_verified_at',
+            'status',
         ];
     }
 }

@@ -348,7 +348,7 @@ class SignUpController extends Controller
                 // $centralUser->status = CentralUser::STATUS_ACTIVE;
                 // $centralUser->save();
 
-                // $centralUser->markEmailAsVerified();
+                if(!$centralUser->hasVerifiedEmail()) $centralUser->markEmailAsVerified();
 
                 $centralUser->tenants()->attach($tenant);
                 
