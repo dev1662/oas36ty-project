@@ -14,6 +14,9 @@ use App\Models\CentralOrganization;
 use App\Models\CentralUser;
 use App\Models\User;
 
+use App\Http\Resources\TenantResource;
+use App\Http\Resources\OrganizationResource;
+
 class LoginController extends Controller
 {
     /**
@@ -77,14 +80,15 @@ class LoginController extends Controller
         }
 
         $credentials = $request->only('email', 'password');
-        // $credentials = array_merge($credentials, ['status' => 'active']);
+        $credentials = array_merge($credentials, ['status' => 'active']);
 
         $centralUser = CentralUser::where("email", $request->email)->first();
 
-        $tenant = $centralUser->tenants()->first();
+        $tenant = $centralUser->tenants()->with('organization')->first();
             
         tenancy()->initialize($tenant);
 
+        
         $user = User::where("email", $request->email)->first();
         if($user && Hash::check($request->password, $user->password)) {
 
@@ -92,6 +96,8 @@ class LoginController extends Controller
                 'token' => $user->createToken("Tenant: " . $user->name . " (" . $user->email . ")")->accessToken,
                 'name' => $user->name,
                 'email' => $user->email,
+                'current_tenant' => new TenantResource($tenant),
+                'all_tenants' => TenantResource::collection($centralUser->tenants()->with('organization')->get()),
             );
 
             $this->response["status"] = true;
