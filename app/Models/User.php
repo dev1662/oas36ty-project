@@ -21,7 +21,7 @@ class User extends Authenticatable implements Syncable
     const STATUS_INACTIVE = 'inactive';
 
     protected $guarded = [];
-    public $timestamps = false;
+    // public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -33,6 +33,7 @@ class User extends Authenticatable implements Syncable
         'name',
         'email',
         'password',
+        'email_verified_at',
         'status',
     ];
 

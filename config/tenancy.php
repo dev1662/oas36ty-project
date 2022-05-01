@@ -19,7 +19,7 @@ return [
     'central_domains' => [
         '127.0.0.1',
         'localhost',
-        'central-api.oas36ty.test',
+        'api.oas36ty.test',
     ],
 
     /**

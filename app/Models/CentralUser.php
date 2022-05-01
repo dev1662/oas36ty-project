@@ -24,7 +24,7 @@ class CentralUser extends Authenticatable implements SyncMaster
     const STATUS_INACTIVE = 'inactive';
 
     protected $guarded = [];
-    public $timestamps = false;
+    // public $timestamps = false;
     public $table = 'users';
 
     /**
@@ -37,6 +37,7 @@ class CentralUser extends Authenticatable implements SyncMaster
         'name',
         'email',
         'password',
+        'email_verified_at',
         'status',
     ];
 

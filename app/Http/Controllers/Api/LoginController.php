@@ -79,8 +79,8 @@ class LoginController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $credentials = $request->only('email', 'password');
-        $credentials = array_merge($credentials, ['status' => 'active']);
+        // $credentials = $request->only('email', 'password');
+        // $credentials = array_merge($credentials, ['status' => 'active']);
 
         $centralUser = CentralUser::where("email", $request->email)->first();
 

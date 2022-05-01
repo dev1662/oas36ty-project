@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\SignUpController;
 use App\Http\Controllers\Api\LoginController;
-use App\Http\Controllers\Api\ChooseOrganizationController;
+// use App\Http\Controllers\Api\ChooseOrganizationController;
 
 use App\Http\Controllers\Api\Tenant\ProfileController;
 
@@ -27,7 +27,6 @@ Route::prefix('signup')->group(function(){
     Route::post('complete', [SignUpController::class, 'complete']);
 });
 
-Route::post('choose-organization', [ChooseOrganizationController::class, 'index']);
+// Route::post('choose-organization', [ChooseOrganizationController::class, 'index']);
 Route::post('login', [LoginController::class, 'index']);
-Route::post('switch-organization', [ChooseOrganizationController::class, 'index']);
 // Route::get('profile', [ProfileController::class, 'index']);

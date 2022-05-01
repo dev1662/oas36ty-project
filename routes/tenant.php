@@ -10,6 +10,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Api\Tenant\ProfileController;
+use App\Http\Controllers\Api\Tenant\SwitchOrganizationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,11 +27,12 @@ use App\Http\Controllers\Api\Tenant\ProfileController;
 Route::middleware([
     'api',
     InitializeTenancyByRequestData::class,
-    PreventAccessFromCentralDomains::class,
+    // PreventAccessFromCentralDomains::class,
 ])->group(function () {
     Route::prefix('v1')->group(function(){
 
         Route::group(['middleware' => ['auth:api', 'verified']], function () {
+            Route::post('switch', [SwitchOrganizationController::class, 'index']);
             Route::get('profile', [ProfileController::class, 'index']);
         });
     });
