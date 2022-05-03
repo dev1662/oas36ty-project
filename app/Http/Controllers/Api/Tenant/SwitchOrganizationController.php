@@ -21,7 +21,7 @@ class SwitchOrganizationController extends Controller
     /**
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
-     *     tags={"tenant"},
+     *     tags={"auth"},
      *     path="/switch",
      *     operationId="postSwitch",
      *     summary="Switch",

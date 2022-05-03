@@ -11,74 +11,6 @@
         }
     ],
     "paths": {
-        "/choose-organization": {
-            "post": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Choose Organization",
-                "description": "Choose Organization",
-                "operationId": "postChooseOrganization",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "organization_url": {
-                                        "type": "string",
-                                        "example": "oas36ty"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success Message!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation Error Message!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/forgot-password": {
             "post": {
                 "tags": [
@@ -651,7 +583,7 @@
         "/switch": {
             "post": {
                 "tags": [
-                    "tenant"
+                    "auth"
                 ],
                 "summary": "Switch",
                 "description": "Switch",

@@ -14,39 +14,6 @@ use App\Models\User;
 
 class ChooseOrganizationController extends Controller
 {
-    /**
-     * @OA\Post(
-     *     tags={"auth"},
-     *     path="/choose-organization",
-     *     operationId="postChooseOrganization",
-     *     summary="Choose Organization",
-     *     description="Choose Organization",
-     *     @OA\RequestBody(
-     *          required=true, 
-     *          @OA\JsonContent(
-     *              type="object",
-     *              @OA\Property(property="organization_url", type="string", example="oas36ty"),
-     *          )
-     *     ),
-     *     @OA\Response(
-     *          response=200, 
-     *          description="Successful Response",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
-     *          )
-     *     ),
-     *     @OA\Response(
-     *          response=422,
-     *          description="Validation Response",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
-     *          )
-     *     ),
-     * )
-     */
-
     public function index(Request $request)
     {
         $validator = Validator::make($request->all(), [
