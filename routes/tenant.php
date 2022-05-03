@@ -9,7 +9,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 use Illuminate\Http\Request;
 
-use App\Http\Controllers\Api\Tenant\ProfileController;
+// use App\Http\Controllers\Api\Tenant\ProfileController;
 use App\Http\Controllers\Api\Tenant\SwitchOrganizationController;
 
 /*
@@ -33,7 +33,7 @@ Route::middleware([
 
         Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('switch', [SwitchOrganizationController::class, 'index']);
-            Route::get('profile', [ProfileController::class, 'index']);
+            // Route::get('profile', [ProfileController::class, 'index']);
         });
     });
 });
