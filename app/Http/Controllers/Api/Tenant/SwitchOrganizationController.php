@@ -73,7 +73,7 @@ class SwitchOrganizationController extends Controller
             return response()->json($this->response, 422);
         }
 
-        // TODO: Check is the new Tenants related to this User
+        // Check is the new Tenants related to this User
         $centralUser = tenancy()->central(function ($tenant) use($user) {
             return CentralUser::where('email', $user->email)->first();
         });

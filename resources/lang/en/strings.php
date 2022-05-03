@@ -18,6 +18,11 @@ return [
     'register_organization_success' => 'Register Organization Success!',
     'register_organization_failed' => 'Register Organization Failed!',
     
+    'forgot_password' => 'We have emailed your password reset link!',
+    'sending_email_failed' => 'Sending email failed!',
+    'reset_password_success' => 'Your password reset completed successfully! Please login.',
+    'reset_password_failed' => 'Resetting your password is failed! Please try again.',
+
     'validation_failed' => 'Validation Error!',
     'something_wrong' => 'Something went wrong!',
 
