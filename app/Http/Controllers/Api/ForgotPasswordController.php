@@ -62,7 +62,7 @@ class ForgotPasswordController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $status = Password::sendResetLink(
+        $status = Password::broker('central_users')->sendResetLink(
             $request->only('email')
         );
         

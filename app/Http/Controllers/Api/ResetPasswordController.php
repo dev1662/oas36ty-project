@@ -68,7 +68,7 @@ class ResetPasswordController extends Controller
         $validator = Validator::make($request->all(), [
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|confirmed|string|min:6|max:15',
+            'password' => 'required|string|min:6|max:15',
         ]);
 
         if ($validator->fails()) {
@@ -78,21 +78,40 @@ class ResetPasswordController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $tokenData = DB::table('password_resets')->where('token', $request->token)->first();
-        if($tokenData){
-            $centralUser = CentralUser::where('email', $tokenData->email)->first();
-            if (!$centralUser){
-                $this->response["message"] = __('strings.reset_password_failed');
-                return response()->json($this->response);
+        $status = Password::broker('central_users')->reset(
+            $request->only('email', 'password', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ]);
+    
+                $user->save();
+    
+                event(new PasswordReset($user));
             }
-            $centralUser->password = Hash::make($request->password);
-            $centralUser->update();
-            DB::table('password_resets')->where('email', $centralUser->email)->delete();
-
+        );
+        
+        if ($status === Password::PASSWORD_RESET) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.reset_password_success');
             return response()->json($this->response);
         }
+
+        // $tokenData = DB::table('password_resets')->where('token', $request->token)->first();
+        // if($tokenData){
+        //     $centralUser = CentralUser::where('email', $tokenData->email)->first();
+        //     if (!$centralUser){
+        //         $this->response["message"] = __('strings.reset_password_failed');
+        //         return response()->json($this->response);
+        //     }
+        //     $centralUser->password = Hash::make($request->password);
+        //     $centralUser->update();
+        //     DB::table('password_resets')->where('email', $centralUser->email)->delete();
+
+        //     $this->response["status"] = true;
+        //     $this->response["message"] = __('strings.reset_password_success');
+        //     return response()->json($this->response);
+        // }
         
         $this->response["message"] = __('strings.reset_password_failed');
         return response()->json($this->response);
