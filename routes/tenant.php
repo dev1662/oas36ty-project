@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Api\Tenant\SwitchOrganizationController;
 use App\Http\Controllers\Api\Tenant\TaskController;
+use App\Http\Controllers\Api\Tenant\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,7 @@ Route::middleware([
         Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('switch', [SwitchOrganizationController::class, 'index']);
             Route::apiResource('tasks', TaskController::class);
+            Route::apiResource('users', UserController::class);
         });
     });
 });

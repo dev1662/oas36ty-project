@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Validator;
-use Storage;
 
 use App\Models\Task;
 
@@ -79,7 +78,7 @@ class TaskController extends Controller
         $tasks = Task::select('id', 'type', 'subject', 'description', 'status')->latest()->get();
 
         $this->response["status"] = true;
-        $this->response["message"] = __('strings.get_one_success');
+        $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] = $tasks;
         return response()->json($this->response);
     }
