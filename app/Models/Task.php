@@ -24,4 +24,9 @@ class Task extends Model
     protected $fillable = [
         'type', 'subject', 'description', 'status',
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, TaskUser::class, 'task_id', 'user_id');
+    }
 }

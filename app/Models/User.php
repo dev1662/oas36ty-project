@@ -81,4 +81,9 @@ class User extends Authenticatable implements Syncable
             'status',
         ];
     }
+
+    public function tasks()
+    {
+        return $this->belongsToMany(Task::class, TaskUser::class, 'user_id', 'task_id');
+    }
 }
