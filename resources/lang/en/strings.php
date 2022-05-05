@@ -22,6 +22,7 @@ return [
     'sending_email_failed' => 'Sending email failed!',
     'reset_password_success' => 'Your password reset completed successfully! Please login.',
     'reset_password_failed' => 'Resetting your password is failed! Please try again.',
+    'forgot_organization' => 'We have emailed the organization details!',
 
     'validation_failed' => 'Validation Error!',
     'something_wrong' => 'Something went wrong!',

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\SignUpController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\ResetPasswordController;
+use App\Http\Controllers\Api\ForgotOrganizationController;
 
 
 /*
@@ -31,3 +32,4 @@ Route::prefix('signup')->group(function(){
 Route::post('login', [LoginController::class, 'index']);
 Route::post('forgot-password', [ForgotPasswordController::class, 'index']);
 Route::post('reset-password', [ResetPasswordController::class, 'update']);
+Route::post('forgot-organization', [ForgotOrganizationController::class, 'index']);

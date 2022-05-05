@@ -7,20 +7,22 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class SingUpOTP extends Mailable implements ShouldQueue
+class ForgotOrganization extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    protected $otp;
+    protected $centralUser;
+    protected $tenants;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($otp)
+    public function __construct($centralUser, $tenants)
     {
-        $this->otp = $otp;
+        $this->centralUser = $centralUser;
+        $this->tenants = $tenants;
 
         // $this->connection = 'database';
     }
@@ -32,8 +34,9 @@ class SingUpOTP extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->subject('One Time Password for '.config('app.name').' Registration')->markdown('emails.auth.signup_otp', [
-            'otp' => $this->otp,
+        return $this->subject('Forgot Organization - '.config('app.name'))->markdown('emails.auth.forgot_organization', [
+            'centralUser' => $this->centralUser,
+            'tenants' => $this->tenants,
         ]);
     }
 }
