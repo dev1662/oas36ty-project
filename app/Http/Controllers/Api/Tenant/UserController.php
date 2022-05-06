@@ -214,15 +214,136 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * 
+     * @OA\Put(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"users"},
+     *     path="/users/{userID}",
+     *     operationId="putUsers",
+     *     summary="Update User",
+     *     description="Update User",
+     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
+     *     @OA\RequestBody(
+     *          required=true, 
+     *          @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="email", type="string", example="naveen.w3master@gmail.com", description=""),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200, 
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=403,
+     *          description="Forbidden Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Forbidden!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors", 
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="user_id", 
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected user_id is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = $request->user();
+
+        $validator = Validator::make(['user_id' => $id] + $request->all(), [
+            'user_id' => 'required|exists:App\Models\User,id',
+            'email' => 'required|email|max:64|unique:App\Models\User,email',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $member = User::find($id);
+        if($member->status != User::STATUS_PENDING){
+            $this->response["message"] = __('strings.update_failed');
+            return response()->json($this->response, Response::HTTP_FORBIDDEN);
+        }
+
+        $oldCentralUser = tenancy()->central(function ($tenant) use($member) {
+            return CentralUser::where(['email' => $member->email])->first();
+        });
+        $newCentralUser = tenancy()->central(function ($tenant) use($request) {
+            return CentralUser::where(['email' => $request->email])->first();
+        });
+        $oldCentralUserTenantsCount = tenancy()->central(function ($tenant) use($oldCentralUser) {
+            return $oldCentralUser->tenants()->count();
+        });
+
+        if($oldCentralUserTenantsCount == 1 && !$newCentralUser){
+            $member->email = $request->email;
+            $member->update();
+        } else {
+            if(!$newCentralUser){
+                $newCentralUser = tenancy()->central(function ($tenant) use($request, $member) {
+                    return CentralUser::create([
+                        'name' => $member->name,
+                        'email' => $request->email,
+                        'status' => CentralUser::STATUS_PENDING,
+                    ]);
+                });
+            }
+
+            tenancy()->central(function ($tenant) use($oldCentralUser, $newCentralUser) {
+                $tenant->users()->detach($oldCentralUser->global_id);
+            });
+
+            $member->global_id = $newCentralUser->global_id;
+            $member->email = $request->email;
+            $member->update();
+
+            tenancy()->central(function ($tenant) use($oldCentralUser, $newCentralUser) {
+                $tenant->users()->syncWithoutDetaching([$newCentralUser->global_id]);
+            });
+
+            if($oldCentralUserTenantsCount == 1){
+                tenancy()->central(function ($tenant) use($oldCentralUser) {
+                    $oldCentralUser->delete();
+                });
+            }
+        }
+
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.update_success');
+        return response()->json($this->response);
     }
 
     /**
