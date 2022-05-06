@@ -35,6 +35,7 @@ class CentralUser extends Authenticatable implements SyncMaster
     protected $fillable = [
         'global_id',
         'name',
+        'display_name',
         'email',
         'password',
         'email_verified_at',

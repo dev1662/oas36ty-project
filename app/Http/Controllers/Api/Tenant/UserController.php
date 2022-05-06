@@ -190,6 +190,11 @@ class UserController extends Controller
             return $centralUser;
         });
 
+        $user = User::where('email', $centralUser->email)->first();
+        if($request->name != $user->name) $user->display_name = $request->name;
+        $user->status = User::STATUS_PENDING;
+        $user->update();
+
         // TODO: Email Invitation from Organization. -> Join / Decline
         
         $this->response["status"] = true;

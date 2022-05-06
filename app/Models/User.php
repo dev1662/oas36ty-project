@@ -31,6 +31,7 @@ class User extends Authenticatable implements Syncable
     protected $fillable = [
         'global_id',
         'name',
+        'display_name',
         'email',
         'password',
         'email_verified_at',
