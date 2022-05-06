@@ -93,7 +93,6 @@ class CentralUser extends Authenticatable implements SyncMaster
             'email',
             'password',
             'email_verified_at',
-            'status',
         ];
     }
 }

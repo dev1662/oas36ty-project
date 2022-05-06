@@ -78,7 +78,6 @@ class User extends Authenticatable implements Syncable
             'email',
             'password',
             'email_verified_at',
-            'status',
         ];
     }
 

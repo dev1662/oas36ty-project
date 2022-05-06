@@ -17,9 +17,9 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('global_id')->unique();
             $table->string('name', 64);
-            $table->string('email')->unique();
+            $table->string('email', 64)->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->enum('status', ['pending', 'active', 'inactive'])->default('pending');
