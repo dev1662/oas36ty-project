@@ -419,7 +419,7 @@ class UserController extends Controller
         }
 
         $member = User::find($id);
-        if($member->status != User::STATUS_PENDING){
+        if($member->status != User::STATUS_PENDING && $member->status != User::STATUS_DECLINED){
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, Response::HTTP_FORBIDDEN);
         }

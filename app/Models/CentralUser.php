@@ -22,6 +22,7 @@ class CentralUser extends Authenticatable implements SyncMaster
     const STATUS_PENDING = 'pending';
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
+    const STATUS_DECLINED = 'declined';
 
     protected $guarded = [];
     // public $timestamps = false;

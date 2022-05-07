@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('password')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->enum('status', ['pending', 'active', 'inactive'])->default('pending');
+            $table->enum('status', ['pending', 'active', 'inactive', 'declined'])->default('pending');
         });
     }
 
