@@ -197,8 +197,11 @@ class UserController extends Controller
 
         // TODO: Email Invitation from Organization. -> Join / Decline
         
+        $result = User::select('id', 'name', 'email', 'status')->find($user->id);
+
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
+        $this->response["data"] = $result;
         return response()->json($this->response);
     }
 
