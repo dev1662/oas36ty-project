@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Validator;
+use Illuminate\Support\Facades\Mail;
 
 use App\Models\CentralUser;
 use App\Models\User;
+
+use App\Mail\JoiningInvitation as JoiningInvitationMail;
 
 class UserController extends Controller
 {
@@ -195,7 +198,11 @@ class UserController extends Controller
         $user->status = User::STATUS_PENDING;
         $user->update();
 
-        // TODO: Email Invitation from Organization. -> Join / Decline
+        // Joining Invitation Mail from Organization. -> Join / Decline
+        tenancy()->central(function ($tenant) use($centralUser) {
+            $organization = $tenant->organization()->first();
+            Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization));
+        });
         
         $result = User::select('id', 'name', 'email', 'status')->find($user->id);
 
