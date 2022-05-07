@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\Tenant\SwitchOrganizationController;
 use App\Http\Controllers\Api\Tenant\TaskController;
 use App\Http\Controllers\Api\Tenant\UserController;
+use App\Http\Controllers\Api\Tenant\TaskUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,8 @@ Route::middleware([
             
             Route::post('users/{id}/deactivate', [UserController::class, 'deactivate']);
             Route::apiResource('users', UserController::class);
+
+            Route::apiResource('tasks.users', TaskUserController::class);
         });
     });
 });
