@@ -35,6 +35,8 @@ Route::middleware([
         Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('switch', [SwitchOrganizationController::class, 'index']);
             Route::apiResource('tasks', TaskController::class);
+            
+            Route::post('users/{id}/deactivate', [UserController::class, 'deactivate']);
             Route::apiResource('users', UserController::class);
         });
     });
