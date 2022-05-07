@@ -90,7 +90,7 @@ class UserController extends Controller
         $search = $request->search;
 
         $users = User::select('id', 'name', 'email', 'status')->where(function($q) use($search){
-            if($search) $q->where('name', 'like', '%'.$search.'%');
+            if($search) $q->where('name', 'like', '%'.$search.'%')->orWhere('email', 'like', '%'.$search.'%');
         })->latest()->get();
 
         $this->response["status"] = true;
