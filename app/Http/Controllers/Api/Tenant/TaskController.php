@@ -171,15 +171,87 @@ class TaskController extends Controller
         return response()->json($this->response);
     }
 
+    
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * 
+     * @OA\Get(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"tasks"},
+     *     path="/tasks/{taskID}",
+     *     operationId="showTask",
+     *     summary="Show Task",
+     *     description="Show Task",
+     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
+     *     @OA\Response(
+     *          response=200, 
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(
+     *                  property="data", 
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="type",
+     *                         type="string",
+     *                         example="lead"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="subject",
+     *                         type="string",
+     *                         example="Task subject"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="description",
+     *                         type="string",
+     *                         example="Task description"
+     *                      ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *          )
+     *     ),
+     * )
      */
     public function show($id)
     {
-        //
+        $validator = Validator::make(['task_id' => $id], [
+            'task_id' => 'required|exists:App\Models\Task,id',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+        
+        $task = Task::select('id', 'type', 'subject', 'description', 'status')->find($id);
+
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.get_one_success');
+        $this->response["data"] = $task;
+        return response()->json($this->response);
     }
 
     /**
