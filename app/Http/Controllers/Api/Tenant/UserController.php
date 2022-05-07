@@ -346,14 +346,91 @@ class UserController extends Controller
         return response()->json($this->response);
     }
 
+    
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * 
+     * @OA\Delete(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"users"},
+     *     path="/users/{userID}",
+     *     operationId="deleteUsers",
+     *     summary="Delete User",
+     *     description="Delete User",
+     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
+     *     @OA\Response(
+     *          response=200, 
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=403,
+     *          description="Forbidden Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Forbidden!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors", 
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="user_id", 
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected user_id is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+        $user = $request->user();
+
+        $validator = Validator::make(['user_id' => $id], [
+            'user_id' => 'required|exists:App\Models\User,id',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $member = User::find($id);
+        if($member->status != User::STATUS_PENDING){
+            $this->response["message"] = __('strings.destroy_failed');
+            return response()->json($this->response, Response::HTTP_FORBIDDEN);
+        }
+
+        if ($member->forceDelete()) {
+            $this->response["status"] = true;
+            $this->response["message"] = __('strings.destroy_success');
+            return response()->json($this->response);
+        }
+
+        $this->response["message"] = __('strings.destroy_failed');
+        return response()->json($this->response);
     }
 }
