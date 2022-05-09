@@ -2395,6 +2395,26 @@
         }
     },
     "components": {
+        "schemas": {
+            "OrganizationResource": {
+                "description": "Class OrganizationResource",
+                "properties": {
+                    "name": {
+                        "title": "name",
+                        "description": "Organization name",
+                        "format": "string",
+                        "default": "Oas36ty"
+                    },
+                    "subdomain": {
+                        "title": "subdomain",
+                        "description": "oas36ty",
+                        "format": "string",
+                        "default": "oas36ty"
+                    }
+                },
+                "type": "object"
+            }
+        },
         "parameters": {
             "tenant--header": {
                 "name": "X-Tenant",
