@@ -276,13 +276,91 @@ class TaskCommentController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * 
+     * @OA\Delete(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"taskComments"},
+     *     path="/tasks/{taskID}/comments/{taskCommentID}",
+     *     operationId="deleteTaskComment",
+     *     summary="Delete Task Comment",
+     *     description="Delete Task Comment",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
+     *     @OA\Parameter(name="taskCommentID", in="path", required=true, description="Task Comment ID"),
+     *     @OA\Response(
+     *          response=200, 
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=403,
+     *          description="Forbidden Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Forbidden!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors", 
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="task_id", 
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected task_id is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
      */
-    public function destroy($id)
+    public function destroy($taskID, $taskCommentID)
     {
-        //
+        $validator = Validator::make(['task_id' => $taskID, 'task_comment_id' => $taskCommentID], [
+            'task_id' => 'required|exists:App\Models\Task,id',
+            'task_comment_id' => 'required|exists:App\Models\TaskComment,id',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+
+        $task = Task::find($taskID);
+
+        $taskComment = $task->comments()->find($taskCommentID);
+        if(!$taskComment){
+            $this->response["message"] = __('strings.destroy_failed');
+            return response()->json($this->response, 422);
+        }
+
+        if ($taskComment->delete()) {
+            $this->response["status"] = true;
+            $this->response["message"] = __('strings.destroy_success');
+            return response()->json($this->response);
+        }
+
+        $this->response["message"] = __('strings.destroy_failed');
+        return response()->json($this->response, 422);
     }
 }

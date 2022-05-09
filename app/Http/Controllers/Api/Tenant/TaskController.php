@@ -416,7 +416,7 @@ class TaskController extends Controller
 
         $task = Task::find($id);
         if(!$task){
-            $this->response["message"] = __('strings.update_failed');
+            $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }
 
