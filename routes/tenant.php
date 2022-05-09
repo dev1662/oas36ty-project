@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Tenant\SwitchOrganizationController;
 use App\Http\Controllers\Api\Tenant\TaskController;
 use App\Http\Controllers\Api\Tenant\UserController;
 use App\Http\Controllers\Api\Tenant\TaskUserController;
+use App\Http\Controllers\Api\Tenant\TaskCommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,7 @@ Route::middleware([
             Route::apiResource('users', UserController::class);
 
             Route::apiResource('tasks.users', TaskUserController::class);
+            Route::apiResource('tasks.comments', TaskCommentController::class);
         });
     });
 });
