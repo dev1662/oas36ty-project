@@ -77,7 +77,7 @@ class TaskCommentController extends Controller
         }
 
         $task = Task::find($taskID);
-        $taskComments = $task->comments()->latest()->get();
+        $taskComments = $task->comments()->select('id', 'comment', 'status')->latest()->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -86,14 +86,87 @@ class TaskCommentController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * 
+     * @OA\Post(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"taskComments"},
+     *     path="/tasks/{taskID}/comments",
+     *     operationId="postTaskComments",
+     *     summary="Create Task Comment",
+     *     description="Create Task Comment",
+     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
+     *     @OA\RequestBody(
+     *          required=true, 
+     *          @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="comment", type="string", example="Task comment", description=""),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200, 
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors", 
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="comment", 
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected comment is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
      */
-    public function store(Request $request)
+    public function store(Request $request, $taskID)
     {
-        //
+        $user = $request->user();
+
+        $validator = Validator::make(['task_id' => $taskID] + $request->all(), [
+            'task_id' => 'required|exists:App\Models\Task,id',
+            'comment' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+
+        $task = Task::find($taskID);
+
+        $taskComment = new TaskComment($request->all());
+        $taskComment->user_id = $user->id;
+        $taskComment->status = TaskComment::STATUS_ACTIVE;
+        $task->comments()->save($taskComment);
+        
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.store_success');
+        return response()->json($this->response);
     }
 
     /**

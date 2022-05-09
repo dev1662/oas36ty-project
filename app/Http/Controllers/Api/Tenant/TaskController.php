@@ -108,12 +108,6 @@ class TaskController extends Controller
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Success Message!"),
-     *              @OA\Property(
-     *                  property="data", 
-     *                  type="object",
-     *                  @OA\Property(property="id", type="string", example="1"),
-     *                  @OA\Property(property="name", type="string", example="Hyderabad Contacts", description=""),
-     *              ),
      *          )
      *     ),
      *     @OA\Response(
