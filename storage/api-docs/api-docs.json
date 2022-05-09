@@ -658,10 +658,7 @@
                 "operationId": "postSwitch",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     }
                 ],
                 "requestBody": {
@@ -755,10 +752,7 @@
                 "operationId": "getTaskComments",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "taskID",
@@ -856,10 +850,7 @@
                 "operationId": "postTaskComments",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "taskID",
@@ -976,10 +967,7 @@
                 "operationId": "getTasks",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     }
                 ],
                 "responses": {
@@ -1079,10 +1067,7 @@
                 "operationId": "postTask",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     }
                 ],
                 "requestBody": {
@@ -1203,10 +1188,7 @@
                 "operationId": "showTask",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "taskID",
@@ -1312,10 +1294,7 @@
                 "operationId": "putTask",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "taskID",
@@ -1456,10 +1435,7 @@
                 "operationId": "deleteTask",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "taskID",
@@ -1575,10 +1551,7 @@
                 "operationId": "getTaskUsers",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "taskID",
@@ -1700,10 +1673,7 @@
                 "operationId": "postTaskUser",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "taskID",
@@ -1834,10 +1804,7 @@
                 "operationId": "getUsers",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "search",
@@ -1943,10 +1910,7 @@
                 "operationId": "postUsers",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     }
                 ],
                 "requestBody": {
@@ -2076,10 +2040,7 @@
                 "operationId": "putUsers",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "userID",
@@ -2210,10 +2171,7 @@
                 "operationId": "deleteUsers",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "userID",
@@ -2329,10 +2287,7 @@
                 "operationId": "deactivateUser",
                 "parameters": [
                     {
-                        "name": "X-Tenant",
-                        "in": "header",
-                        "description": "Tenant ID",
-                        "required": true
+                        "$ref": "#/components/parameters/tenant--header"
                     },
                     {
                         "name": "userID",
@@ -2440,6 +2395,17 @@
         }
     },
     "components": {
+        "parameters": {
+            "tenant--header": {
+                "name": "X-Tenant",
+                "in": "header",
+                "description": "Tenant ID",
+                "schema": {
+                    "type": "string",
+                    "default": "oas36ty"
+                }
+            }
+        },
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",

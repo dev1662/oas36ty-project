@@ -22,7 +22,7 @@ class TaskUserController extends Controller
      *     operationId="getTaskUsers",
      *     summary="TaskUsers",
      *     description="TaskUsers",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\Response(
      *          response=200, 
@@ -121,7 +121,7 @@ class TaskUserController extends Controller
      *     operationId="postTaskUser",
      *     summary="Create Task User",
      *     description="Create Task User",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\RequestBody(
      *          required=true, 

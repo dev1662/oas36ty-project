@@ -23,6 +23,16 @@ use Illuminate\Routing\Controller as BaseController;
  *  type="http",
  *  scheme="bearer"
  * )
+ * @OA\Parameter(
+ *      parameter="tenant--header",
+ *      in="header",
+ *      name="X-Tenant",
+ *      description="Tenant ID",
+ *      @OA\Schema(
+ *          type="string",
+ *          default="oas36ty",
+ *      )
+ * )
  */
 
 class Controller extends BaseController

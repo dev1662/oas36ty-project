@@ -20,7 +20,7 @@ class TaskController extends Controller
      *     operationId="getTasks",
      *     summary="Tasks",
      *     description="Tasks",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Response(
      *          response=200, 
      *          description="Successful Response",
@@ -92,7 +92,7 @@ class TaskController extends Controller
      *     operationId="postTask",
      *     summary="Create Task",
      *     description="Create Task",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\RequestBody(
      *          required=true, 
      *          @OA\JsonContent(
@@ -175,7 +175,7 @@ class TaskController extends Controller
      *     operationId="showTask",
      *     summary="Show Task",
      *     description="Show Task",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\Response(
      *          response=200, 
@@ -257,7 +257,7 @@ class TaskController extends Controller
      *     operationId="putTask",
      *     summary="Update Task",
      *     description="Update Task",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\RequestBody(
      *          required=true, 
@@ -353,7 +353,7 @@ class TaskController extends Controller
      *     operationId="deleteTask",
      *     summary="Delete Task",
      *     description="Delete Task",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\Response(
      *          response=200, 

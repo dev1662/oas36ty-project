@@ -24,7 +24,7 @@ class UserController extends Controller
      *     operationId="getUsers",
      *     summary="Users",
      *     description="Users",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="search", in="query", required=false, description="Search"),
      *     @OA\Response(
      *          response=200, 
@@ -111,7 +111,7 @@ class UserController extends Controller
      *     operationId="postUsers",
      *     summary="Create User",
      *     description="Create User",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\RequestBody(
      *          required=true, 
      *          @OA\JsonContent(
@@ -232,7 +232,7 @@ class UserController extends Controller
      *     operationId="putUsers",
      *     summary="Update User",
      *     description="Update User",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
      *     @OA\RequestBody(
      *          required=true, 
@@ -366,7 +366,7 @@ class UserController extends Controller
      *     operationId="deleteUsers",
      *     summary="Delete User",
      *     description="Delete User",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
      *     @OA\Response(
      *          response=200, 
@@ -454,7 +454,7 @@ class UserController extends Controller
      *     operationId="deactivateUser",
      *     summary="Deactivate User",
      *     description="Deactivate User",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
      *     @OA\Response(
      *          response=200, 

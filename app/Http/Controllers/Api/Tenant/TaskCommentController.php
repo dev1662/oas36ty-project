@@ -21,7 +21,7 @@ class TaskCommentController extends Controller
      *     operationId="getTaskComments",
      *     summary="Task Comments",
      *     description="Task Comments",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\Response(
      *          response=200, 
@@ -94,7 +94,7 @@ class TaskCommentController extends Controller
      *     operationId="postTaskComments",
      *     summary="Create Task Comment",
      *     description="Create Task Comment",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\RequestBody(
      *          required=true, 

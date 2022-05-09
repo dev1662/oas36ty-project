@@ -26,7 +26,7 @@ class SwitchOrganizationController extends Controller
      *     operationId="postSwitch",
      *     summary="Switch",
      *     description="Switch",
-     *     @OA\Parameter(name="X-Tenant", in="header", required=true, description="Tenant ID"),
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\RequestBody(
      *          required=true, 
      *          @OA\JsonContent(
