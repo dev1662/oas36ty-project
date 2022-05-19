@@ -2173,6 +2173,13 @@
                                         "description": "",
                                         "type": "integer",
                                         "example": ""
+                                    },
+                                    "user_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -2295,6 +2302,13 @@
                                         "description": "",
                                         "type": "integer",
                                         "example": ""
+                                    },
+                                    "user_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
                                     },
                                     "status": {
                                         "description": "",

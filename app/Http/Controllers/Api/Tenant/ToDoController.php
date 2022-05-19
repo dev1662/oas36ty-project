@@ -71,7 +71,10 @@ class ToDoController extends Controller
         $toDos = $user->toDos()->select('id', 'task_id', 'to_do', 'status')->with([
             'task' => function($q){
                 $q->select('id', 'type', 'subject', 'description');
-            }
+            },
+            'mentionUsers' => function($q){
+                $q->select('users.id', 'name', 'email');
+            },
         ])->latest()->get();
 
         $this->response["status"] = true;
@@ -96,6 +99,14 @@ class ToDoController extends Controller
      *             type="object",
      *             @OA\Property(property="to_do", type="string", example="A ToDo", description=""),
      *             @OA\Property(property="task_id", type="integer", example="", description=""),
+     *             @OA\Property(
+     *                  property="user_ids", 
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="integer",
+     *                         example="1"
+     *                  ),
+     *              ),
      *         )
      *     ),
      *     @OA\Response(
@@ -144,6 +155,8 @@ class ToDoController extends Controller
         $validator = Validator::make($request->all(), [
             'to_do' => 'required|max:255',
             'task_id' => 'nullable|exists:App\Models\Task,id',
+            'user_ids' => 'nullable|array',
+            'user_ids.*' => 'required|exists:App\Models\User,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -155,6 +168,8 @@ class ToDoController extends Controller
         $toDo = new ToDo($request->all());
         $toDo->status = ToDo::STATUS_NOT_DONE;
         $user->toDos()->save($toDo);
+
+        $toDo->mentionUsers()->sync($request->user_ids);
         
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
@@ -189,6 +204,14 @@ class ToDoController extends Controller
      *             type="object",
      *             @OA\Property(property="to_do", type="string", example="A ToDo", description=""),
      *             @OA\Property(property="task_id", type="integer", example="", description=""),
+     *             @OA\Property(
+     *                  property="user_ids", 
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="integer",
+     *                         example="1"
+     *                  ),
+     *              ),
      *             @OA\Property(property="status", type="string", example="done", description=""),
      *         )
      *     ),
@@ -246,6 +269,8 @@ class ToDoController extends Controller
             'to_do_id' => 'required|exists:App\Models\ToDo,id',
             'to_do' => 'required|max:255',
             'task_id' => 'nullable|exists:App\Models\Task,id',
+            'user_ids' => 'nullable|array',
+            'user_ids.*' => 'required|exists:App\Models\User,id',
             'status' => 'required|in:not-done,done',
         ]);
         if ($validator->fails()) {
@@ -264,6 +289,8 @@ class ToDoController extends Controller
         $toDo->fill($request->only(['to_do', 'task_id', 'status']));
         $toDo->update();
 
+        $toDo->mentionUsers()->sync($request->user_ids);
+        
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
         return response()->json($this->response);
@@ -345,6 +372,8 @@ class ToDoController extends Controller
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }
+
+        $toDo->mentions()->delete();
 
         if ($toDo->delete()) {
             $this->response["status"] = true;

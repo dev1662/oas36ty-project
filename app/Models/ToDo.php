@@ -31,4 +31,14 @@ class ToDo extends Model
     {
         return $this->belongsTo(Task::class);
     }
+
+    public function mentions()
+    {
+        return $this->hasMany(ToDoMention::class);
+    }
+
+    public function mentionUsers()
+    {
+        return $this->belongsToMany(User::class, ToDoMention::class, 'to_do_id', 'user_id');
+    }
 }
