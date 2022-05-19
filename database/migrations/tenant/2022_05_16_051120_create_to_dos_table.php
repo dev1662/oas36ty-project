@@ -17,7 +17,7 @@ class CreateToDosTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('task_id')->nullable()->constrained();
-            $table->string('todo');
+            $table->string('to_do');
             $table->timestamps();
             $table->softDeletes();
             $table->enum('status', ['not-done', 'done'])->default('not-done');

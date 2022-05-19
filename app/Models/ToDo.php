@@ -19,7 +19,7 @@ class ToDo extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'task_id', 'todo', 'status',
+        'user_id', 'task_id', 'to_do', 'status',
     ];
 
     public function user()

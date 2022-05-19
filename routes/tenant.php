@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Tenant\TaskController;
 use App\Http\Controllers\Api\Tenant\UserController;
 use App\Http\Controllers\Api\Tenant\TaskUserController;
 use App\Http\Controllers\Api\Tenant\TaskCommentController;
+use App\Http\Controllers\Api\Tenant\ToDoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,7 @@ Route::middleware([
 
             Route::apiResource('tasks.users', TaskUserController::class);
             Route::apiResource('tasks.comments', TaskCommentController::class);
+            Route::apiResource('to-dos', ToDoController::class);
         });
     });
 });
