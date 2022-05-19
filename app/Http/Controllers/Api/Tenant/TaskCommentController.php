@@ -77,7 +77,11 @@ class TaskCommentController extends Controller
         }
 
         $task = Task::find($taskID);
-        $taskComments = $task->comments()->select('id', 'comment', 'status')->latest()->get();
+        $taskComments = $task->comments()->with([
+            'user' => function($q){
+                $q->select('id', 'name', 'email');
+            }
+        ])->select('id', 'user_id', 'comment', 'status')->latest()->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
