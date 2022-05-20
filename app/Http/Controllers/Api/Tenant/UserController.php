@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Validator;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Mail;
 
 use App\Models\CentralUser;
@@ -201,7 +203,12 @@ class UserController extends Controller
         // Joining Invitation Mail from Organization. -> Join / Decline
         tenancy()->central(function ($tenant) use($centralUser) {
             $organization = $tenant->organization()->first();
-            Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization));
+            $token = [
+                'tenant_id' => $organization->tenant_id,
+                'email' => $centralUser->email,
+            ];
+            $url = config('app.url').'/invitation?token='.Crypt::encryptString(json_encode($token));
+            Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
         });
         
         $result = User::select('id', 'name', 'email', 'status')->find($user->id);

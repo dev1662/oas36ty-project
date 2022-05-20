@@ -13,16 +13,18 @@ class JoiningInvitation extends Mailable implements ShouldQueue
 
     protected $centralUser;
     protected $organization;
+    protected $url;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($centralUser, $organization)
+    public function __construct($centralUser, $organization, $url)
     {
         $this->centralUser = $centralUser;
         $this->organization = $organization;
+        $this->url = $url;
 
         // $this->connection = 'database';
     }
@@ -37,6 +39,7 @@ class JoiningInvitation extends Mailable implements ShouldQueue
         return $this->subject('Joining Invitation - '.config('app.name'))->markdown('emails.auth.joining_invitation', [
             'centralUser' => $this->centralUser,
             'organization' => $this->organization,
+            'url' => $this->url,
         ]);
     }
 }

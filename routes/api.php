@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\ResetPasswordController;
 use App\Http\Controllers\Api\ForgotOrganizationController;
+use App\Http\Controllers\Api\InvitationController;
 
 
 /*
@@ -33,3 +34,6 @@ Route::post('login', [LoginController::class, 'index']);
 Route::post('forgot-password', [ForgotPasswordController::class, 'index']);
 Route::post('reset-password', [ResetPasswordController::class, 'update']);
 Route::post('forgot-organization', [ForgotOrganizationController::class, 'index']);
+Route::post('invitation/check', [InvitationController::class, 'check']);
+Route::post('invitation/accept', [InvitationController::class, 'accept']);
+Route::post('invitation/decline', [InvitationController::class, 'decline']);

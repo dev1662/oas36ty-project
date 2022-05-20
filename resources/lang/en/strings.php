@@ -24,6 +24,13 @@ return [
     'reset_password_failed' => 'Resetting your password is failed! Please try again.',
     'forgot_organization' => 'We have emailed the organization details!',
 
+    'invitation_check_success' => 'Invitation check successfully!',
+    'invitation_check_failed' => 'Invitation check failed!',
+    'invitation_accept_success' => 'Invitation accepted successfully!',
+    'invitation_accept_failed' => 'Invitation accept failed!',
+    'invitation_decline_success' => 'Invitation declined successfully!',
+    'invitation_decline_failed' => 'Invitation decline failed!',
+    
     'validation_failed' => 'Validation Error!',
     'something_wrong' => 'Something went wrong!',
 

@@ -3,7 +3,7 @@
 
 You are invited to join the Organization: {{ $organization->name }}
 
-@component('mail::button', ['url' => ''])
+@component('mail::button', ['url' => $url])
 View Invitation
 @endcomponent
 
