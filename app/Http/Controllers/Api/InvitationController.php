@@ -118,6 +118,7 @@ class InvitationController extends Controller
      *          @OA\JsonContent(
      *              type="object",
      *              @OA\Property(property="token", type="string", example="XXXXXXXXXXXXXXXXXXXXXXXXXX"),
+     *              @OA\Property(property="password", type="string", example=""),
      *          )
      *     ),
      *     @OA\Response(
@@ -181,7 +182,7 @@ class InvitationController extends Controller
                 return response()->json($this->response, 401);
             }
 
-            $tenant = $centralUser->tenants()->with('organization')->find($tokenData->tenant_id);
+            $tenant = $centralUser->tenants()->find($tokenData->tenant_id);
             if($tenant) {
                 
                 $user = $tenant->run(function ($tenant) use($centralUser) {
@@ -209,6 +210,100 @@ class InvitationController extends Controller
         }
 
         $this->response["message"] = __('strings.invitation_accept_failed');
+        return response()->json($this->response);
+    }
+
+    /**
+     * @OA\Post(
+     *     tags={"auth"},
+     *     path="/invitation/decline",
+     *     operationId="postInvitationDecline",
+     *     summary="Decline Invitation",
+     *     description="Decline Invitation",
+     *     @OA\RequestBody(
+     *          required=true, 
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(property="token", type="string", example="XXXXXXXXXXXXXXXXXXXXXXXXXX"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=200, 
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors", 
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="token", 
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected token is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
+
+    public function decline(Request $request){
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+        
+        try {
+            $tokenData = json_decode(Crypt::decryptString($request->token));
+        } catch (DecryptException $e) {
+            $this->response["message"] = __('strings.something_wrong');
+            return response()->json($this->response, 401);
+        }
+
+        $centralUser = CentralUser::where('email', $tokenData->email)->first();
+        if($centralUser){
+
+            $tenant = $centralUser->tenants()->find($tokenData->tenant_id);
+            if($tenant) {
+                
+                $user = $tenant->run(function ($tenant) use($centralUser) {
+                    return User::where("email", $centralUser->email)->first();
+                });
+                if($user && $user->status == User::STATUS_PENDING) {
+
+                    $tenant->run(function ($tenant) use($centralUser) {
+                        $user = User::where("email", $centralUser->email)->first();
+                        $user->status = User::STATUS_DECLINED;
+                        $user->update();
+                    });
+
+                    $this->response["status"] = true;
+                    $this->response["message"] = __('strings.invitation_decline_success');
+                    return response()->json($this->response);
+                }
+            }
+        }
+
+        $this->response["message"] = __('strings.invitation_decline_failed');
         return response()->json($this->response);
     }
 }

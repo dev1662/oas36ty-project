@@ -248,6 +248,94 @@
                                     "token": {
                                         "type": "string",
                                         "example": "XXXXXXXXXXXXXXXXXXXXXXXXXX"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": ""
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success Message!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation Error Message!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected token is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/invitation/decline": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Decline Invitation",
+                "description": "Decline Invitation",
+                "operationId": "postInvitationDecline",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "XXXXXXXXXXXXXXXXXXXXXXXXXX"
                                     }
                                 },
                                 "type": "object"
