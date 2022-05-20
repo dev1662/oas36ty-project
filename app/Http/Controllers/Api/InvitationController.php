@@ -189,7 +189,7 @@ class InvitationController extends Controller
                 });
                 if($user && $user->status == User::STATUS_PENDING) {
 
-                    $centralUser->password = Hash::make($request->password);
+                    if($request->password) $centralUser->password = Hash::make($request->password);
                     $centralUser->status = CentralUser::STATUS_ACTIVE;
                     $centralUser->update();
 
