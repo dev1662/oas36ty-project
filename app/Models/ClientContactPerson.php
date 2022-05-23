@@ -27,12 +27,12 @@ class ClientContactPerson extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function contactPersonPhones()
+    public function phones()
     {
         return $this->hasMany(ClientContactPersonPhone::class);
     }
 
-    public function contactPersonEmails()
+    public function emails()
     {
         return $this->hasMany(ClientContactPersonEmail::class);
     }
