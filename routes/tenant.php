@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\Tenant\TaskUserController;
 use App\Http\Controllers\Api\Tenant\TaskCommentController;
 use App\Http\Controllers\Api\Tenant\ToDoController;
 use App\Http\Controllers\Api\Tenant\ClientController;
+use App\Http\Controllers\Api\Tenant\ClientContactPersonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,7 @@ Route::middleware([
             Route::apiResource('tasks.comments', TaskCommentController::class);
             Route::apiResource('to-dos', ToDoController::class);
             Route::apiResource('clients', ClientController::class);
+            Route::apiResource('clients.contact-people', ClientContactPersonController::class);
         });
     });
 });
