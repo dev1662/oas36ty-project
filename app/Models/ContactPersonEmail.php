@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ClientContactPersonEmail extends Model
+class ContactPersonEmail extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -19,11 +19,11 @@ class ClientContactPersonEmail extends Model
      * @var array
      */
     protected $fillable = [
-        'client_contact_person_id', 'email', 'status',
+        'contact_person_id', 'email', 'status',
     ];
 
     public function contactPerson()
     {
-        return $this->belongsTo(ClientContactPerson::class);
+        return $this->belongsTo(ContactPerson::class);
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateClientContactPeopleTable extends Migration
+class CreateContactPersonEmailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateClientContactPeopleTable extends Migration
      */
     public function up()
     {
-        Schema::create('client_contact_people', function (Blueprint $table) {
+        Schema::create('contact_person_emails', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained();
-            $table->string('name', 64);
+            $table->foreignId('contact_person_id')->constrained();
+            $table->string('email', 64);
             $table->timestamps();
             $table->softDeletes();
             $table->enum('status', ['active', 'inactive'])->default('inactive');
@@ -30,6 +30,6 @@ class CreateClientContactPeopleTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('client_contact_people');
+        Schema::dropIfExists('contact_person_emails');
     }
 }

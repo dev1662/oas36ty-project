@@ -11,7 +11,7 @@ use App\Models\Client;
 use App\Models\ClientContactPerson;
 use App\Models\ClientContactPersonPhone;
 
-class ClientContactPersonPhoneController extends Controller
+class ContactPersonPhoneController extends Controller
 {
     /**
      * 

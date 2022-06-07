@@ -7,24 +7,20 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Validator;
 
-use App\Models\Client;
-use App\Models\ClientContactPerson;
-use App\Models\ClientContactPersonEmail;
+use App\Models\ContactPerson;
 
-class ClientContactPersonEmailController extends Controller
+class ContactPersonController extends Controller
 {
     /**
      * 
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clientContactPersonEmails"},
-     *     path="/clients/{clientID}/contact-people/{clientContactPersonID}/emails",
-     *     operationId="getClientContactPersonEmails",
-     *     summary="Client Contact Person Emails",
-     *     description="Client Contact Person Emails",
+     *     tags={"contactPeople"},
+     *     path="/contact-people",
+     *     operationId="getContactPeople",
+     *     summary="Contact People",
+     *     description="Contact People",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
-     *     @OA\Parameter(name="clientContactPersonID", in="path", required=true, description="Client Contact Person ID"),
      *     @OA\Response(
      *          response=200, 
      *          description="Successful Response",
@@ -41,9 +37,9 @@ class ClientContactPersonEmailController extends Controller
      *                         example="1"
      *                      ),
      *                      @OA\Property(
-     *                         property="email",
+     *                         property="name",
      *                         type="string",
-     *                         example="Client Contact Person Email"
+     *                         example="Contact Person Name"
      *                      ),
      *                  ),
      *              ),
@@ -66,28 +62,9 @@ class ClientContactPersonEmailController extends Controller
      *     ),
      * )
      */
-    public function index($clientID, $clientContactPersonID)
+    public function index()
     {
-        $validator = Validator::make(['client_id' => $clientID, 'client_contact_person_id' => $clientContactPersonID], [
-            'client_id' => 'required|exists:App\Models\Client,id',
-            'client_contact_person_id' => 'required|exists:App\Models\ClientContactPerson,id',
-        ]);
-        if ($validator->fails()) {
-            $this->response["code"] = "INVALID";
-            $this->response["message"] = $validator->errors()->first();
-            $this->response["errors"] = $validator->errors();
-            return response()->json($this->response, 422);
-        }
-        
-        $client = Client::select('id', 'name')->find($clientID);
-        $clientContactPerson = $client->contactPeople()->select('id', 'name')->find($clientContactPersonID);
-
-        if(!$clientContactPerson){
-            $this->response["message"] = __('strings.get_all_failed');
-            return response()->json($this->response);
-        }
-
-        $result = $clientContactPerson->emails()->select('id', 'email')->get();
+        $result = ContactPerson::select('id', 'name')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -99,19 +76,17 @@ class ClientContactPersonEmailController extends Controller
      * 
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clientContactPersonEmails"},
-     *     path="/clients/{clientID}/contact-people/{clientContactPersonID}/emails",
-     *     operationId="postClientContactPersonEmail",
-     *     summary="Create Client Contact Person Email",
-     *     description="Create Client Contact Person Email",
+     *     tags={"contactPeople"},
+     *     path="/contact-people",
+     *     operationId="postContactPerson",
+     *     summary="Create Contact Person",
+     *     description="Create Contact Person",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
-     *     @OA\Parameter(name="clientContactPersonID", in="path", required=true, description="Client Contact Person ID"),
      *     @OA\RequestBody(
      *          required=true, 
      *          @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="email", type="string", example="Client Contact Person Email", description=""),
+     *             @OA\Property(property="name", type="string", example="Contact Person", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -140,11 +115,11 @@ class ClientContactPersonEmailController extends Controller
      *                  property="errors", 
      *                  type="object",
      *                      @OA\Property(
-     *                  property="email", 
+     *                  property="name", 
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
-     *                         example="The selected email is invalid."
+     *                         example="The selected name is invalid."
      *                  ),
      *              ),
      *                  ),
@@ -153,12 +128,12 @@ class ClientContactPersonEmailController extends Controller
      *     ),
      * )
      */
-    public function store(Request $request, $clientID, $clientContactPersonID)
+    public function store(Request $request)
     {
-        $validator = Validator::make(['client_id' => $clientID, 'client_contact_person_id' => $clientContactPersonID] + $request->all(), [
-            'client_id' => 'required|exists:App\Models\Client,id',
-            'client_contact_person_id' => 'required|exists:App\Models\ClientContactPerson,id',
-            'email' => 'required|email|max:64',
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:64',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -167,17 +142,9 @@ class ClientContactPersonEmailController extends Controller
             return response()->json($this->response, 422);
         }
         
-        $client = Client::select('id', 'name')->find($clientID);
-        $clientContactPerson = $client->contactPeople()->select('id', 'name')->find($clientContactPersonID);
-
-        if(!$clientContactPerson){
-            $this->response["message"] = __('strings.store_failed');
-            return response()->json($this->response);
-        }
-
-        $clientContactPersonEmail = new ClientContactPersonEmail($request->all());
-        $clientContactPersonEmail->status = ClientContactPersonEmail::STATUS_ACTIVE;
-        $clientContactPerson->emails()->save($clientContactPersonEmail);
+        $contactPerson = new ContactPerson($request->all());
+        $contactPerson->status = ContactPerson::STATUS_ACTIVE;
+        $contactPerson->save();
         
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
@@ -188,15 +155,13 @@ class ClientContactPersonEmailController extends Controller
      * 
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clientContactPersonEmails"},
-     *     path="/clients/{clientID}/contact-people/{clientContactPersonID}/emails/{clientContactPersonEmailID}",
-     *     operationId="getClientContactPersonEmail",
-     *     summary="Show Client Contact Person Email",
-     *     description="Show Client Contact Person Email",
+     *     tags={"contactPeople"},
+     *     path="/contact-people/{contactPersonID}",
+     *     operationId="getContactPerson",
+     *     summary="Show Contact Person",
+     *     description="Show Contact Person",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
-     *     @OA\Parameter(name="clientContactPersonID", in="path", required=true, description="Client Contact Person ID"),
-     *     @OA\Parameter(name="clientContactPersonEmailID", in="path", required=true, description="Client Contact Person Email ID"),
+     *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
      *     @OA\Response(
      *          response=200, 
      *          description="Successful Response",
@@ -213,9 +178,9 @@ class ClientContactPersonEmailController extends Controller
      *                         example="1"
      *                      ),
      *                      @OA\Property(
-     *                         property="email",
+     *                         property="name",
      *                         type="string",
-     *                         example="Client Contact Person Email"
+     *                         example="Contact Person Name"
      *                      ),
      *                  ),
      *              ),
@@ -238,12 +203,10 @@ class ClientContactPersonEmailController extends Controller
      *     ),
      * )
      */
-    public function show($clientID, $clientContactPersonID, $clientContactPersonEmailID)
+    public function show($contactPersonID)
     {
-        $validator = Validator::make(['client_id' => $clientID, 'client_contact_person_id' => $clientContactPersonID, 'client_contact_person_email_id' => $clientContactPersonEmailID], [
-            'client_id' => 'required|exists:App\Models\Client,id',
-            'client_contact_person_id' => 'required|exists:App\Models\ClientContactPerson,id',
-            'client_contact_person_email_id' => 'required|exists:App\Models\ClientContactPersonEmail,id',
+        $validator = Validator::make(['contact_person_id' => $contactPersonID], [
+            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -252,19 +215,11 @@ class ClientContactPersonEmailController extends Controller
             return response()->json($this->response, 422);
         }
         
-        $client = Client::select('id', 'name')->find($clientID);
-        $clientContactPerson = $client->contactPeople()->select('id', 'name')->find($clientContactPersonID);
-
-        if(!$clientContactPerson){
-            $this->response["message"] = __('strings.get_one_failed');
-            return response()->json($this->response);
-        }
-
-        $clientContactPersonEmail = $clientContactPerson->emails()->select('id', 'email')->find($clientContactPersonEmailID);
+        $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
-        $this->response["data"] = $clientContactPersonEmail;
+        $this->response["data"] = $contactPerson;
         return response()->json($this->response);
     }
 
@@ -272,20 +227,18 @@ class ClientContactPersonEmailController extends Controller
      * 
      * @OA\Put(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clientContactPersonEmails"},
-     *     path="/clients/{clientID}/contact-people/{clientContactPersonID}/emails/{clientContactPersonEmailID}",
-     *     operationId="putClientContactPersonEmail",
-     *     summary="Update Client Contact Person Email",
-     *     description="Update Client Contact Person Email",
+     *     tags={"contactPeople"},
+     *     path="/contact-people/{contactPersonID}",
+     *     operationId="putContactPerson",
+     *     summary="Update Contact Person",
+     *     description="Update Contact Person",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
-     *     @OA\Parameter(name="clientContactPersonID", in="path", required=true, description="Client Contact Person ID"),
-     *     @OA\Parameter(name="clientContactPersonEmailID", in="path", required=true, description="Client Contact Person Email ID"),
+     *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
      *     @OA\RequestBody(
      *          required=true, 
      *          @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="email", type="string", example="Client Contact Person Email", description=""),
+     *             @OA\Property(property="name", type="string", example="Contact Person name", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -321,11 +274,11 @@ class ClientContactPersonEmailController extends Controller
      *                  property="errors", 
      *                  type="object",
      *                      @OA\Property(
-     *                  property="client_id", 
+     *                  property="contact_person_id", 
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
-     *                         example="The selected client_id is invalid."
+     *                         example="The selected contact_person_id is invalid."
      *                  ),
      *              ),
      *                  ),
@@ -334,13 +287,11 @@ class ClientContactPersonEmailController extends Controller
      *     ),
      * )
      */
-    public function update(Request $request, $clientID, $clientContactPersonID, $clientContactPersonEmailID)
+    public function update(Request $request, $contactPersonID)
     {
-        $validator = Validator::make(['client_id' => $clientID, 'client_contact_person_id' => $clientContactPersonID, 'client_contact_person_email_id' => $clientContactPersonEmailID] + $request->all(), [
-            'client_id' => 'required|exists:App\Models\Client,id',
-            'client_contact_person_id' => 'required|exists:App\Models\ClientContactPerson,id',
-            'client_contact_person_email_id' => 'required|exists:App\Models\ClientContactPersonEmail,id',
-            'email' => 'required|email|max:64',
+        $validator = Validator::make(['contact_person_id' => $contactPersonID] + $request->all(), [
+            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
+            'name' => 'required|max:64',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -349,23 +300,15 @@ class ClientContactPersonEmailController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $client = Client::select('id', 'name')->find($clientID);
-        $clientContactPerson = $client->contactPeople()->select('id', 'name')->find($clientContactPersonID);
+        $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
-        if(!$clientContactPerson){
-            $this->response["message"] = __('strings.update_failed');
-            return response()->json($this->response);
-        }
-
-        $clientContactPersonEmail = $clientContactPerson->emails()->select('id', 'email')->find($clientContactPersonEmailID);
-
-        if(!$clientContactPersonEmail){
+        if(!$contactPerson){
             $this->response["message"] = __('strings.update_failed');
             return response()->json($this->response, 422);
         }
 
-        $clientContactPersonEmail->fill($request->only(['email']));
-        $clientContactPersonEmail->update();
+        $contactPerson->fill($request->only(['name']));
+        $contactPerson->update();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
@@ -376,15 +319,13 @@ class ClientContactPersonEmailController extends Controller
      * 
      * @OA\Delete(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clientContactPersonEmails"},
-     *     path="/clients/{clientID}/contact-people/{clientContactPersonID}/emails/{clientContactPersonEmailID}",
-     *     operationId="deleteClientContactPersonEmail",
-     *     summary="Delete Client Contact Person Email",
-     *     description="Delete Client Contact Person Email",
+     *     tags={"contactPeople"},
+     *     path="/contact-people/{contactPersonID}",
+     *     operationId="deleteContactPerson",
+     *     summary="Delete Contact Person",
+     *     description="Delete Contact Person",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
-     *     @OA\Parameter(name="clientContactPersonID", in="path", required=true, description="Client Contact Person ID"),
-     *     @OA\Parameter(name="clientContactPersonEmailID", in="path", required=true, description="Client Contact Person Email ID"),
+     *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
      *     @OA\Response(
      *          response=200, 
      *          description="Successful Response",
@@ -418,11 +359,11 @@ class ClientContactPersonEmailController extends Controller
      *                  property="errors", 
      *                  type="object",
      *                      @OA\Property(
-     *                  property="client_id", 
+     *                  property="contact_person_id", 
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
-     *                         example="The selected client_id is invalid."
+     *                         example="The selected contact_person_id is invalid."
      *                  ),
      *              ),
      *                  ),
@@ -431,12 +372,10 @@ class ClientContactPersonEmailController extends Controller
      *     ),
      * )
      */
-    public function destroy($clientID, $clientContactPersonID, $clientContactPersonEmailID)
+    public function destroy($contactPersonID)
     {
-        $validator = Validator::make(['client_id' => $clientID, 'client_contact_person_id' => $clientContactPersonID, 'client_contact_person_email_id' => $clientContactPersonEmailID], [
-            'client_id' => 'required|exists:App\Models\Client,id',
-            'client_contact_person_id' => 'required|exists:App\Models\ClientContactPerson,id',
-            'client_contact_person_email_id' => 'required|exists:App\Models\ClientContactPersonEmail,id',
+        $validator = Validator::make(['contact_person_id' => $contactPersonID], [
+            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -445,22 +384,14 @@ class ClientContactPersonEmailController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $client = Client::select('id', 'name')->find($clientID);
-        $clientContactPerson = $client->contactPeople()->select('id', 'name')->find($clientContactPersonID);
+        $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
-        if(!$clientContactPerson){
-            $this->response["message"] = __('strings.destroy_failed');
-            return response()->json($this->response);
-        }
-
-        $clientContactPersonEmail = $clientContactPerson->emails()->select('id', 'email')->find($clientContactPersonEmailID);
-
-        if(!$clientContactPersonEmail){
+        if(!$contactPerson){
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }
-        
-        if ($clientContactPersonEmail->delete()) {
+
+        if ($contactPerson->delete()) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');
             return response()->json($this->response);

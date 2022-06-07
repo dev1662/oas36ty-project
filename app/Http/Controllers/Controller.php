@@ -9,7 +9,7 @@ use Illuminate\Routing\Controller as BaseController;
 
 /**
  * @OA\Server(
- *  url="http://localhost/v1",
+ *  url="http://localhost:8000/v1",
  *  description="Localhost"
  * )
  * @OA\Info(

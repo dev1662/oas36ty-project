@@ -22,8 +22,4 @@ class Client extends Model
         'user_id', 'name', 'status',
     ];
 
-    public function contactPeople()
-    {
-        return $this->hasMany(ClientContactPerson::class);
-    }
 }

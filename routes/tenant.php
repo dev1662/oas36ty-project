@@ -16,9 +16,9 @@ use App\Http\Controllers\Api\Tenant\TaskUserController;
 use App\Http\Controllers\Api\Tenant\TaskCommentController;
 use App\Http\Controllers\Api\Tenant\ToDoController;
 use App\Http\Controllers\Api\Tenant\ClientController;
-use App\Http\Controllers\Api\Tenant\ClientContactPersonController;
-use App\Http\Controllers\Api\Tenant\ClientContactPersonEmailController;
-use App\Http\Controllers\Api\Tenant\ClientContactPersonPhoneController;
+use App\Http\Controllers\Api\Tenant\ContactPersonController;
+use App\Http\Controllers\Api\Tenant\ContactPersonEmailController;
+use App\Http\Controllers\Api\Tenant\ContactPersonPhoneController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,9 +50,9 @@ Route::middleware([
             Route::apiResource('tasks.comments', TaskCommentController::class);
             Route::apiResource('to-dos', ToDoController::class);
             Route::apiResource('clients', ClientController::class);
-            Route::apiResource('clients.contact-people', ClientContactPersonController::class);
-            Route::apiResource('clients.contact-people.emails', ClientContactPersonEmailController::class);
-            Route::apiResource('clients.contact-people.phones', ClientContactPersonPhoneController::class);
+            Route::apiResource('contact-people', ContactPersonController::class);
+            Route::apiResource('contact-people.emails', ContactPersonEmailController::class);
+            Route::apiResource('contact-people.phones', ContactPersonPhoneController::class);
         });
     });
 });
