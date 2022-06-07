@@ -6,7 +6,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8000/v1",
+            "url": "http://192.168.1.10:8000/v1",
             "description": "Localhost"
         }
     ],
@@ -2000,28 +2000,22 @@
                 ]
             }
         },
-        "/clients/{clientID}/contact-people/{clientContactPersonID}/emails": {
+        "/contact-people/{contactPersonID}/emails": {
             "get": {
                 "tags": [
-                    "clientContactPersonEmails"
+                    "contactPersonEmails"
                 ],
-                "summary": "Client Contact Person Emails",
-                "description": "Client Contact Person Emails",
-                "operationId": "getClientContactPersonEmails",
+                "summary": "Contact Person Emails",
+                "description": "Contact Person Emails",
+                "operationId": "getContactPersonEmails",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "contactPersonID",
                         "in": "path",
-                        "description": "Client ID",
-                        "required": true
-                    },
-                    {
-                        "name": "clientContactPersonID",
-                        "in": "path",
-                        "description": "Client Contact Person ID",
+                        "description": "Contact Person ID",
                         "required": true
                     }
                 ],
@@ -2050,7 +2044,7 @@
                                                     },
                                                     "email": {
                                                         "type": "string",
-                                                        "example": "Client Contact Person Email"
+                                                        "example": "Contact Person Email"
                                                     }
                                                 },
                                                 "type": "object"
@@ -2107,25 +2101,19 @@
             },
             "post": {
                 "tags": [
-                    "clientContactPersonEmails"
+                    "contactPersonEmails"
                 ],
-                "summary": "Create Client Contact Person Email",
-                "description": "Create Client Contact Person Email",
-                "operationId": "postClientContactPersonEmail",
+                "summary": "Create Contact Person Email",
+                "description": "Create Contact Person Email",
+                "operationId": "postContactPersonEmail",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "contactPersonID",
                         "in": "path",
-                        "description": "Client ID",
-                        "required": true
-                    },
-                    {
-                        "name": "clientContactPersonID",
-                        "in": "path",
-                        "description": "Client Contact Person ID",
+                        "description": "Contact Person ID",
                         "required": true
                     }
                 ],
@@ -2138,7 +2126,7 @@
                                     "email": {
                                         "description": "",
                                         "type": "string",
-                                        "example": "Client Contact Person Email"
+                                        "example": "Contact Person Email"
                                     }
                                 },
                                 "type": "object"
@@ -2227,34 +2215,28 @@
                 ]
             }
         },
-        "/clients/{clientID}/contact-people/{clientContactPersonID}/emails/{clientContactPersonEmailID}": {
+        "/contact-people/{contactPersonID}/emails/{contactPersonEmailID}": {
             "get": {
                 "tags": [
-                    "clientContactPersonEmails"
+                    "contactPersonEmails"
                 ],
-                "summary": "Show Client Contact Person Email",
-                "description": "Show Client Contact Person Email",
-                "operationId": "getClientContactPersonEmail",
+                "summary": "Show Contact Person Email",
+                "description": "Show Contact Person Email",
+                "operationId": "getContactPersonEmail",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "contactPersonID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Contact Person ID",
                         "required": true
                     },
                     {
-                        "name": "clientContactPersonID",
+                        "name": "contactPersonEmailID",
                         "in": "path",
-                        "description": "Client Contact Person ID",
-                        "required": true
-                    },
-                    {
-                        "name": "clientContactPersonEmailID",
-                        "in": "path",
-                        "description": "Client Contact Person Email ID",
+                        "description": "Contact Person Email ID",
                         "required": true
                     }
                 ],
@@ -2283,7 +2265,7 @@
                                                     },
                                                     "email": {
                                                         "type": "string",
-                                                        "example": "Client Contact Person Email"
+                                                        "example": "Contact Person Email"
                                                     }
                                                 },
                                                 "type": "object"
@@ -2340,31 +2322,25 @@
             },
             "put": {
                 "tags": [
-                    "clientContactPersonEmails"
+                    "contactPersonEmails"
                 ],
-                "summary": "Update Client Contact Person Email",
-                "description": "Update Client Contact Person Email",
-                "operationId": "putClientContactPersonEmail",
+                "summary": "Update Contact Person Email",
+                "description": "Update Contact Person Email",
+                "operationId": "putContactPersonEmail",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "contactPersonID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Contact Person ID",
                         "required": true
                     },
                     {
-                        "name": "clientContactPersonID",
+                        "name": "contactPersonEmailID",
                         "in": "path",
-                        "description": "Client Contact Person ID",
-                        "required": true
-                    },
-                    {
-                        "name": "clientContactPersonEmailID",
-                        "in": "path",
-                        "description": "Client Contact Person Email ID",
+                        "description": "Contact Person Email ID",
                         "required": true
                     }
                 ],
@@ -2377,7 +2353,7 @@
                                     "email": {
                                         "description": "",
                                         "type": "string",
-                                        "example": "Client Contact Person Email"
+                                        "example": "Contact Person Email"
                                     }
                                 },
                                 "type": "object"
@@ -2458,11 +2434,11 @@
                                         },
                                         "errors": {
                                             "properties": {
-                                                "client_id": {
+                                                "contact_person_id": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string",
-                                                        "example": "The selected client_id is invalid."
+                                                        "example": "The selected contact_person_id is invalid."
                                                     }
                                                 }
                                             },
@@ -2483,31 +2459,25 @@
             },
             "delete": {
                 "tags": [
-                    "clientContactPersonEmails"
+                    "contactPersonEmails"
                 ],
-                "summary": "Delete Client Contact Person Email",
-                "description": "Delete Client Contact Person Email",
-                "operationId": "deleteClientContactPersonEmail",
+                "summary": "Delete Contact Person Email",
+                "description": "Delete Contact Person Email",
+                "operationId": "deleteContactPersonEmail",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "contactPersonID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Contact Person ID",
                         "required": true
                     },
                     {
-                        "name": "clientContactPersonID",
+                        "name": "contactPersonEmailID",
                         "in": "path",
-                        "description": "Client Contact Person ID",
-                        "required": true
-                    },
-                    {
-                        "name": "clientContactPersonEmailID",
-                        "in": "path",
-                        "description": "Client Contact Person Email ID",
+                        "description": "Contact Person Email ID",
                         "required": true
                     }
                 ],
@@ -2584,11 +2554,11 @@
                                         },
                                         "errors": {
                                             "properties": {
-                                                "client_id": {
+                                                "contact_person_id": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string",
-                                                        "example": "The selected client_id is invalid."
+                                                        "example": "The selected contact_person_id is invalid."
                                                     }
                                                 }
                                             },
@@ -2608,28 +2578,22 @@
                 ]
             }
         },
-        "/clients/{clientID}/contact-people/{clientContactPersonID}/phones": {
+        "/contact-people/{contactPersonID}/phones": {
             "get": {
                 "tags": [
-                    "clientContactPersonPhones"
+                    "contactPersonPhones"
                 ],
-                "summary": "Client Contact Person Phones",
-                "description": "Client Contact Person Phones",
-                "operationId": "getClientContactPersonPhones",
+                "summary": "Contact Person Phones",
+                "description": "Contact Person Phones",
+                "operationId": "getContactPersonPhones",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "contactPersonID",
                         "in": "path",
-                        "description": "Client ID",
-                        "required": true
-                    },
-                    {
-                        "name": "clientContactPersonID",
-                        "in": "path",
-                        "description": "Client Contact Person ID",
+                        "description": "Contact Person ID",
                         "required": true
                     }
                 ],
@@ -2658,7 +2622,7 @@
                                                     },
                                                     "phone": {
                                                         "type": "string",
-                                                        "example": "Client Contact Person Phone"
+                                                        "example": "Contact Person Phone"
                                                     }
                                                 },
                                                 "type": "object"
@@ -2715,25 +2679,19 @@
             },
             "post": {
                 "tags": [
-                    "clientContactPersonPhones"
+                    "contactPersonPhones"
                 ],
-                "summary": "Create Client Contact Person Phone",
-                "description": "Create Client Contact Person Phone",
-                "operationId": "postClientContactPersonPhone",
+                "summary": "Create Contact Person Phone",
+                "description": "Create Contact Person Phone",
+                "operationId": "postContactPersonPhone",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "contactPersonID",
                         "in": "path",
-                        "description": "Client ID",
-                        "required": true
-                    },
-                    {
-                        "name": "clientContactPersonID",
-                        "in": "path",
-                        "description": "Client Contact Person ID",
+                        "description": "Contact Person ID",
                         "required": true
                     }
                 ],
@@ -2746,7 +2704,7 @@
                                     "phone": {
                                         "description": "",
                                         "type": "string",
-                                        "example": "Client Contact Person Phone"
+                                        "example": "Contact Person Phone"
                                     }
                                 },
                                 "type": "object"
@@ -2835,34 +2793,28 @@
                 ]
             }
         },
-        "/clients/{clientID}/contact-people/{clientContactPersonID}/phones/{clientContactPersonPhoneID}": {
+        "/contact-people/{contactPersonID}/phones/{contactPersonPhoneID}": {
             "get": {
                 "tags": [
-                    "clientContactPersonPhones"
+                    "contactPersonPhones"
                 ],
-                "summary": "Show Client Contact Person Phone",
-                "description": "Show Client Contact Person Phone",
-                "operationId": "getClientContactPersonPhone",
+                "summary": "Show Contact Person Phone",
+                "description": "Show Contact Person Phone",
+                "operationId": "getContactPersonPhone",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "contactPersonID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Contact Person ID",
                         "required": true
                     },
                     {
-                        "name": "clientContactPersonID",
+                        "name": "contactPersonPhoneID",
                         "in": "path",
-                        "description": "Client Contact Person ID",
-                        "required": true
-                    },
-                    {
-                        "name": "clientContactPersonPhoneID",
-                        "in": "path",
-                        "description": "Client Contact Person Phone ID",
+                        "description": "Contact Person Phone ID",
                         "required": true
                     }
                 ],
@@ -2891,7 +2843,7 @@
                                                     },
                                                     "phone": {
                                                         "type": "string",
-                                                        "example": "Client Contact Person Phone"
+                                                        "example": "Contact Person Phone"
                                                     }
                                                 },
                                                 "type": "object"
@@ -2948,31 +2900,25 @@
             },
             "put": {
                 "tags": [
-                    "clientContactPersonPhones"
+                    "contactPersonPhones"
                 ],
-                "summary": "Update Client Contact Person Phone",
-                "description": "Update Client Contact Person Phone",
-                "operationId": "putClientContactPersonPhone",
+                "summary": "Update Contact Person Phone",
+                "description": "Update Contact Person Phone",
+                "operationId": "putContactPersonPhone",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "contactPersonID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Contact Person ID",
                         "required": true
                     },
                     {
-                        "name": "clientContactPersonID",
+                        "name": "contactPersonPhoneID",
                         "in": "path",
-                        "description": "Client Contact Person ID",
-                        "required": true
-                    },
-                    {
-                        "name": "clientContactPersonPhoneID",
-                        "in": "path",
-                        "description": "Client Contact Person Phone ID",
+                        "description": "Contact Person Phone ID",
                         "required": true
                     }
                 ],
@@ -2985,7 +2931,7 @@
                                     "phone": {
                                         "description": "",
                                         "type": "string",
-                                        "example": "Client Contact Person Phone"
+                                        "example": "Contact Person Phone"
                                     }
                                 },
                                 "type": "object"
@@ -3066,11 +3012,11 @@
                                         },
                                         "errors": {
                                             "properties": {
-                                                "client_id": {
+                                                "contact_person_id": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string",
-                                                        "example": "The selected client_id is invalid."
+                                                        "example": "The selected contact_person_id is invalid."
                                                     }
                                                 }
                                             },
@@ -3091,31 +3037,25 @@
             },
             "delete": {
                 "tags": [
-                    "clientContactPersonPhones"
+                    "contactPersonPhones"
                 ],
-                "summary": "Delete Client Contact Person Phone",
-                "description": "Delete Client Contact Person Phone",
-                "operationId": "deleteClientContactPersonPhone",
+                "summary": "Delete Contact Person Phone",
+                "description": "Delete Contact Person Phone",
+                "operationId": "deleteContactPersonPhone",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "contactPersonID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Contact Person ID",
                         "required": true
                     },
                     {
-                        "name": "clientContactPersonID",
+                        "name": "contactPersonPhoneID",
                         "in": "path",
-                        "description": "Client Contact Person ID",
-                        "required": true
-                    },
-                    {
-                        "name": "clientContactPersonPhoneID",
-                        "in": "path",
-                        "description": "Client Contact Person Phone ID",
+                        "description": "Contact Person Phone ID",
                         "required": true
                     }
                 ],
@@ -3192,11 +3132,11 @@
                                         },
                                         "errors": {
                                             "properties": {
-                                                "client_id": {
+                                                "contact_person_id": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string",
-                                                        "example": "The selected client_id is invalid."
+                                                        "example": "The selected contact_person_id is invalid."
                                                     }
                                                 }
                                             },

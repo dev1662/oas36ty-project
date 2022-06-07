@@ -7,9 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Validator;
 
-use App\Models\Client;
-use App\Models\ClientContactPerson;
-use App\Models\ClientContactPersonPhone;
+use App\Models\ContactPerson;
+use App\Models\ContactPersonPhone;
 
 class ContactPersonPhoneController extends Controller
 {
@@ -17,14 +16,13 @@ class ContactPersonPhoneController extends Controller
      * 
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clientContactPersonPhones"},
-     *     path="/clients/{clientID}/contact-people/{clientContactPersonID}/phones",
-     *     operationId="getClientContactPersonPhones",
-     *     summary="Client Contact Person Phones",
-     *     description="Client Contact Person Phones",
+     *     tags={"contactPersonPhones"},
+     *     path="/contact-people/{contactPersonID}/phones",
+     *     operationId="getContactPersonPhones",
+     *     summary="Contact Person Phones",
+     *     description="Contact Person Phones",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
-     *     @OA\Parameter(name="clientContactPersonID", in="path", required=true, description="Client Contact Person ID"),
+     *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
      *     @OA\Response(
      *          response=200, 
      *          description="Successful Response",
@@ -43,7 +41,7 @@ class ContactPersonPhoneController extends Controller
      *                      @OA\Property(
      *                         property="phone",
      *                         type="string",
-     *                         example="Client Contact Person Phone"
+     *                         example="Contact Person Phone"
      *                      ),
      *                  ),
      *              ),
@@ -66,11 +64,10 @@ class ContactPersonPhoneController extends Controller
      *     ),
      * )
      */
-    public function index($clientID, $clientContactPersonID)
+    public function index($contactPersonID)
     {
-        $validator = Validator::make(['client_id' => $clientID, 'client_contact_person_id' => $clientContactPersonID], [
-            'client_id' => 'required|exists:App\Models\Client,id',
-            'client_contact_person_id' => 'required|exists:App\Models\ClientContactPerson,id',
+        $validator = Validator::make(['contact_person_id' => $contactPersonID], [
+            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -79,15 +76,14 @@ class ContactPersonPhoneController extends Controller
             return response()->json($this->response, 422);
         }
         
-        $client = Client::select('id', 'name')->find($clientID);
-        $clientContactPerson = $client->contactPeople()->select('id', 'name')->find($clientContactPersonID);
+        $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
-        if(!$clientContactPerson){
+        if(!$contactPerson){
             $this->response["message"] = __('strings.get_all_failed');
             return response()->json($this->response);
         }
 
-        $result = $clientContactPerson->phones()->select('id', 'phone')->get();
+        $result = $contactPerson->phones()->select('id', 'phone')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -99,19 +95,18 @@ class ContactPersonPhoneController extends Controller
      * 
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clientContactPersonPhones"},
-     *     path="/clients/{clientID}/contact-people/{clientContactPersonID}/phones",
-     *     operationId="postClientContactPersonPhone",
-     *     summary="Create Client Contact Person Phone",
-     *     description="Create Client Contact Person Phone",
+     *     tags={"contactPersonPhones"},
+     *     path="/contact-people/{contactPersonID}/phones",
+     *     operationId="postContactPersonPhone",
+     *     summary="Create Contact Person Phone",
+     *     description="Create Contact Person Phone",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
-     *     @OA\Parameter(name="clientContactPersonID", in="path", required=true, description="Client Contact Person ID"),
+     *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
      *     @OA\RequestBody(
      *          required=true, 
      *          @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="phone", type="string", example="Client Contact Person Phone", description=""),
+     *             @OA\Property(property="phone", type="string", example="Contact Person Phone", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -153,12 +148,11 @@ class ContactPersonPhoneController extends Controller
      *     ),
      * )
      */
-    public function store(Request $request, $clientID, $clientContactPersonID)
+    public function store(Request $request, $contactPersonID)
     {
-        $validator = Validator::make(['client_id' => $clientID, 'client_contact_person_id' => $clientContactPersonID] + $request->all(), [
-            'client_id' => 'required|exists:App\Models\Client,id',
-            'client_contact_person_id' => 'required|exists:App\Models\ClientContactPerson,id',
-            'phone' => 'required|digits:10|max:20',
+        $validator = Validator::make(['contact_person_id' => $contactPersonID] + $request->all(), [
+            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
+            'phone' => 'required|digits:10|unique:App\Models\ContactPersonPhone,phone',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -167,17 +161,16 @@ class ContactPersonPhoneController extends Controller
             return response()->json($this->response, 422);
         }
         
-        $client = Client::select('id', 'name')->find($clientID);
-        $clientContactPerson = $client->contactPeople()->select('id', 'name')->find($clientContactPersonID);
+        $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
-        if(!$clientContactPerson){
+        if(!$contactPerson){
             $this->response["message"] = __('strings.store_failed');
             return response()->json($this->response);
         }
 
-        $clientContactPersonPhone = new ClientContactPersonPhone($request->all());
-        $clientContactPersonPhone->status = ClientContactPersonPhone::STATUS_ACTIVE;
-        $clientContactPerson->phones()->save($clientContactPersonPhone);
+        $contactPersonPhone = new ContactPersonPhone($request->all());
+        $contactPersonPhone->status = ContactPersonPhone::STATUS_ACTIVE;
+        $contactPerson->phones()->save($contactPersonPhone);
         
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
@@ -188,15 +181,14 @@ class ContactPersonPhoneController extends Controller
      * 
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clientContactPersonPhones"},
-     *     path="/clients/{clientID}/contact-people/{clientContactPersonID}/phones/{clientContactPersonPhoneID}",
-     *     operationId="getClientContactPersonPhone",
-     *     summary="Show Client Contact Person Phone",
-     *     description="Show Client Contact Person Phone",
+     *     tags={"contactPersonPhones"},
+     *     path="/contact-people/{contactPersonID}/phones/{contactPersonPhoneID}",
+     *     operationId="getContactPersonPhone",
+     *     summary="Show Contact Person Phone",
+     *     description="Show Contact Person Phone",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
-     *     @OA\Parameter(name="clientContactPersonID", in="path", required=true, description="Client Contact Person ID"),
-     *     @OA\Parameter(name="clientContactPersonPhoneID", in="path", required=true, description="Client Contact Person Phone ID"),
+     *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
+     *     @OA\Parameter(name="contactPersonPhoneID", in="path", required=true, description="Contact Person Phone ID"),
      *     @OA\Response(
      *          response=200, 
      *          description="Successful Response",
@@ -215,7 +207,7 @@ class ContactPersonPhoneController extends Controller
      *                      @OA\Property(
      *                         property="phone",
      *                         type="string",
-     *                         example="Client Contact Person Phone"
+     *                         example="Contact Person Phone"
      *                      ),
      *                  ),
      *              ),
@@ -238,12 +230,11 @@ class ContactPersonPhoneController extends Controller
      *     ),
      * )
      */
-    public function show($clientID, $clientContactPersonID, $clientContactPersonPhoneID)
+    public function show($contactPersonID, $contactPersonPhoneID)
     {
-        $validator = Validator::make(['client_id' => $clientID, 'client_contact_person_id' => $clientContactPersonID, 'client_contact_person_phone_id' => $clientContactPersonPhoneID], [
-            'client_id' => 'required|exists:App\Models\Client,id',
-            'client_contact_person_id' => 'required|exists:App\Models\ClientContactPerson,id',
-            'client_contact_person_phone_id' => 'required|exists:App\Models\ClientContactPersonPhone,id',
+        $validator = Validator::make(['contact_person_id' => $contactPersonID, 'contact_person_phone_id' => $contactPersonPhoneID], [
+            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
+            'contact_person_phone_id' => 'required|exists:App\Models\ContactPersonPhone,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -252,19 +243,18 @@ class ContactPersonPhoneController extends Controller
             return response()->json($this->response, 422);
         }
         
-        $client = Client::select('id', 'name')->find($clientID);
-        $clientContactPerson = $client->contactPeople()->select('id', 'name')->find($clientContactPersonID);
+        $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
-        if(!$clientContactPerson){
+        if(!$contactPerson){
             $this->response["message"] = __('strings.get_one_failed');
             return response()->json($this->response);
         }
 
-        $clientContactPersonPhone = $clientContactPerson->phones()->select('id', 'phone')->find($clientContactPersonPhoneID);
+        $contactPersonPhone = $contactPerson->phones()->select('id', 'phone')->find($contactPersonPhoneID);
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
-        $this->response["data"] = $clientContactPersonPhone;
+        $this->response["data"] = $contactPersonPhone;
         return response()->json($this->response);
     }
 
@@ -272,20 +262,19 @@ class ContactPersonPhoneController extends Controller
      * 
      * @OA\Put(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clientContactPersonPhones"},
-     *     path="/clients/{clientID}/contact-people/{clientContactPersonID}/phones/{clientContactPersonPhoneID}",
-     *     operationId="putClientContactPersonPhone",
-     *     summary="Update Client Contact Person Phone",
-     *     description="Update Client Contact Person Phone",
+     *     tags={"contactPersonPhones"},
+     *     path="/contact-people/{contactPersonID}/phones/{contactPersonPhoneID}",
+     *     operationId="putContactPersonPhone",
+     *     summary="Update Contact Person Phone",
+     *     description="Update Contact Person Phone",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
-     *     @OA\Parameter(name="clientContactPersonID", in="path", required=true, description="Client Contact Person ID"),
-     *     @OA\Parameter(name="clientContactPersonPhoneID", in="path", required=true, description="Client Contact Person Phone ID"),
+     *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
+     *     @OA\Parameter(name="contactPersonPhoneID", in="path", required=true, description="Contact Person Phone ID"),
      *     @OA\RequestBody(
      *          required=true, 
      *          @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="phone", type="string", example="Client Contact Person Phone", description=""),
+     *             @OA\Property(property="phone", type="string", example="Contact Person Phone", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -321,11 +310,11 @@ class ContactPersonPhoneController extends Controller
      *                  property="errors", 
      *                  type="object",
      *                      @OA\Property(
-     *                  property="client_id", 
+     *                  property="contact_person_id", 
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
-     *                         example="The selected client_id is invalid."
+     *                         example="The selected contact_person_id is invalid."
      *                  ),
      *              ),
      *                  ),
@@ -334,13 +323,12 @@ class ContactPersonPhoneController extends Controller
      *     ),
      * )
      */
-    public function update(Request $request, $clientID, $clientContactPersonID, $clientContactPersonPhoneID)
+    public function update(Request $request, $contactPersonID, $contactPersonPhoneID)
     {
-        $validator = Validator::make(['client_id' => $clientID, 'client_contact_person_id' => $clientContactPersonID, 'client_contact_person_phone_id' => $clientContactPersonPhoneID] + $request->all(), [
-            'client_id' => 'required|exists:App\Models\Client,id',
-            'client_contact_person_id' => 'required|exists:App\Models\ClientContactPerson,id',
-            'client_contact_person_phone_id' => 'required|exists:App\Models\ClientContactPersonPhone,id',
-            'phone' => 'required|digits:10|max:20',
+        $validator = Validator::make(['contact_person_id' => $contactPersonID, 'contact_person_phone_id' => $contactPersonPhoneID] + $request->all(), [
+            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
+            'contact_person_phone_id' => 'required|exists:App\Models\ContactPersonPhone,id',
+            'phone' => 'required|digits:10|unique:App\Models\ContactPersonPhone,phone,'.$contactPersonPhoneID.',id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -349,23 +337,22 @@ class ContactPersonPhoneController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $client = Client::select('id', 'name')->find($clientID);
-        $clientContactPerson = $client->contactPeople()->select('id', 'name')->find($clientContactPersonID);
+        $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
-        if(!$clientContactPerson){
+        if(!$contactPerson){
             $this->response["message"] = __('strings.update_failed');
             return response()->json($this->response);
         }
 
-        $clientContactPersonPhone = $clientContactPerson->phones()->select('id', 'phone')->find($clientContactPersonPhoneID);
+        $contactPersonPhone = $contactPerson->phones()->select('id', 'phone')->find($contactPersonPhoneID);
 
-        if(!$clientContactPersonPhone){
+        if(!$contactPersonPhone){
             $this->response["message"] = __('strings.update_failed');
             return response()->json($this->response, 422);
         }
 
-        $clientContactPersonPhone->fill($request->only(['phone']));
-        $clientContactPersonPhone->update();
+        $contactPersonPhone->fill($request->only(['phone']));
+        $contactPersonPhone->update();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
@@ -376,15 +363,14 @@ class ContactPersonPhoneController extends Controller
      * 
      * @OA\Delete(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clientContactPersonPhones"},
-     *     path="/clients/{clientID}/contact-people/{clientContactPersonID}/phones/{clientContactPersonPhoneID}",
-     *     operationId="deleteClientContactPersonPhone",
-     *     summary="Delete Client Contact Person Phone",
-     *     description="Delete Client Contact Person Phone",
+     *     tags={"contactPersonPhones"},
+     *     path="/contact-people/{contactPersonID}/phones/{contactPersonPhoneID}",
+     *     operationId="deleteContactPersonPhone",
+     *     summary="Delete Contact Person Phone",
+     *     description="Delete Contact Person Phone",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
-     *     @OA\Parameter(name="clientContactPersonID", in="path", required=true, description="Client Contact Person ID"),
-     *     @OA\Parameter(name="clientContactPersonPhoneID", in="path", required=true, description="Client Contact Person Phone ID"),
+     *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
+     *     @OA\Parameter(name="contactPersonPhoneID", in="path", required=true, description="Contact Person Phone ID"),
      *     @OA\Response(
      *          response=200, 
      *          description="Successful Response",
@@ -418,11 +404,11 @@ class ContactPersonPhoneController extends Controller
      *                  property="errors", 
      *                  type="object",
      *                      @OA\Property(
-     *                  property="client_id", 
+     *                  property="contact_person_id", 
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
-     *                         example="The selected client_id is invalid."
+     *                         example="The selected contact_person_id is invalid."
      *                  ),
      *              ),
      *                  ),
@@ -431,12 +417,11 @@ class ContactPersonPhoneController extends Controller
      *     ),
      * )
      */
-    public function destroy($clientID, $clientContactPersonID, $clientContactPersonPhoneID)
+    public function destroy($clientID, $contactPersonID, $contactPersonPhoneID)
     {
-        $validator = Validator::make(['client_id' => $clientID, 'client_contact_person_id' => $clientContactPersonID, 'client_contact_person_phone_id' => $clientContactPersonPhoneID], [
-            'client_id' => 'required|exists:App\Models\Client,id',
-            'client_contact_person_id' => 'required|exists:App\Models\ClientContactPerson,id',
-            'client_contact_person_phone_id' => 'required|exists:App\Models\ClientContactPersonPhone,id',
+        $validator = Validator::make(['contact_person_id' => $contactPersonID, 'contact_person_phone_id' => $contactPersonPhoneID], [
+            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
+            'contact_person_phone_id' => 'required|exists:App\Models\ContactPersonPhone,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -445,22 +430,21 @@ class ContactPersonPhoneController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $client = Client::select('id', 'name')->find($clientID);
-        $clientContactPerson = $client->contactPeople()->select('id', 'name')->find($clientContactPersonID);
+        $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
-        if(!$clientContactPerson){
+        if(!$contactPerson){
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response);
         }
 
-        $clientContactPersonPhone = $clientContactPerson->phones()->select('id', 'phone')->find($clientContactPersonPhoneID);
+        $contactPersonPhone = $contactPerson->phones()->select('id', 'phone')->find($contactPersonPhoneID);
 
-        if(!$clientContactPersonPhone){
+        if(!$contactPersonPhone){
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }
         
-        if ($clientContactPersonPhone->delete()) {
+        if ($contactPersonPhone->delete()) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');
             return response()->json($this->response);
