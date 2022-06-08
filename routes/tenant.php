@@ -10,6 +10,8 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Api\Tenant\SwitchOrganizationController;
+use App\Http\Controllers\Api\Tenant\BranchController;
+use App\Http\Controllers\Api\Tenant\CategoryController;
 use App\Http\Controllers\Api\Tenant\TaskController;
 use App\Http\Controllers\Api\Tenant\UserController;
 use App\Http\Controllers\Api\Tenant\TaskUserController;
@@ -41,6 +43,9 @@ Route::middleware([
 
         Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('switch', [SwitchOrganizationController::class, 'index']);
+            Route::apiResource('branches', BranchController::class);
+            Route::apiResource('categories', CategoryController::class);
+
             Route::apiResource('tasks', TaskController::class);
             
             Route::post('users/{id}/deactivate', [UserController::class, 'deactivate']);
