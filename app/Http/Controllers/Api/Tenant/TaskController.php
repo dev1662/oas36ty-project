@@ -75,7 +75,20 @@ class TaskController extends Controller
 
     public function index()
     {
-        $tasks = Task::select('id', 'type', 'subject', 'description', 'status')->latest()->get();
+        $tasks = Task::select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status')->with([
+            'branch' => function($q){
+                $q->select('id', 'name');
+            },
+            'category' => function($q){
+                $q->select('id', 'name');
+            },
+            'client' => function($q){
+                $q->select('id', 'name');
+            },
+            'contactPerson' => function($q){
+                $q->select('id', 'name');
+            }
+        ])->latest()->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -97,9 +110,15 @@ class TaskController extends Controller
      *          required=true, 
      *          @OA\JsonContent(
      *             type="object",
+     *             @OA\Property(property="branch_id", type="string", example="1", description=""),
+     *             @OA\Property(property="category_id", type="string", example="1", description=""),
+     *             @OA\Property(property="client_id", type="string", example="1", description=""),
+     *             @OA\Property(property="contact_person_id", type="string", example="1", description=""),
      *             @OA\Property(property="type", type="string", example="lead", description=""),
      *             @OA\Property(property="subject", type="string", example="Task subject", description=""),
      *             @OA\Property(property="description", type="string", example="Task description", description=""),
+     *             @OA\Property(property="due_date", type="string", example="2022-06-01", description=""),
+     *             @OA\Property(property="importance", type="string", example="3", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -145,9 +164,15 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'branch_id' => 'required|exists:App\Models\Branch,id',
+            'category_id' => 'nullable|exists:App\Models\Category,id',
+            'client_id' => 'nullable|exists:App\Models\Client,id',
+            'contact_person_id' => 'nullable|exists:App\Models\ContactPerson,id',
             'type' => 'required|in:lead,task',
             'subject' => 'required|max:255',
             'description' => 'nullable',
+            'due_date' => 'required|date',
+            'importance' => 'required|in:1,2,3,4,5',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -157,7 +182,7 @@ class TaskController extends Controller
         }
 
         $task = new Task($request->all());
-        $task->status = Task::STATUS_ACTIVE;
+        $task->status = Task::STATUS_OPEN;
         $task->save();
         
         $this->response["status"] = true;
@@ -240,7 +265,20 @@ class TaskController extends Controller
             return response()->json($this->response, 422);
         }
         
-        $task = Task::select('id', 'type', 'subject', 'description', 'status')->find($id);
+        $task = Task::select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status')->with([
+            'branch' => function($q){
+                $q->select('id', 'name');
+            },
+            'category' => function($q){
+                $q->select('id', 'name');
+            },
+            'client' => function($q){
+                $q->select('id', 'name');
+            },
+            'contactPerson' => function($q){
+                $q->select('id', 'name');
+            }
+        ])->find($id);
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
@@ -263,9 +301,16 @@ class TaskController extends Controller
      *          required=true, 
      *          @OA\JsonContent(
      *             type="object",
+     *             @OA\Property(property="branch_id", type="string", example="1", description=""),
+     *             @OA\Property(property="category_id", type="string", example="1", description=""),
+     *             @OA\Property(property="client_id", type="string", example="1", description=""),
+     *             @OA\Property(property="contact_person_id", type="string", example="1", description=""),
      *             @OA\Property(property="type", type="string", example="lead", description=""),
      *             @OA\Property(property="subject", type="string", example="Task subject", description=""),
      *             @OA\Property(property="description", type="string", example="Task description", description=""),
+     *             @OA\Property(property="due_date", type="string", example="2022-06-01", description=""),
+     *             @OA\Property(property="importance", type="string", example="3", description=""),
+     *             @OA\Property(property="status", type="string", example="closed", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -319,9 +364,16 @@ class TaskController extends Controller
     {
         $validator = Validator::make(['task_id' => $id] + $request->all(), [
             'task_id' => 'required|exists:App\Models\Task,id',
+            'branch_id' => 'required|exists:App\Models\Branch,id',
+            'category_id' => 'nullable|exists:App\Models\Category,id',
+            'client_id' => 'nullable|exists:App\Models\Client,id',
+            'contact_person_id' => 'nullable|exists:App\Models\ContactPerson,id',
             'type' => 'required|in:lead,task',
             'subject' => 'required|max:255',
             'description' => 'nullable',
+            'due_date' => 'required|date',
+            'importance' => 'required|in:1,2,3,4,5',
+            'status' => 'required|in:open,completed,invoiced,closed',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -336,7 +388,7 @@ class TaskController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $task->fill($request->only(['type', 'subject', 'description']));
+        $task->fill($request->only(['task_id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status']));
         $task->update();
 
         $this->response["status"] = true;

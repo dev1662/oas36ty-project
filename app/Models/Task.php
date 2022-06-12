@@ -13,8 +13,10 @@ class Task extends Model
     const TYPE_LEAD = 'lead';
     const TYPE_TASK = 'task';
     
-    const STATUS_ACTIVE = 'active';
-    const STATUS_INACTIVE = 'inactive';
+    const STATUS_OPEN = 'open';
+    const STATUS_COMPLETED = 'completed';
+    const STATUS_INVOICED = 'invoiced';
+    const STATUS_CLOSED = 'closed';
     
     /**
      * The attributes that are mass assignable.
@@ -33,5 +35,25 @@ class Task extends Model
     public function comments()
     {
         return $this->hasMany(TaskComment::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+    public function contactPerson()
+    {
+        return $this->belongsTo(ContactPerson::class);
     }
 }

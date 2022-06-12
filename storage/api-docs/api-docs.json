@@ -4939,6 +4939,26 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "branch_id": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
+                                    "category_id": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
+                                    "client_id": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
+                                    "contact_person_id": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
                                     "type": {
                                         "description": "",
                                         "type": "string",
@@ -4953,6 +4973,16 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "Task description"
+                                    },
+                                    "due_date": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "2022-06-01"
+                                    },
+                                    "importance": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "3"
                                     }
                                 },
                                 "type": "object"
@@ -5172,6 +5202,26 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "branch_id": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
+                                    "category_id": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
+                                    "client_id": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
+                                    "contact_person_id": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
                                     "type": {
                                         "description": "",
                                         "type": "string",
@@ -5186,6 +5236,21 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "Task description"
+                                    },
+                                    "due_date": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "2022-06-01"
+                                    },
+                                    "importance": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "3"
+                                    },
+                                    "status": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "closed"
                                     }
                                 },
                                 "type": "object"
