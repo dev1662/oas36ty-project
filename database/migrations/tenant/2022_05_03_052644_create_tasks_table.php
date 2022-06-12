@@ -15,12 +15,18 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('branch_id')->constrained()->nullable();
+            $table->foreignId('category_id')->constrained()->nullable();
+            $table->foreignId('client_id')->constrained()->nullable();
+            $table->foreignId('contact_person_id')->constrained()->nullable();
             $table->enum('type', ['lead', 'task'])->default('lead');
             $table->string('subject');
             $table->longText('description')->nullable();
+            $table->date('due_date')->nullable();
+            $table->unsignedTinyInteger('importance')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->enum('status', ['active', 'inactive'])->default('inactive');
+            $table->enum('status', ['open', 'completed', 'invoiced', 'closed'])->default('open');
         });
     }
 
