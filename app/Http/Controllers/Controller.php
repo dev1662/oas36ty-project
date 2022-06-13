@@ -9,6 +9,10 @@ use Illuminate\Routing\Controller as BaseController;
 
 /**
  * @OA\Server(
+ *  url="https://api-office36ty.protracked.in/v1",
+ *  description="Office36ty"
+ * )
+ * @OA\Server(
  *  url="http://192.168.1.10:8000/v1",
  *  description="Localhost"
  * )

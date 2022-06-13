@@ -20,7 +20,8 @@ return [
         '127.0.0.1',
         'localhost',
         'api.oas36ty.test',
-        '192.168.1.10'
+        '192.168.1.10',
+        'api-office36ty.protracked.in'
     ],
 
     /**

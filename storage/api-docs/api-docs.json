@@ -6,6 +6,10 @@
     },
     "servers": [
         {
+            "url": "https://api-office36ty.protracked.in/v1",
+            "description": "Office36ty"
+        },
+        {
             "url": "http://192.168.1.10:8000/v1",
             "description": "Localhost"
         }
