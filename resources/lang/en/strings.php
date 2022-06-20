@@ -10,7 +10,7 @@ return [
 
     'login_success' => 'Logged In Successfully!',
     'login_failed' => 'Login Failed!',
-    'logged_out' => 'Logged Out!',
+    'logged_out' => 'Logged Out Successfully!',
 
     'register_success' => 'Registration Completed!',
     'register_failed' => 'Registration Failed!',

@@ -9,6 +9,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 use Illuminate\Http\Request;
 
+use App\Http\Controllers\Api\Tenant\AccountController;
 use App\Http\Controllers\Api\Tenant\SwitchOrganizationController;
 use App\Http\Controllers\Api\Tenant\BranchController;
 use App\Http\Controllers\Api\Tenant\CategoryController;
@@ -43,6 +44,7 @@ Route::middleware([
 
         Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('switch', [SwitchOrganizationController::class, 'index']);
+            Route::post('logout', [AccountController::class, 'logout']);
             Route::apiResource('branches', BranchController::class);
             Route::apiResource('categories', CategoryController::class);
 
