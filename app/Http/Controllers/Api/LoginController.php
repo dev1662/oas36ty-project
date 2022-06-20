@@ -75,7 +75,9 @@ class LoginController extends Controller
         ]);
 
         if($validator->fails()) {
+            $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
 
