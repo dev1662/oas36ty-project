@@ -105,7 +105,7 @@ class LoginController extends Controller
             $this->response["data"] = $result;
         } else { 
             $this->response["message"] = __('strings.login_failed');
-            return response()->json($this->response, 401);
+            return response()->json($this->response, 200);
         } 
         return response()->json($this->response);
     }
