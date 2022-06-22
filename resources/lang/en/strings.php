@@ -12,7 +12,7 @@ return [
     'login_failed' => 'Login Failed!',
     'logged_out' => 'Logged Out Successfully!',
 
-    'register_success' => 'Registration Completed!',
+    'register_success' => 'Registration Completed! Please login',
     'register_failed' => 'Registration Failed!',
 
     'register_organization_success' => 'Organization details are saved!',
