@@ -749,13 +749,13 @@
             }
         },
         "/signup/organization": {
-            "post": {
+            "put": {
                 "tags": [
                     "auth"
                 ],
                 "summary": "Signup Organization",
                 "description": "Signup Organization",
-                "operationId": "postSignupOrganization",
+                "operationId": "putSignupOrganization",
                 "requestBody": {
                     "required": true,
                     "content": {

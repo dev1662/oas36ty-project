@@ -173,10 +173,10 @@ class SignUpController extends Controller
     }
 
     /**
-     * @OA\Post(
+     * @OA\Put(
      *     tags={"auth"},
      *     path="/signup/organization",
-     *     operationId="postSignupOrganization",
+     *     operationId="putSignupOrganization",
      *     summary="Signup Organization",
      *     description="Signup Organization",
      *     @OA\RequestBody(
@@ -230,7 +230,7 @@ class SignUpController extends Controller
             return response()->json($this->response, 401);
         }
         
-        $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNull('subdomain')->first();
+        $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNotNull('email_verified_at')->first();
         if(!$centralOnboarding){
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);

@@ -25,7 +25,7 @@ use App\Http\Controllers\Api\InvitationController;
 Route::prefix('signup')->group(function(){
     Route::post('send-email', [SignUpController::class, 'sendEmail']);
     Route::post('verify-email', [SignUpController::class, 'verifyEmail']);
-    Route::post('organization', [SignUpController::class, 'organization']);
+    Route::put('organization', [SignUpController::class, 'organization']);
     Route::post('complete', [SignUpController::class, 'complete']);
 });
 
