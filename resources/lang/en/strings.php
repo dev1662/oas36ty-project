@@ -15,8 +15,8 @@ return [
     'register_success' => 'Registration Completed!',
     'register_failed' => 'Registration Failed!',
 
-    'register_organization_success' => 'Register Organization Success!',
-    'register_organization_failed' => 'Register Organization Failed!',
+    'register_organization_success' => 'Organization details are saved!',
+    'register_organization_failed' => 'Organization details are not saved!',
     
     'forgot_password' => 'We have emailed your password reset link!',
     'sending_email_failed' => 'Sending email failed!',
