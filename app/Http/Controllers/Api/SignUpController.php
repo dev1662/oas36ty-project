@@ -252,7 +252,7 @@ class SignUpController extends Controller
         $user= CentralOnboarding::where(['email'=> $request->email])->whereNotNull('organization_name') ;
             if($user->count() > 0){
                 $this->response['passwordNotRequired'] = true;
-                return response()->json($this->response);
+                return response()->json($this->response['passwordNotRequired']);
             }
         if($centralOnboarding->update()){
    
