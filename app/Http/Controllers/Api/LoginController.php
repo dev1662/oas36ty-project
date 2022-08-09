@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use Auth;
-use Hash;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 use App\Models\Tenant;
@@ -16,6 +16,7 @@ use App\Models\User;
 
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\OrganizationResource;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -68,7 +69,7 @@ class LoginController extends Controller
      */
 
     public function index(Request $request){ 
-
+        
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:App\Models\User,email',
             'password' => 'required',
@@ -101,7 +102,13 @@ class LoginController extends Controller
                 'current_tenant' => new TenantResource($tenant),
                 'all_tenants' => TenantResource::collection($centralUser->tenants()->with('organization')->get()),
             );
+            // Session::put('key', 'value');
+            // session()->save();
+            // $request->session()->put('key', 'value');
+            // save();
 
+            // $request->session()->put('current_tenant' , new TenantResource($tenant));
+            // session('current_tenant' , new TenantResource($tenant));
             $this->response["status"] = true;
             $this->response["message"] = __('strings.login_success');
             $this->response["data"] = $result;

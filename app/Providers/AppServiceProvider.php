@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\CentralOnboarding;
 use Illuminate\Support\ServiceProvider;
 
 use Laravel\Passport\Passport;
@@ -32,5 +33,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Passport::loadKeysFrom(base_path(config('passport.key_path')));
+        CentralOnboarding::observe(UserObserver::class);
+
     }
 }

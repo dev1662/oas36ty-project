@@ -11,6 +11,8 @@ use App\Models\User;
 
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\OrganizationResource;
+use Illuminate\Contracts\Session\Session;
+use Illuminate\Support\Facades\Session as FacadesSession;
 
 class AccountController extends Controller
 {
@@ -44,9 +46,11 @@ class AccountController extends Controller
     public function logout(Request $request){ 
 
         $user = $request->user();
-
+        // return $user;
         // Revoke Token
+        // return FacadesSession::all();
         $user->token()->revoke();
+        
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.logged_out');

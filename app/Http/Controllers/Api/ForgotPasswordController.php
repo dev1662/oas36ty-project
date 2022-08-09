@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Password;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use Auth;
-use Hash;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 use App\Models\Tenant;
@@ -51,7 +51,6 @@ class ForgotPasswordController extends Controller
      */
 
     public function index(Request $request){ 
-
         $validator = Validator::make($request->all(), [
             'email' => 'required|exists:App\Models\CentralUser,email',
         ]);
@@ -61,17 +60,26 @@ class ForgotPasswordController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-
+        
         $status = Password::broker('central_users')->sendResetLink(
             $request->only('email')
         );
+        // return response()->json($status);
+        // $status = Password::sendResetLink(
+        //     $request->only('email')
+        // );
         
+        // return "heelo";
         if ($status === Password::RESET_LINK_SENT) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.forgot_password');
             return response()->json($this->response);
+        }else{
+
+            $this->response["message"] = __('strings.sending_email_failed');
+            return response()->json($this->response);
+            
         }
-        $this->response["message"] = __('strings.sending_email_failed');
         return response()->json($this->response);
     }
 }
