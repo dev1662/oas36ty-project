@@ -8,6 +8,8 @@ use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\InitializeTenancyByRequestData;
+use App\Observers\UserObserver;
+
 
 class AppServiceProvider extends ServiceProvider
 {
