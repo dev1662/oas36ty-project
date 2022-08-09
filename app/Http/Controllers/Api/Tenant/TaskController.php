@@ -5,12 +5,36 @@ namespace App\Http\Controllers\Api\Tenant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Validator;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Config;
 
 use App\Models\Task;
+use PDO;
 
 class TaskController extends Controller
 {
+    public function switchingDB($dbName)
+    {
+        Config::set("database.connections.mysql", [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => $dbName,
+            'username' => env('DB_USERNAME','root'),
+            'password' => env('DB_PASSWORD',''),
+            'unix_socket' => env('DB_SOCKET',''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ]);
+    }
     /**
      * 
      * @OA\Get(
@@ -73,8 +97,12 @@ class TaskController extends Controller
      * )
      */
 
-    public function index()
+    public function index(Request $request)
     {
+        $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
+        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+        // return   $dbname;
+        $this->switchingDB($dbname);
         $tasks = Task::select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status')->with([
             'branch' => function($q){
                 $q->select('id', 'name');
@@ -163,6 +191,7 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
+        // return "hello";
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required|exists:App\Models\Branch,id',
             'category_id' => 'nullable|exists:App\Models\Category,id',
@@ -173,6 +202,7 @@ class TaskController extends Controller
             'description' => 'nullable',
             'due_date' => 'required|date',
             'importance' => 'required|in:1,2,3,4,5',
+            // 'selected_db' => 'required'
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -182,6 +212,7 @@ class TaskController extends Controller
         }
 
         $task = new Task($request->all());
+        // echo '<pre>';print_r($task);exit;
         $task->status = Task::STATUS_OPEN;
         $task->save();
         

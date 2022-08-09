@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 
 use App\Models\Tenant;
@@ -50,7 +50,8 @@ class ForgotOrganizationController extends Controller
      */
 
     public function index(Request $request){ 
-
+        
+        // return $this->response;
         $validator = Validator::make($request->all(), [
             'email' => 'required|exists:App\Models\CentralUser,email',
         ]);
@@ -62,13 +63,13 @@ class ForgotOrganizationController extends Controller
         }
 
         $centralUser = CentralUser::where("email", $request->email)->first();
-
         $tenants = $centralUser->tenants()->with('organization')->get();
-            
+        
         Mail::to($centralUser->email)->send(new ForgotOrganizationMail($centralUser, $tenants));
-
+        
         $this->response["status"] = true;
         $this->response["message"] = __('strings.forgot_organization');
+        // return "hee";
         return response()->json($this->response);
     }
 }

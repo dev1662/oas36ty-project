@@ -5,12 +5,36 @@ namespace App\Http\Controllers\Api\Tenant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\ContactPerson;
+use Illuminate\Support\Facades\Config;
+use PDO;
 
 class ContactPersonController extends Controller
 {
+    public function switchingDB($dbName)
+    {
+        Config::set("database.connections.mysql", [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => $dbName,
+            'username' => env('DB_USERNAME','root'),
+            'password' => env('DB_PASSWORD',''),
+            'unix_socket' => env('DB_SOCKET',''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ]);
+    }
     /**
      * 
      * @OA\Get(
@@ -62,8 +86,12 @@ class ContactPersonController extends Controller
      *     ),
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
+        $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
+        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+        // return   $dbname;
+        $this->switchingDB($dbname);
         $result = ContactPerson::select('id', 'name')->get();
 
         $this->response["status"] = true;
@@ -130,7 +158,7 @@ class ContactPersonController extends Controller
      */
     public function store(Request $request)
     {
-        $user = $request->user();
+        // $user = $request->user();
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64',
@@ -141,7 +169,7 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        
+        // return $request->all();
         $contactPerson = new ContactPerson($request->all());
         $contactPerson->status = ContactPerson::STATUS_ACTIVE;
         $contactPerson->save();

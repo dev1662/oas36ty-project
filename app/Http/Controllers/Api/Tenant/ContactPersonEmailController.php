@@ -5,13 +5,37 @@ namespace App\Http\Controllers\Api\Tenant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\ContactPerson;
 use App\Models\ContactPersonEmail;
+use Illuminate\Support\Facades\Config;
+use PDO;
 
 class ContactPersonEmailController extends Controller
 {
+    public function switchingDB($dbName)
+    {
+        Config::set("database.connections.mysql", [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => $dbName,
+            'username' => env('DB_USERNAME','root'),
+            'password' => env('DB_PASSWORD',''),
+            'unix_socket' => env('DB_SOCKET',''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ]);
+    }
     /**
      * 
      * @OA\Get(
@@ -64,8 +88,12 @@ class ContactPersonEmailController extends Controller
      *     ),
      * )
      */
-    public function index($contactPersonID)
+    public function index(Request $request,$contactPersonID)
     {
+        $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
+        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+        // return   $dbname;
+        $this->switchingDB($dbname);
         $validator = Validator::make(['contact_person_id' => $contactPersonID], [
             'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
         ]);
@@ -150,6 +178,7 @@ class ContactPersonEmailController extends Controller
      */
     public function store(Request $request, $contactPersonID)
     {
+        // return $contactPersonID;
         $validator = Validator::make(['contact_person_id' => $contactPersonID] + $request->all(), [
             'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
             'email' => 'required|email|max:64|unique:App\Models\ContactPersonEmail,email',

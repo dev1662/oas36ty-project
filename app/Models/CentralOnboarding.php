@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 
 class CentralOnboarding extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes,Notifiable;
 
     const STATUS_PENDING = 'pending';
     const STATUS_COMPLETED = 'completed';
