@@ -248,19 +248,19 @@ class SignUpController extends Controller
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
-        $db = DB::connection();
-        $dbs = $db->select('show databases');
-        $original = [
-            'data' => '',
-        ];
-        foreach($dbs as $d){
+        // $db = DB::connection();
+        // $dbs = $db->select('show databases');
+        // $original = [
+        //     'data' => '',
+        // ];
+        // foreach($dbs as $d){
         
-           $us = $d->Database;
-            if($us === config('tenancy.database.prefix'). $request->input('organization_url')){
-                $original['data'] = $us;
-            }
-        }
-        if(empty($original['data'])){
+        //    $us = $d->Database;
+        //     if($us === config('tenancy.database.prefix'). $request->input('organization_url')){
+        //         $original['data'] = $us;
+        //     }
+        // }
+        // if(empty($original['data'])){
 
             
             $centralOnboarding->organization_name = $request->input('organization_name');
@@ -283,10 +283,10 @@ class SignUpController extends Controller
                 $this->response["message"] = __('strings.register_organization_failed');
                 return response()->json($this->response, 401);
             }
-        }else{
-            $this->response["message"] = __('strings.register_organization_failed');
-            return response()->json($this->response, 401); 
-        }
+        // }else{
+        //     $this->response["message"] = __('strings.register_organization_failed');
+        //     return response()->json($this->response, 401); 
+        // }
         return response()->json($this->response);
     }
 
