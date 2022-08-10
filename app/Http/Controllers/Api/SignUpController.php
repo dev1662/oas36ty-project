@@ -90,7 +90,7 @@ class SignUpController extends Controller
                 'signup_token' => Crypt::encryptString($centralOnboarding->id),
             ];
             
-            return response()->json($this->response);
+            // return response()->json($this->response);
             // return $this->response;
             // return $this->response;
         } else {
