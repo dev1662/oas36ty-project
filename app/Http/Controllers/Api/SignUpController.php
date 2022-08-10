@@ -23,6 +23,8 @@ use Exception;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Notification as FacadesNotification;
+use Illuminate\Support\Facades\DB;
+
 
 class SignUpController extends Controller
 {
@@ -246,26 +248,44 @@ class SignUpController extends Controller
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
-
-        $centralOnboarding->organization_name = $request->input('organization_name');
-        $centralOnboarding->subdomain = $request->input('organization_url');
-        $user= CentralOnboarding::where(['email'=> $request->email])->whereNotNull('organization_name') ;
-            if($user->count() > 0){
-                $this->response['passwordNotRequired'] = true;
-                // return response()->json($this->response['passwordNotRequired']);
+        $db = DB::connection();
+        $dbs = $db->select('show databases');
+        $original = [
+            'data' => '',
+        ];
+        foreach($dbs as $d){
+        
+           $us = $d->Database;
+            if($us === config('tenancy.database.prefix'). $request->input('organization_url')){
+                $original['data'] = $us;
             }
-        if($centralOnboarding->update()){
-   
+        }
+        if(empty($original['data'])){
+
             
-            $this->response["status"] = true;
-            $this->response["message"] = __('strings.register_organization_success');
-            $this->response["data"] = [
-                'email' => $centralOnboarding->email,
-                'signup_token' => Crypt::encryptString($centralOnboarding->id),
-            ];
-        } else {
+            $centralOnboarding->organization_name = $request->input('organization_name');
+            $centralOnboarding->subdomain = $request->input('organization_url');
+            $user= CentralOnboarding::where(['email'=> $request->email])->whereNotNull('organization_name') ;
+                if($user->count() > 0){
+                    $this->response['passwordNotRequired'] = true;
+                    // return response()->json($this->response['passwordNotRequired']);
+                }
+            if($centralOnboarding->update()){
+    
+                
+                $this->response["status"] = true;
+                $this->response["message"] = __('strings.register_organization_success');
+                $this->response["data"] = [
+                    'email' => $centralOnboarding->email,
+                    'signup_token' => Crypt::encryptString($centralOnboarding->id),
+                ];
+            } else {
+                $this->response["message"] = __('strings.register_organization_failed');
+                return response()->json($this->response, 401);
+            }
+        }else{
             $this->response["message"] = __('strings.register_organization_failed');
-            return response()->json($this->response, 401);
+            return response()->json($this->response, 401); 
         }
         return response()->json($this->response);
     }
