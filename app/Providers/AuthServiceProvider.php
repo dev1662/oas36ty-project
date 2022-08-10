@@ -35,7 +35,9 @@ class AuthServiceProvider extends ServiceProvider
         }
 
         ResetPassword::createUrlUsing(function ($user, string $token) {
-            return config('app.url').'/reset-password?token='.$token;
+            // return config('app.url').'/reset-password?token='.$token;
+            return 'https://app-office36ty.protracked.in/reset-password?token='.$token;
+
         });
     }
 }
