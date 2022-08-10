@@ -15,7 +15,7 @@ class UserObserver
      */
     public function created(CentralOnboarding $centralOnboarding)
     {
-        $centralOnboarding->notify(new SignupEmailNotification($centralOnboarding->otp));
+        // $centralOnboarding->notify(new SignupEmailNotification($centralOnboarding->otp));
 
     }
 
