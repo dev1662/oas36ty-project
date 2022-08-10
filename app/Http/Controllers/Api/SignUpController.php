@@ -253,7 +253,7 @@ class SignUpController extends Controller
         if($centralOnboarding->update()){
             if($user->count() > 0){
                 $this->response['passwordNotRequired'] = true;
-                return response()->json($this->response['passwordNotRequired']);
+                // return response()->json($this->response['passwordNotRequired']);
             }
    
             
