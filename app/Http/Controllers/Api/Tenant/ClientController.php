@@ -161,7 +161,7 @@ class ClientController extends Controller
         $user = $request->user();
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:64',
+            'name' => 'required|max:64|unique:App\Models\Client,name',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
