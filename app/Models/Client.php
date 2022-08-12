@@ -21,5 +21,9 @@ class Client extends Model
     protected $fillable = [
         'user_id', 'name', 'status',
     ];
+    public function task()
+    {
+        return $this->hasMany(Task::class);
+    }
 
 }
