@@ -31,4 +31,8 @@ class ContactPerson extends Model
     {
         return $this->hasMany(ContactPersonEmail::class);
     }
+    public function task()
+    {
+        return $this->hasMany(Task::class);
+    }
 }
