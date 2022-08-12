@@ -161,7 +161,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:64',
+            'name' => 'required|max:64|unique:App\Models\Category,name',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
