@@ -169,7 +169,7 @@ class BranchController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:64',
+            'name' => 'required|max:64|unique:App\Models\Branch,name',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
