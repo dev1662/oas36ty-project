@@ -93,7 +93,7 @@ class CategoryController extends Controller
         $dbname = strtolower($dbname);
         // return $dbname;  
         $this->switchingDB($dbname);
-        $categories = Category::select('id', 'name')->get();
+        $categories = Category::select('id', 'name','type')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
