@@ -17,6 +17,7 @@ class CreateClientsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->string('name', 64);
+            $table->enum('type', ['delete', 'dont_delete'])->default('delete');
             $table->timestamps();
             $table->softDeletes();
             $table->enum('status', ['active', 'inactive'])->default('inactive');
