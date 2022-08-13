@@ -100,7 +100,7 @@ class BranchController extends Controller
         $this->switchingDB($dbname);
         // return json_decode($request->header('currrent'))->tenant->organization->name;
 
-        $branches = Branch::select('id', 'name')->get();
+        $branches = Branch::select('id', 'name','type')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
