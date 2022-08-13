@@ -19,7 +19,7 @@ class Client extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'name', 'status',
+        'user_id', 'name','type', 'status',
     ];
     public function task()
     {
