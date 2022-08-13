@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 
 use App\Models\Task;
+use App\Models\Branch;
+use App\Models\Category;
+use App\Models\Client;
+use App\Models\ContactPerson;
+
 use PDO;
 
 class TaskController extends Controller
@@ -215,7 +220,16 @@ class TaskController extends Controller
         // echo '<pre>';print_r($task);exit;
         $task->status = Task::STATUS_OPEN;
         $task->save();
+
+        $data = [
+            'type' => 'dont_delete',
+        ];
+        $branch = Branch::where(['id' => $request->branch_id])->update($data);
+        $Category = Category::where(['id' => $request->category_id])->update($data);
+        $Client = Client::where(['id' => $request->client_id])->update($data);
+        $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
         
+               
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
