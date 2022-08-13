@@ -92,7 +92,7 @@ class ClientController extends Controller
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        $clients = Client::select('id', 'name')->latest()->get();
+        $clients = Client::select('id', 'name','type')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
