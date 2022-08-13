@@ -92,7 +92,7 @@ class ContactPersonController extends Controller
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        $result = ContactPerson::select('id', 'name')->get();
+        $result = ContactPerson::select('id', 'name','type')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
