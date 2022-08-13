@@ -16,6 +16,7 @@ class CreateContactPeopleTable extends Migration
         Schema::create('contact_people', function (Blueprint $table) {
             $table->id();
             $table->string('name', 64);
+            $table->enum('type', ['delete', 'dont_delete'])->default('delete');
             $table->timestamps();
             $table->softDeletes();
             $table->enum('status', ['active', 'inactive'])->default('inactive');
