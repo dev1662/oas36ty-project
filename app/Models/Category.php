@@ -19,7 +19,7 @@ class Category extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'status',
+        'name', 'type','status',
     ];
     public function task()
     {
