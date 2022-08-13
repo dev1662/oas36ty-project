@@ -12,7 +12,8 @@ class ContactPerson extends Model
 
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
-    
+     const TYPE_DELETE = 'delete';
+    const TYPE_DONT_DELETE = 'dont_delete';
     /**
      * The attributes that are mass assignable.
      *
