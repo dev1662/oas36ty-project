@@ -19,7 +19,7 @@ class ContactPerson extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'status',
+        'name', 'type','status',
     ];
 
     public function phones()
