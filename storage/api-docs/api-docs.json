@@ -52,7 +52,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -72,7 +72,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong, please try again!"
                                         }
                                     },
                                     "type": "object"
@@ -120,7 +120,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Reset link  sent successfully"
                                         }
                                     },
                                     "type": "object"
@@ -140,7 +140,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong, please try again!"
                                         }
                                     },
                                     "type": "object"
@@ -188,7 +188,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Checked successfully"
                                         }
                                     },
                                     "type": "object"
@@ -208,7 +208,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -276,7 +276,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Invitation accepted"
                                         }
                                     },
                                     "type": "object"
@@ -296,7 +296,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -360,7 +360,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Invitation declined"
                                         }
                                     },
                                     "type": "object"
@@ -380,7 +380,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -448,7 +448,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Loggedin successfully"
                                         },
                                         "data": {
                                             "properties": {
@@ -485,7 +485,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Invalid email or password"
                                         }
                                     },
                                     "type": "object"
@@ -501,7 +501,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized Error Message!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -557,7 +557,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Password updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -577,7 +577,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -641,7 +641,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Otp sent successfully"
                                         }
                                     },
                                     "type": "object"
@@ -661,7 +661,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong, please try again!"
                                         }
                                     },
                                     "type": "object"
@@ -717,7 +717,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Email verified successfully"
                                         }
                                     },
                                     "type": "object"
@@ -737,7 +737,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong, please try again!"
                                         }
                                     },
                                     "type": "object"
@@ -797,7 +797,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Registered successfully"
                                         }
                                     },
                                     "type": "object"
@@ -817,7 +817,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong, please try again!"
                                         }
                                     },
                                     "type": "object"
@@ -877,7 +877,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Registered successfully"
                                         }
                                     },
                                     "type": "object"
@@ -897,7 +897,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong, please try again!"
                                         }
                                     },
                                     "type": "object"
@@ -934,7 +934,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Logout successfully"
                                         }
                                     },
                                     "type": "object"
@@ -950,7 +950,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -992,7 +992,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched all data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -1028,7 +1028,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -1044,7 +1044,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -1101,7 +1101,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Registered successfully"
                                         }
                                     },
                                     "type": "object"
@@ -1117,7 +1117,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -1137,7 +1137,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -1201,7 +1201,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched all data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -1237,7 +1237,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -1253,7 +1253,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -1316,7 +1316,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -1332,7 +1332,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -1368,7 +1368,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -1430,7 +1430,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Deleted successfully!"
                                         }
                                     },
                                     "type": "object"
@@ -1446,7 +1446,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -1482,7 +1482,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -1540,7 +1540,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched all data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -1576,7 +1576,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -1592,7 +1592,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -1649,7 +1649,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Created successfully"
                                         }
                                     },
                                     "type": "object"
@@ -1665,7 +1665,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -1685,7 +1685,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -1749,7 +1749,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -1785,7 +1785,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -1801,7 +1801,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -1864,7 +1864,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -1880,7 +1880,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -1916,7 +1916,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -1978,7 +1978,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Deleted successfully"
                                         }
                                     },
                                     "type": "object"
@@ -1994,7 +1994,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -2030,7 +2030,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -2088,7 +2088,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched all data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -2124,7 +2124,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -2140,7 +2140,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -2197,7 +2197,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Created successfully"
                                         }
                                     },
                                     "type": "object"
@@ -2213,7 +2213,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -2233,7 +2233,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -2297,7 +2297,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -2333,7 +2333,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -2349,7 +2349,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -2412,7 +2412,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -2428,7 +2428,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -2464,7 +2464,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -2526,7 +2526,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Deleted successfully"
                                         }
                                     },
                                     "type": "object"
@@ -2542,7 +2542,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -2578,7 +2578,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -2636,7 +2636,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched all data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -2672,7 +2672,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -2688,7 +2688,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -2745,7 +2745,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Created successfully"
                                         }
                                     },
                                     "type": "object"
@@ -2761,7 +2761,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -2781,7 +2781,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -2845,7 +2845,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fethced data successfully!"
                                         },
                                         "data": {
                                             "type": "array",
@@ -2881,7 +2881,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -2897,7 +2897,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -2960,7 +2960,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -2976,7 +2976,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -3012,7 +3012,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -3074,7 +3074,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Deleted successfully"
                                         }
                                     },
                                     "type": "object"
@@ -3090,7 +3090,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -3126,7 +3126,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -3190,7 +3190,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -3226,7 +3226,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -3242,7 +3242,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -3305,7 +3305,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Created successfully"
                                         }
                                     },
                                     "type": "object"
@@ -3321,7 +3321,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -3341,7 +3341,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -3411,7 +3411,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -3447,7 +3447,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -3463,7 +3463,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -3532,7 +3532,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -3548,7 +3548,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -3584,7 +3584,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -3652,7 +3652,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Deleted successfully"
                                         }
                                     },
                                     "type": "object"
@@ -3668,7 +3668,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -3704,7 +3704,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -3768,7 +3768,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -3804,7 +3804,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -3820,7 +3820,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -3883,7 +3883,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Created successfully"
                                         }
                                     },
                                     "type": "object"
@@ -3899,7 +3899,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -3919,7 +3919,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -3989,7 +3989,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -4025,7 +4025,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -4041,7 +4041,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -4110,7 +4110,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -4126,7 +4126,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -4162,7 +4162,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -4230,7 +4230,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Deleted successfully"
                                         }
                                     },
                                     "type": "object"
@@ -4246,7 +4246,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -4282,7 +4282,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -4356,7 +4356,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Switched successfully"
                                         }
                                     },
                                     "type": "object"
@@ -4376,7 +4376,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -4392,7 +4392,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized Error Message!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -4440,7 +4440,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched all data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -4476,7 +4476,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -4492,7 +4492,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -4555,7 +4555,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Created successfully"
                                         }
                                     },
                                     "type": "object"
@@ -4571,7 +4571,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -4591,7 +4591,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -4678,7 +4678,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -4694,7 +4694,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -4730,7 +4730,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -4798,7 +4798,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Deleted successfully"
                                         }
                                     },
                                     "type": "object"
@@ -4814,7 +4814,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -4850,7 +4850,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -4908,7 +4908,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched all data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -4952,7 +4952,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -4968,7 +4968,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -5065,7 +5065,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Created successfully"
                                         }
                                     },
                                     "type": "object"
@@ -5081,7 +5081,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -5101,7 +5101,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -5165,7 +5165,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched data successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -5209,7 +5209,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -5225,7 +5225,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -5333,7 +5333,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully!"
                                         }
                                     },
                                     "type": "object"
@@ -5349,7 +5349,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -5385,7 +5385,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -5447,7 +5447,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Deleted successfully"
                                         }
                                     },
                                     "type": "object"
@@ -5463,7 +5463,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -5499,7 +5499,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -5563,7 +5563,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched all records successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -5603,7 +5603,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -5623,7 +5623,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -5702,7 +5702,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Created new record successfully"
                                         },
                                         "data": {
                                             "properties": {
@@ -5732,7 +5732,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -5752,7 +5752,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -5810,7 +5810,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched all records successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -5846,7 +5846,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -5862,7 +5862,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -5931,7 +5931,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Created new record successfully"
                                         }
                                     },
                                     "type": "object"
@@ -5947,7 +5947,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -5967,7 +5967,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -6065,7 +6065,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -6081,7 +6081,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -6117,7 +6117,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -6179,7 +6179,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Record deleted successfully"
                                         }
                                     },
                                     "type": "object"
@@ -6195,7 +6195,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -6231,7 +6231,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -6295,7 +6295,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Fetched all records successfully"
                                         },
                                         "data": {
                                             "type": "array",
@@ -6339,7 +6339,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         }
                                     },
                                     "type": "object"
@@ -6355,7 +6355,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -6417,7 +6417,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Created new record successfully"
                                         },
                                         "data": {
                                             "properties": {
@@ -6447,7 +6447,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -6467,7 +6467,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -6548,7 +6548,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -6564,7 +6564,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -6600,7 +6600,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -6662,7 +6662,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Record deleted successfully"
                                         }
                                     },
                                     "type": "object"
@@ -6678,7 +6678,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -6714,7 +6714,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",
@@ -6778,7 +6778,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Success Message!"
+                                            "example": "Deactivated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -6794,7 +6794,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized!"
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
@@ -6830,7 +6830,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Validation Error Message!"
+                                            "example": "Something went wrong!"
                                         },
                                         "code": {
                                             "type": "string",

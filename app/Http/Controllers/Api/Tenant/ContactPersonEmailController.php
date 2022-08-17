@@ -52,7 +52,7 @@ class ContactPersonEmailController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Fetched data successfully"),
      *              @OA\Property(
      *                  property="data", 
      *                  type="array",
@@ -76,14 +76,14 @@ class ContactPersonEmailController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
+     *              @OA\Property(property="message", type="string", example="Something went wrong!")
      *          )
      *     ),
      *     @OA\Response(
      *          response=401,
      *          description="Unauthorized Response",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
      *          )
      *     ),
      * )
@@ -142,14 +142,14 @@ class ContactPersonEmailController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Created successfully"),
      *          )
      *     ),
      *     @OA\Response(
      *          response=401,
      *          description="Unauthorized Response",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
      *          )
      *     ),
      *     @OA\Response(
@@ -157,7 +157,7 @@ class ContactPersonEmailController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
      *                  property="errors", 
@@ -223,7 +223,7 @@ class ContactPersonEmailController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Fetched data successfully"),
      *              @OA\Property(
      *                  property="data", 
      *                  type="array",
@@ -247,14 +247,14 @@ class ContactPersonEmailController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
+     *              @OA\Property(property="message", type="string", example="Something went wrong!")
      *          )
      *     ),
      *     @OA\Response(
      *          response=401,
      *          description="Unauthorized Response",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
      *          )
      *     ),
      * )
@@ -311,14 +311,14 @@ class ContactPersonEmailController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Updated successfully"),
      *          )
      *     ),
      *     @OA\Response(
      *          response=401,
      *          description="Unauthorized Response",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
      *          )
      *     ),
      *     @OA\Response(
@@ -333,7 +333,7 @@ class ContactPersonEmailController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
      *                  property="errors", 
@@ -405,14 +405,14 @@ class ContactPersonEmailController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Deleted successfully"),
      *          )
      *     ),
      *     @OA\Response(
      *          response=401,
      *          description="Unauthorized Response",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
      *          )
      *     ),
      *     @OA\Response(
@@ -427,7 +427,7 @@ class ContactPersonEmailController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
      *                  property="errors", 

@@ -35,7 +35,7 @@ class ForgotOrganizationController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Updated successfully"),
      *          )
      *     ),
      *     @OA\Response(
@@ -43,7 +43,7 @@ class ForgotOrganizationController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
+     *              @OA\Property(property="message", type="string", example="Something went wrong, please try again!")
      *          )
      *     ),
      * )
