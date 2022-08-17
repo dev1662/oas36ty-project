@@ -40,7 +40,7 @@ class LoginController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Loggedin successfully"),
      *              @OA\Property(
      *                  property="data", 
      *                  type="object",
@@ -55,14 +55,14 @@ class LoginController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
+     *              @OA\Property(property="message", type="string", example="Invalid email or password")
      *          )
      *     ),
      *     @OA\Response(
      *          response=401,
      *          description="Unauthorized Response",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Unauthorized Error Message!")
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
      *          )
      *     ),
      * )

@@ -29,7 +29,7 @@ class TaskUserController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Fetched all records successfully"),
      *              @OA\Property(
      *                  property="data", 
      *                  type="array",
@@ -62,7 +62,7 @@ class TaskUserController extends Controller
      *          response=401,
      *          description="Unauthorized Response",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
      *          )
      *     ),
      *     @OA\Response(
@@ -70,7 +70,7 @@ class TaskUserController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
      *                  property="errors", 
@@ -135,7 +135,7 @@ class TaskUserController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Created new record successfully"),
      *              @OA\Property(
      *                  property="data", 
      *                  type="object",
@@ -148,7 +148,7 @@ class TaskUserController extends Controller
      *          response=401,
      *          description="Unauthorized Response",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Unauthorized!")
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
      *          )
      *     ),
      *     @OA\Response(
@@ -156,7 +156,7 @@ class TaskUserController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
      *                  property="errors", 

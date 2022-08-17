@@ -36,7 +36,7 @@ class ResetPasswordController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Password updated successfully"),
      *          )
      *     ),
      *     @OA\Response(
@@ -44,7 +44,7 @@ class ResetPasswordController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!"),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
      *                  property="errors", 

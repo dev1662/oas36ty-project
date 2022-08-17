@@ -47,7 +47,7 @@ class SignUpController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Otp sent successfully"),
      *          )
      *     ),
      *     @OA\Response(
@@ -55,7 +55,7 @@ class SignUpController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
+     *              @OA\Property(property="message", type="string", example="Something went wrong, please try again!")
      *          )
      *     ),
      * )
@@ -123,7 +123,7 @@ class SignUpController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Email verified successfully"),
      *          )
      *     ),
      *     @OA\Response(
@@ -131,7 +131,7 @@ class SignUpController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
+     *              @OA\Property(property="message", type="string", example="Something went wrong, please try again!")
      *          )
      *     ),
      * )
@@ -207,7 +207,7 @@ class SignUpController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Registered successfully"),
      *          )
      *     ),
      *     @OA\Response(
@@ -215,7 +215,7 @@ class SignUpController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
+     *              @OA\Property(property="message", type="string", example="Something went wrong, please try again!")
      *          )
      *     ),
      * )
@@ -312,7 +312,7 @@ class SignUpController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Success Message!"),
+     *              @OA\Property(property="message", type="string", example="Registered successfully"),
      *          )
      *     ),
      *     @OA\Response(
@@ -320,7 +320,7 @@ class SignUpController extends Controller
      *          description="Validation Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Validation Error Message!")
+     *              @OA\Property(property="message", type="string", example="Something went wrong, please try again!")
      *          )
      *     ),
      * )
