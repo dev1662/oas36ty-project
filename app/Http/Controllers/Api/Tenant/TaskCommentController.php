@@ -28,7 +28,7 @@ class TaskCommentController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Fetched all data successfully"),
+     *              @OA\Property(property="message", type="string", example="Fetched all records successfully"),
      *              @OA\Property(
      *                  property="data", 
      *                  type="array",

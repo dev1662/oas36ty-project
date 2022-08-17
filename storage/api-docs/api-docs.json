@@ -4440,7 +4440,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Fetched all data successfully"
+                                            "example": "Fetched all records successfully"
                                         },
                                         "data": {
                                             "type": "array",
