@@ -161,13 +161,7 @@ class ContactPersonController extends Controller
     public function store(Request $request)
     {
         // $user = $request->user();
-        $data =array();
-        for($i=0;$i<count($request->email);$i++){
-            $data = [
-                "email" => $request->email[$i],
-            ];
-        }
-        return $data;
+        
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\ContactPerson,name',
             'email' => 'required|email|array|min:2|unique:App\Models\ContactPersonEmail,email',
@@ -180,7 +174,13 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        return $request->all();
+        $data =array();
+        for($i=0;$i<count($request->email);$i++){
+            $data = [
+                "email" => $request->email[$i],
+            ];
+        }
+        return $data;
         // return $request->all();
         $contactPerson = new ContactPerson();
         $contactPerson->name = $request->name;
