@@ -159,7 +159,8 @@ class ContactPersonController extends Controller
     public function store(Request $request)
     {
         // $user = $request->user();
-
+        $getContactPerson = ContactPerson::select('id')->latest()->get();
+        return $getContactPerson;
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\ContactPerson,name',
         ]);
