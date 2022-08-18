@@ -174,6 +174,7 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+        return $request->all();
         // return $request->all();
         $contactPerson = new ContactPerson();
         $contactPerson->name = $request->name;
