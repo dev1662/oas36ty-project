@@ -8,7 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\ContactPerson;
-use App\Models\ContactPersonPhone;
+use App\Models\ContactPersonEmail;
 use App\Models\ContactPersonPhone;
 use Illuminate\Support\Facades\Config;
 use PDO;
