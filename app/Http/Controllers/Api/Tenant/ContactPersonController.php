@@ -162,7 +162,7 @@ class ContactPersonController extends Controller
     {
         // $user = $request->user();
         $data =array();
-        for($i=0;$i<=$request->email->count();$i++){
+        for($i=0;$i<=count($request->email);$i++){
             $data = [
                 "email" => $request->email[$i],
             ];
