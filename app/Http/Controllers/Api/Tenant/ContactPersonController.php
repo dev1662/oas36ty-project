@@ -161,11 +161,11 @@ class ContactPersonController extends Controller
     public function store(Request $request)
     {
         // $user = $request->user();
-        
+        // $request->validation($request,$this->rules);
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\ContactPerson,name',
-            'email' => 'required|email|array|max:64|unique:App\Models\ContactPersonEmail,email',
-            'phone' => 'required|digits:10|array|max:64|unique:App\Models\ContactPersonPhone,phone',
+            'email' => 'required|email|max:64|unique:App\Models\ContactPersonEmail,email',
+            'phone' => 'required|digits:10|max:64|unique:App\Models\ContactPersonPhone,phone',
 
         ]);
         if ($validator->fails()) {
