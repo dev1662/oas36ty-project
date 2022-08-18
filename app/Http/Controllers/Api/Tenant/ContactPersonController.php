@@ -172,8 +172,10 @@ class ContactPersonController extends Controller
         // return $request->all();
         $contactPerson = new ContactPerson($request->all());
         $contactPerson->status = ContactPerson::STATUS_ACTIVE;
-        $data = $contactPerson->save();
-        return $data;
+        $contactPerson->save();
+        $id = DB::getPdo()->lastInsertId();;
+
+        return $id;
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
