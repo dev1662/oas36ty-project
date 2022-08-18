@@ -162,6 +162,9 @@ class ContactPersonController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\ContactPerson,name',
+            'email' => 'required|email|max:64|unique:App\Models\ContactPersonEmail,email',
+            'phone' => 'required|digits:10|unique:App\Models\ContactPersonPhone,phone',
+
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -174,8 +177,39 @@ class ContactPersonController extends Controller
         $contactPerson->status = ContactPerson::STATUS_ACTIVE;
         $contactPerson->save();
         // $id = DB::getPdo()->lastInsertId();;
+        $id = $contactPerson->id;
 
-        return $contactPerson->id;
+        $contactPersonEmail = new ContactPersonEmail();
+        if($request->email->count() > 1){
+
+        foreach($request->email as $emails){
+
+            $contactPersonEmail->contact_person_id = $id;
+            $contactPersonEmail->email = $emails;
+            $contactPersonEmail->status = ContactPersonEmail::STATUS_ACTIVE;
+            $contactPersonEmail->save();
+            }
+        }else{
+            $contactPersonEmail->contact_person_id = $id;
+            $contactPersonEmail->email = $request->email;
+            $contactPersonEmail->status = ContactPersonEmail::STATUS_ACTIVE;
+            $contactPersonEmail->save();
+        }
+        $contactPersonPhone = new ContactPersonPhone();
+        if($request->phone->count() > 1){
+            foreach($request->phone as $phones){
+
+                $contactPersonPhone->contact_person_id = $id;
+                $contactPersonPhone->phone = $phones;
+                $contactPersonPhone->status = ContactPersonPhone::STATUS_ACTIVE;
+                $contactPersonPhone->save();
+            }
+        }else{
+            $contactPersonPhone->contact_person_id = $id;
+                $contactPersonPhone->phone = $request->phone;
+                $contactPersonPhone->status = ContactPersonPhone::STATUS_ACTIVE;
+                $contactPersonPhone->save();
+        }
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
