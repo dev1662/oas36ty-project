@@ -161,19 +161,19 @@ class ContactPersonController extends Controller
     public function store(Request $request)
     {
         // $user = $request->user();
-        // $request->validation($request,$this->rules);
-        // $validator = Validator::make($request->all(), [
-        //     'name' => 'required|max:64|unique:App\Models\ContactPerson,name',
-        //     'email' => 'required|array|max:64',
-        //     'phone' => 'required|digits:10|max:64',
+        $request->validation($request,$this->rules);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:64|unique:App\Models\ContactPerson,name',
+            // 'email' => 'required|array|max:64',
+            // 'phone' => 'required|digits:10|max:64',
 
-        // ]);
-        // if ($validator->fails()) {
-        //     $this->response["code"] = "INVALID";
-        //     $this->response["message"] = $validator->errors()->first();
-        //     $this->response["errors"] = $validator->errors();
-        //     return response()->json($this->response, 422);
-        // }
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
         $data =array();
         $phoness = array();
         for($i=0;$i<count($request->email);$i++){
