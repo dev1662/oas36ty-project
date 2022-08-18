@@ -159,8 +159,7 @@ class ContactPersonController extends Controller
     public function store(Request $request)
     {
         // $user = $request->user();
-        $getContactPerson = ContactPerson::select('id')->latest()->get();
-        return $getContactPerson;
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\ContactPerson,name',
         ]);
@@ -173,8 +172,8 @@ class ContactPersonController extends Controller
         // return $request->all();
         $contactPerson = new ContactPerson($request->all());
         $contactPerson->status = ContactPerson::STATUS_ACTIVE;
-        $contactPerson->save();
-        
+        $data = $contactPerson->save();
+        return $data;
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
