@@ -164,8 +164,8 @@ class ContactPersonController extends Controller
         // $request->validation($request,$this->rules);
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\ContactPerson,name',
-            'email' => 'required|email|max:64|unique:App\Models\ContactPersonEmail,email',
-            'phone' => 'required|digits:10|max:64|unique:App\Models\ContactPersonPhone,phone',
+            'email' => 'required|email|max:64',
+            'phone' => 'required|digits:10|max:64',
 
         ]);
         if ($validator->fails()) {
