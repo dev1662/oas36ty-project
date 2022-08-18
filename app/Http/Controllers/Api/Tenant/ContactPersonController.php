@@ -161,7 +161,7 @@ class ContactPersonController extends Controller
     public function store(Request $request)
     {
         // $user = $request->user();
-        $request->validation($request,$this->rules);
+        // $request->validation($request,$this->rules);
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\ContactPerson,name',
             // 'email' => 'required|array|max:64',
