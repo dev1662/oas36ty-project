@@ -175,12 +175,19 @@ class ContactPersonController extends Controller
             return response()->json($this->response, 422);
         }
         $data =array();
+        $phoness = array();
         for($i=0;$i<count($request->email);$i++){
-            $data = [
+            $data[] = [
                 "email" => $request->email[$i],
             ];
         }
-        return $data;
+        for($i=0;$i<count($request->phone);$i++){
+            $phoness[] = [
+                "phone" => $request->phone[$i],
+            ];
+        }
+
+        return $d = [$data,$phoness];
         // return $request->all();
         $contactPerson = new ContactPerson();
         $contactPerson->name = $request->name;
