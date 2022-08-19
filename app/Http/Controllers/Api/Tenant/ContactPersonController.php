@@ -94,19 +94,19 @@ class ContactPersonController extends Controller
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        $id = ContactPerson::select('id')->get();
-        $name = ContactPerson::select('name')->get();
-        $type = ContactPerson::select('type')->get();
-        $email = ContactPersonEmail::where(['contact_person_id' => $id])->select('email')->get();
-        $phone = ContactPersonPhone::where(['contact_person_id' => $id])->select('phone')->get();
+        $result = ContactPerson::select('id','name','type')->get();
+        // $name = ContactPerson::select('name')->get();
+        // $type = ContactPerson::select('type')->get();
+        // $email = ContactPersonEmail::where(['contact_person_id' => $id])->select('email')->get();
+        // $phone = ContactPersonPhone::where(['contact_person_id' => $id])->select('phone')->get();
 
-        $result = [
-            "id" => $id,
-            "name" => $name,
-            "type"=> $type,
-            "email" => $email,
-            "phone" => $phone,
-        ];
+        // $result = [
+        //     "id" => $id,
+        //     "name" => $name,
+        //     "type"=> $type,
+        //     "email" => $email,
+        //     "phone" => $phone,
+        // ];
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] = $result;
