@@ -174,20 +174,20 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        $data =array();
-        $phoness = array();
-        for($i=0;$i<count($request->email);$i++){
-            $data[] = [
-                "email" => $request->email[$i],
-            ];
-        }
-        for($i=0;$i<count($request->phone);$i++){
-            $phoness[] = [
-                "phone" => $request->phone[$i],
-            ];
-        }
+        // $data =array();
+        // $phoness = array();
+        // for($i=0;$i<count($request->email);$i++){
+        //     $data[] = [
+        //         "email" => $request->email[$i],
+        //     ];
+        // }
+        // for($i=0;$i<count($request->phone);$i++){
+        //     $phoness[] = [
+        //         "phone" => $request->phone[$i],
+        //     ];
+        // }
 
-        return $d = [$data,$phoness];
+        // return $d = [$data,$phoness];
         // return $request->all();
         $contactPerson = new ContactPerson();
         $contactPerson->name = $request->name;
@@ -197,12 +197,12 @@ class ContactPersonController extends Controller
         $id = $contactPerson->id;
 
         $contactPersonEmail = new ContactPersonEmail();
-        if($request->email->count() > 1){
+        if(count($request->email) > 1){
 
-        foreach($request->email as $emails){
+        for($i=0;$i<count($request->email);$i++){
 
             $contactPersonEmail->contact_person_id = $id;
-            $contactPersonEmail->email = $emails;
+            $contactPersonEmail->email = $request->email[$i];
             $contactPersonEmail->status = ContactPersonEmail::STATUS_ACTIVE;
             $contactPersonEmail->save();
             }
@@ -213,11 +213,11 @@ class ContactPersonController extends Controller
             $contactPersonEmail->save();
         }
         $contactPersonPhone = new ContactPersonPhone();
-        if($request->phone->count() > 1){
-            foreach($request->phone as $phones){
+        if(count($request->phone) > 1){
+            for($i=0;$i<count($request->phone);$i++){
 
                 $contactPersonPhone->contact_person_id = $id;
-                $contactPersonPhone->phone = $phones;
+                $contactPersonPhone->phone = $request->phone[$i];
                 $contactPersonPhone->status = ContactPersonPhone::STATUS_ACTIVE;
                 $contactPersonPhone->save();
             }
