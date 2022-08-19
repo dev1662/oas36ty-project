@@ -196,25 +196,28 @@ class ContactPersonController extends Controller
         // $id = DB::getPdo()->lastInsertId();;
         $id = $contactPerson->id;
 
-        $contactPersonEmail = new ContactPersonEmail();
         if(count($request->email) > 1){
 
         for($i=0;$i<count($request->email);$i++){
+        $contactPersonEmail = new ContactPersonEmail();
 
             $contactPersonEmail->contact_person_id = $id;
             $contactPersonEmail->email = $request->email[$i];
             $contactPersonEmail->status = ContactPersonEmail::STATUS_ACTIVE;
+            // return $contactPersonEmail
             $contactPersonEmail->save();
             }
         }else{
+        $contactPersonEmail = new ContactPersonEmail();
+
             $contactPersonEmail->contact_person_id = $id;
             $contactPersonEmail->email = $request->email;
             $contactPersonEmail->status = ContactPersonEmail::STATUS_ACTIVE;
             $contactPersonEmail->save();
         }
-        $contactPersonPhone = new ContactPersonPhone();
         if(count($request->phone) > 1){
             for($i=0;$i<count($request->phone);$i++){
+        $contactPersonPhone = new ContactPersonPhone();
 
                 $contactPersonPhone->contact_person_id = $id;
                 $contactPersonPhone->phone = $request->phone[$i];
@@ -222,6 +225,8 @@ class ContactPersonController extends Controller
                 $contactPersonPhone->save();
             }
         }else{
+        $contactPersonPhone = new ContactPersonPhone();
+
             $contactPersonPhone->contact_person_id = $id;
                 $contactPersonPhone->phone = $request->phone;
                 $contactPersonPhone->status = ContactPersonPhone::STATUS_ACTIVE;
