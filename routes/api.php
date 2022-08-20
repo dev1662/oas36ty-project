@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\ResetPasswordController;
 use App\Http\Controllers\Api\ForgotOrganizationController;
 use App\Http\Controllers\Api\InvitationController;
-
+use App\Http\Controllers\Api\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +21,6 @@ use App\Http\Controllers\Api\InvitationController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::prefix('signup')->group(function(){
     Route::post('send-email', [SignUpController::class, 'sendEmail']);
     Route::post('verify-email', [SignUpController::class, 'verifyEmail']);

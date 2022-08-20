@@ -19,11 +19,12 @@ class CreateTasksTable extends Migration
             $table->foreignId('category_id')->nullable()->constrained();
             $table->foreignId('client_id')->nullable()->constrained();
             $table->foreignId('contact_person_id')->nullable()->constrained();
+            $table->foreignId('user_id')->nullable()->constrained();
             $table->enum('type', ['lead', 'task'])->default('lead');
             $table->string('subject');
             $table->longText('description')->nullable();
             $table->date('due_date')->nullable();
-            $table->unsignedTinyInteger('importance')->nullable();
+            $table->unsignedTinyInteger('priority')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->enum('status', ['open', 'completed', 'invoiced', 'closed'])->default('open');

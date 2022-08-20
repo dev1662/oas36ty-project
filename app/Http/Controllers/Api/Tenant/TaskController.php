@@ -196,17 +196,18 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        // return "hello";
+        return $request->all();
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required|exists:App\Models\Branch,id',
             'category_id' => 'nullable|exists:App\Models\Category,id',
             'client_id' => 'nullable|exists:App\Models\Client,id',
             'contact_person_id' => 'nullable|exists:App\Models\ContactPerson,id',
+            'user_id' => 'nullable|exists:App\Models\CentralUser,id',
             'type' => 'required|in:lead,task',
             'subject' => 'required|max:255',
             'description' => 'nullable',
             'due_date' => 'required|date',
-            'importance' => 'required|in:1,2,3,4,5',
+            'priority' => 'required|in:1,2,3,4,5',
             // 'selected_db' => 'required'
         ]);
         if ($validator->fails()) {
@@ -215,24 +216,53 @@ class TaskController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+       return  $request->all();
+        for($i=0;count($request->users);$i++){
+            
+            $task = new Task();
+            for($i=0;$i<count($request->branch_id);$i++){
 
-        $task = new Task($request->all());
-        // echo '<pre>';print_r($task);exit;
-        $task->status = Task::STATUS_OPEN;
-        $task->save();
+                $task->branch_id = $request->branch_id[$i]->id;
+            }
+            for($i=0;$i<count($request->category_id);$i++){
 
-        $data = [
-            'type' => 'dont_delete',
-        ];
-        $branch = Branch::where(['id' => $request->branch_id])->update($data);
-        $Category = Category::where(['id' => $request->category_id])->update($data);
-        $Client = Client::where(['id' => $request->client_id])->update($data);
-        $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
+                $task->category_id = $request->category_id[$i]->id;
+            }
+            for($i=0;$i<count($request->client_id);$i++){
+
+                $task->client_id = $request->client_id[$i]->id;
+            }
+            for($i=0;$i<count($request->contact_person_id);$i++){
+
+                $task->contact_person_id = $request->contact_person_id[$i]->id;
+            }
+            $task->user_id = $request->users[$i]->id;
+            $task->type = $request->type;
+            $task->subject = $request->subject;
+            $task->description = $request->description;
+            $task->due_date = $request->due_date;
+            for($j=0;$j<count($request->priority);$i++){
+                $task->priority = $request->priority[$i]->id;
+            }
+
+            // echo '<pre>';print_r($task);exit;
+            $task->status = Task::STATUS_OPEN;
+            return $task;exit;
+            // $task->save();
+        }
+
+        // $data = [
+        //     'type' => 'dont_delete',
+        // ];
+        // $branch = Branch::where(['id' => $request->branch_id])->update($data);
+        // $Category = Category::where(['id' => $request->category_id])->update($data);
+        // $Client = Client::where(['id' => $request->client_id])->update($data);
+        // $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
         
                
-        $this->response["status"] = true;
-        $this->response["message"] = __('strings.store_success');
-        return response()->json($this->response);
+        // $this->response["status"] = true;
+        // $this->response["message"] = __('strings.store_success');
+        // return response()->json($this->response);
     }
 
     
@@ -413,11 +443,13 @@ class TaskController extends Controller
             'category_id' => 'nullable|exists:App\Models\Category,id',
             'client_id' => 'nullable|exists:App\Models\Client,id',
             'contact_person_id' => 'nullable|exists:App\Models\ContactPerson,id',
+            'user_id' => 'nullable|exists:App\Models\CentralUser,id',
+
             'type' => 'required|in:lead,task',
             'subject' => 'required|max:255',
             'description' => 'nullable',
             'due_date' => 'required|date',
-            'importance' => 'required|in:1,2,3,4,5',
+            'priority' => 'required|in:1,2,3,4,5',
             'status' => 'required|in:open,completed,invoiced,closed',
         ]);
         if ($validator->fails()) {
@@ -433,7 +465,7 @@ class TaskController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $task->fill($request->only(['task_id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status']));
+        $task->fill($request->only(['task_id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status']));
         $task->update();
 
         $this->response["status"] = true;

@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\Tenant\ClientController;
 use App\Http\Controllers\Api\Tenant\ContactPersonController;
 use App\Http\Controllers\Api\Tenant\ContactPersonEmailController;
 use App\Http\Controllers\Api\Tenant\ContactPersonPhoneController;
+use App\Http\Controllers\Api\UserController as ApiUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,7 @@ Route::middleware([
             Route::apiResource('categories', CategoryController::class);
 
             Route::apiResource('tasks', TaskController::class);
+            Route::get('all-users', [ApiUserController::class, 'fetch']);
             
             Route::post('users/{id}/deactivate', [UserController::class, 'deactivate']);
             Route::apiResource('users', UserController::class);
