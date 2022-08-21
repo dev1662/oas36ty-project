@@ -108,7 +108,7 @@ class TaskController extends Controller
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        $tasks = Task::select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status')->with([
+        $tasks = Task::select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status')->with([
             'branch' => function($q){
                 $q->select('id', 'name');
             },
@@ -196,18 +196,18 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        return $request->all();
+        
         $validator = Validator::make($request->all(), [
-            'branch_id' => 'required|exists:App\Models\Branch,id',
-            'category_id' => 'nullable|exists:App\Models\Category,id',
-            'client_id' => 'nullable|exists:App\Models\Client,id',
-            'contact_person_id' => 'nullable|exists:App\Models\ContactPerson,id',
-            'user_id' => 'nullable|exists:App\Models\CentralUser,id',
+            'branch_id' => 'required',
+            'category_id' => 'nullable',
+            'client_id' => 'nullable',
+            'contact_person_id' => 'nullable',
+            'user_id' => 'nullable',
             'type' => 'required|in:lead,task',
             'subject' => 'required|max:255',
             'description' => 'nullable',
             'due_date' => 'required|date',
-            'priority' => 'required|in:1,2,3,4,5',
+            'priority' => 'required',
             // 'selected_db' => 'required'
         ]);
         if ($validator->fails()) {
@@ -220,49 +220,45 @@ class TaskController extends Controller
         for($i=0;count($request->users);$i++){
             
             $task = new Task();
-            for($i=0;$i<count($request->branch_id);$i++){
 
-                $task->branch_id = $request->branch_id[$i]->id;
-            }
-            for($i=0;$i<count($request->category_id);$i++){
+                $task->branch_id = $request->branch_id->id;
+           
 
-                $task->category_id = $request->category_id[$i]->id;
-            }
-            for($i=0;$i<count($request->client_id);$i++){
+                $task->category_id = $request->category_id->id;
+     
 
-                $task->client_id = $request->client_id[$i]->id;
-            }
-            for($i=0;$i<count($request->contact_person_id);$i++){
+                $task->client_id = $request->client_id->id;
+           
 
-                $task->contact_person_id = $request->contact_person_id[$i]->id;
-            }
+                $task->contact_person_id = $request->contact_person_id->id;
+            
             $task->user_id = $request->users[$i]->id;
             $task->type = $request->type;
             $task->subject = $request->subject;
             $task->description = $request->description;
             $task->due_date = $request->due_date;
-            for($j=0;$j<count($request->priority);$i++){
-                $task->priority = $request->priority[$i]->id;
-            }
+            
+                $task->priority = $request->priority->id;
+            
 
             // echo '<pre>';print_r($task);exit;
             $task->status = Task::STATUS_OPEN;
-            return $task;exit;
-            // $task->save();
+            
+            $task->save();
         }
 
-        // $data = [
-        //     'type' => 'dont_delete',
-        // ];
-        // $branch = Branch::where(['id' => $request->branch_id])->update($data);
-        // $Category = Category::where(['id' => $request->category_id])->update($data);
-        // $Client = Client::where(['id' => $request->client_id])->update($data);
-        // $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
+        $data = [
+            'type' => 'dont_delete',
+        ];
+        $branch = Branch::where(['id' => $request->branch_id])->update($data);
+        $Category = Category::where(['id' => $request->category_id])->update($data);
+        $Client = Client::where(['id' => $request->client_id])->update($data);
+        $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
         
                
-        // $this->response["status"] = true;
-        // $this->response["message"] = __('strings.store_success');
-        // return response()->json($this->response);
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.store_success');
+        return response()->json($this->response);
     }
 
     
