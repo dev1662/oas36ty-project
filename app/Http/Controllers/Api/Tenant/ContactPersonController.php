@@ -95,7 +95,7 @@ class ContactPersonController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
         // $result = ContactPerson::select('id','name','type')->get();
-        $data = ContactPerson::select('id','name','type')->get();
+        $id = ContactPerson::select('id','name','type')->get();
         // $result = array();
         // $result = [
         //     'id' => 1,
@@ -118,7 +118,7 @@ class ContactPersonController extends Controller
             $phone = ContactPersonPhone::where(['contact_person_id' => $id[$i]->id])->select('phone')->get();
             
             $result = [
-                "data" => $data,
+                "data" => $id[$i],
                 
                 "email" => $email,
                 "phone" => $phone,
