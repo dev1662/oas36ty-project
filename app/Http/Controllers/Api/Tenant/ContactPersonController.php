@@ -95,39 +95,39 @@ class ContactPersonController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
         // $result = ContactPerson::select('id','name','type')->get();
-        // $id = ContactPerson::select('id','name','type')->get();
-        $result = array();
-        $result = [
-            'id' => 1,
-            'name' => 'contact',
-            'type' => 'delete',
-            'email' => [
-                0 => 'abc@gmail.com',
-                1 => 'abd@gmail.com',
-            ],
-            'phone' => [
-                0 => '9868609613',
-                1 => '7428040855',
+        $data = ContactPerson::select('id','name','type')->get();
+        // $result = array();
+        // $result = [
+        //     'id' => 1,
+        //     'name' => 'contact',
+        //     'type' => 'delete',
+        //     'email' => [
+        //         0 => 'abc@gmail.com',
+        //         1 => 'abd@gmail.com',
+        //     ],
+        //     'phone' => [
+        //         0 => '9868609613',
+        //         1 => '7428040855',
 
-            ],
-        ];
+        //     ],
+        // ];
 
-        // for($i=0;$i<count($id);$i++){
+        for($i=0;$i<count($id);$i++){
 
-            // $email = ContactPersonEmail::where(['contact_person_id' => $id[$i]->id])->select('email')->get();
-            // $phone = ContactPersonPhone::where(['contact_person_id' => $id[$i]->id])->select('phone')->get();
+            $email = ContactPersonEmail::where(['contact_person_id' => $id[$i]->id])->select('email')->get();
+            $phone = ContactPersonPhone::where(['contact_person_id' => $id[$i]->id])->select('phone')->get();
             
-            // $result = [
-            //     "data" => $id,
+            $result = [
+                "data" => $data,
                 
-            //     "email" => $email,
-            //     "phone" => $phone,
-            // ];
+                "email" => $email,
+                "phone" => $phone,
+            ];
             $this->response["status"] = true;
             $this->response["message"] = __('strings.get_all_success');
             $this->response["data"] = $result;
             return response()->json($this->response);
-        // }
+        }
     }
 
     /**
