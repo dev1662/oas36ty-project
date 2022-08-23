@@ -216,7 +216,7 @@ class TaskController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-       return  $request->all();
+
         for($i=0;count($request->users);$i++){
             
             $task = new Task();
