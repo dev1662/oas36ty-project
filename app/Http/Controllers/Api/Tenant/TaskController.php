@@ -243,7 +243,7 @@ class TaskController extends Controller
 
             // echo '<pre>';print_r($task);exit;
             $task->status = Task::STATUS_OPEN;
-            return $task;
+            return $request->users[$i];
             $task->save();
         }
 
