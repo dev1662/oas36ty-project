@@ -221,18 +221,18 @@ class TaskController extends Controller
             
             $task = new Task();
 
-                $task->branch_id = $request->branch_id['id'];
+                $task->branch_id = (int)$request->branch_id['id'];
            
 
-                $task->category_id = $request->category_id['id'];
+                $task->category_id = (int)$request->category_id['id'];
      
 
-                $task->client_id = $request->client_id['id'];
+                $task->client_id = (int)$request->client_id['id'];
            
 
-                $task->contact_person_id = $request->contact_person_id['id'];
+                $task->contact_person_id = (int)$request->contact_person_id['id'];
             
-            $task->user_id = $request->users[$i]['id'];
+            $task->user_id = (int)$request->users[$i]['id'];
             $task->type = $request->type;
             $task->subject = $request->subject;
             $task->description = $request->description;
