@@ -99,8 +99,8 @@ class ContactPersonController extends Controller
         $result = array();
         for($i=0;$i<count($id);$i++){
 
-            $email = ContactPersonEmail::where(['contact_person_id' => $id[$i]->id])->select('email')->get();
-            $phone = ContactPersonPhone::where(['contact_person_id' => $id[$i]->id])->select('phone')->get();
+            $email = ContactPersonEmail::where(['contact_person_id' => $id[$i]->id])->select('email','contact_person_id')->get();
+            $phone = ContactPersonPhone::where(['contact_person_id' => $id[$i]->id])->select('phone','contact_person_id')->get();
             
             $result = [
                 "data" => $id,
