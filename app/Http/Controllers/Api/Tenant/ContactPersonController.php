@@ -103,9 +103,7 @@ class ContactPersonController extends Controller
             $phone = ContactPersonPhone::where(['contact_person_id' => $id[$i]->id])->select('phone')->get();
             
             $result = [
-                "id" => $id[$i]->id,
-                "name" => $id[$i]->name,
-                "type" => $id[$i]->type,
+                "data" => $id,
                 "email" => $email,
                 "phone" => $phone,
             ];
