@@ -107,11 +107,11 @@ class ContactPersonController extends Controller
                 "email" => $email,
                 "phone" => $phone,
             ];
-        }
             $this->response["status"] = true;
             $this->response["message"] = __('strings.get_all_success');
             $this->response["data"] = $result;
             return response()->json($this->response);
+        }
     }
 
     /**
