@@ -96,30 +96,16 @@ class ContactPersonController extends Controller
         $this->switchingDB($dbname);
         // $result = ContactPerson::select('id','name','type')->get();
         $id = ContactPerson::select('id','name','type')->get();
-        // $result = array();
-        // $result = [
-        //     'id' => 1,
-        //     'name' => 'contact',
-        //     'type' => 'delete',
-        //     'email' => [
-        //         0 => 'abc@gmail.com',
-        //         1 => 'abd@gmail.com',
-        //     ],
-        //     'phone' => [
-        //         0 => '9868609613',
-        //         1 => '7428040855',
-
-        //     ],
-        // ];
-
+       
         for($i=0;$i<count($id);$i++){
 
             $email = ContactPersonEmail::where(['contact_person_id' => $id[$i]->id])->select('email')->get();
             $phone = ContactPersonPhone::where(['contact_person_id' => $id[$i]->id])->select('phone')->get();
             
             $result = [
-                "data" => $id,
-                
+                "id" => $id[$i]->id,
+                "name" => $id[$i]->name,
+                "type" => $id[$i]->type,
                 "email" => $email,
                 "phone" => $phone,
             ];
