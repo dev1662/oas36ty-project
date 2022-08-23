@@ -97,7 +97,6 @@ class ContactPersonController extends Controller
         // $result = ContactPerson::select('id','name','type')->get();
         $id = ContactPerson::select('id','name','type')->get();
         $result = array();
-        return count($id);
         for($i=0;$i<=count($id);$i++){
 
             $email = ContactPersonEmail::where(['contact_person_id' => $id[$i]->id])->select('email','contact_person_id')->get();
@@ -108,11 +107,11 @@ class ContactPersonController extends Controller
                 "email" => $email,
                 "phone" => $phone,
             ];
+        }
             $this->response["status"] = true;
             $this->response["message"] = __('strings.get_all_success');
             $this->response["data"] = $result;
             return response()->json($this->response);
-        }
     }
 
     /**
