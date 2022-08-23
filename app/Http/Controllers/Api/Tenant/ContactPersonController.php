@@ -37,6 +37,22 @@ class ContactPersonController extends Controller
             ]) : [],
         ]);
     }
+    public function getDataForLeads(Request $request)
+    {
+        $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
+        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+        // return   $dbname;
+        $this->switchingDB($dbname);
+        // $result = ContactPerson::select('id','name','type')->get();
+        $result = ContactPerson::select('id','name','type')->get();
+        // $result = array();
+        
+            $this->response["status"] = true;
+            $this->response["message"] = __('strings.get_all_success');
+            $this->response["data"] = $result;
+            return response()->json($this->response);
+        
+    }
     /**
      * 
      * @OA\Get(
