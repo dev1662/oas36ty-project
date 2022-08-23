@@ -96,7 +96,7 @@ class ContactPersonController extends Controller
         $this->switchingDB($dbname);
         // $result = ContactPerson::select('id','name','type')->get();
         $id = ContactPerson::select('id','name','type')->get();
-       
+        $result = array();
         for($i=0;$i<count($id);$i++){
 
             $email = ContactPersonEmail::where(['contact_person_id' => $id[$i]->id])->select('email')->get();
@@ -107,11 +107,11 @@ class ContactPersonController extends Controller
                 "email" => $email,
                 "phone" => $phone,
             ];
+        }
             $this->response["status"] = true;
             $this->response["message"] = __('strings.get_all_success');
             $this->response["data"] = $result;
             return response()->json($this->response);
-        }
     }
 
     /**
