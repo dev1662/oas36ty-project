@@ -217,7 +217,7 @@ class TaskController extends Controller
             return response()->json($this->response, 422);
         }
 
-        for($i=0;count($request->users);$i++){
+        for($i=0;$i<count($request->users);$i++){
             
             $task = new Task();
 
