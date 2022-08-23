@@ -216,29 +216,29 @@ class TaskController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        return $request->branch_id['id'];
+        // return $request->branch_id['id'];
         for($i=0;$i<count($request->users);$i++){
             
             $task = new Task();
 
-                $task->branch_id = $request->branch_id->id;
+                $task->branch_id = $request->branch_id['id'];
            
 
-                $task->category_id = $request->category_id->id;
+                $task->category_id = $request->category_id['id'];
      
 
-                $task->client_id = $request->client_id->id;
+                $task->client_id = $request->client_id['id'];
            
 
-                $task->contact_person_id = $request->contact_person_id->id;
+                $task->contact_person_id = $request->contact_person_id['id'];
             
-            $task->user_id = $request->users[$i]->id;
+            $task->user_id = $request->users[$i]['id'];
             $task->type = $request->type;
             $task->subject = $request->subject;
             $task->description = $request->description;
             $task->due_date = $request->due_date;
             
-                $task->priority = $request->priority->id;
+                $task->priority = $request->priority['id'];
             
 
             // echo '<pre>';print_r($task);exit;
