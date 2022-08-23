@@ -97,6 +97,7 @@ class ContactPersonController extends Controller
         // $result = ContactPerson::select('id','name','type')->get();
         $id = ContactPerson::select('id','name','type')->get();
         $result = array();
+        return count($id);
         for($i=0;$i<=count($id);$i++){
 
             $email = ContactPersonEmail::where(['contact_person_id' => $id[$i]->id])->select('email','contact_person_id')->get();
