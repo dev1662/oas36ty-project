@@ -33,7 +33,7 @@ class Task extends Model
     // }
     public function users()
     {
-        return $this->belongsToMany(CentralUser::class, 'user_id');
+        return $this->belongsToMany(CentralUser::class);
     }
 
     public function comments()
