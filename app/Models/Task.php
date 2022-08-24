@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Task extends Model
 {
     use HasFactory, SoftDeletes;
-
+    public $table = 'oas36ty_org_NanakOrg.tasks';
     const TYPE_LEAD = 'lead';
     const TYPE_TASK = 'task';
     
