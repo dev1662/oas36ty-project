@@ -104,6 +104,7 @@ class TaskController extends Controller
 
     public function index(Request $request)
     {
+        
         $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
@@ -121,9 +122,9 @@ class TaskController extends Controller
             'contactPerson' => function($q){
                 $q->select('id', 'name');
             },
-            // 'users' => function($q){
-            //     $q->select('id','name');
-            // }
+            'users' => function($q){
+                $q->select('id','name');
+            }
         ])->latest()->get();
         // $user_details = CentralUser::find($)
 
