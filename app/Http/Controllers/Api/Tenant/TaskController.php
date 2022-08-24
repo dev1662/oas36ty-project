@@ -121,7 +121,7 @@ class TaskController extends Controller
             'contactPerson' => function($q){
                 $q->select('id', 'name');
             },
-            'userss' => function($q){
+            'users' => function($q){
                 $q->select('id','name');
             }
         ])->latest()->get();
