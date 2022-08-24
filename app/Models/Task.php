@@ -31,9 +31,9 @@ class Task extends Model
     // {
     //     return $this->belongsToMany(User::class, TaskUser::class, 'task_id', 'user_id');
     // }
-    public function users()
+    public function users(): BelongsToMany
     {
-        return $this->belongsToMany(CentralUser::class, 'office36ty_api.users');
+        return $this->belongsToMany(CentralUser::class, 'office36ty_api.users','user_id');
     }
 
     public function comments()
