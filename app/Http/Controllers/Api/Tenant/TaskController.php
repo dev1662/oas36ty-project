@@ -113,7 +113,7 @@ class TaskController extends Controller
                 $q->select('id', 'name');
             },
             'category' => function($q){
-                $q->select('name');
+                $q->select('id','name');
             },
             'client' => function($q){
                 $q->select('id', 'name');
