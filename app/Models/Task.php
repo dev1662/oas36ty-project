@@ -31,7 +31,7 @@ class Task extends Model
     // {
     //     return $this->belongsToMany(User::class, TaskUser::class, 'task_id', 'user_id');
     // }
-    public function users(): BelongsToMany
+    public function users()
     {
         return $this->belongsToMany(CentralUser::class);
     }
