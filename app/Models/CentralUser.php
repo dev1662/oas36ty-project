@@ -25,9 +25,9 @@ class CentralUser extends Authenticatable implements SyncMaster
     const STATUS_DECLINED = 'declined';
 
     protected $guarded = [];
-     protected $connection = 'mysql';
+    //  protected $connection = 'mysql';
     // public $timestamps = false;
-    public $table = 'users';
+    public $table = 'office36ty_api.users';
 
     /**
      * The attributes that are mass assignable.
