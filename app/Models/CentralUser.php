@@ -27,7 +27,7 @@ class CentralUser extends Authenticatable implements SyncMaster
     protected $guarded = [];
     //  protected $connection = 'mysql';
     // public $timestamps = false;
-    public $table = 'office36ty_api.users';
+    public $table = 'users';
 
     /**
      * The attributes that are mass assignable.
