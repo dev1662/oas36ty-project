@@ -122,6 +122,7 @@ class TaskController extends Controller
                 $q->select('id', 'name');
             }
         ])->latest()->get();
+        // $user_details = CentralUser::find($)
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
