@@ -449,7 +449,7 @@ class TaskController extends Controller
             'description' => 'nullable',
             'due_date' => 'required|date',
             'priority' => 'required',
-            'status' => 'required|in:open,completed,invoiced,closed',
+            'status' => 'required',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
