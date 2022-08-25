@@ -29,15 +29,15 @@ class Task extends Model
         'client_id', 'contact_person_id', 'branch_id', 'category_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status',
     ];
 
-    // public function users()
-    // {
-    //     return $this->belongsToMany(User::class, TaskUser::class, 'task_id', 'user_id');
-    // }
     public function users()
     {
-        // DB::connection()->setDatabaseName('oas36ty_org_NanakOrg');
-        return $this->belongsToMany(\App\Models\User::class);
+        return $this->belongsToMany(User::class, TaskUser::class, 'task_id', 'user_id');
     }
+    // public function users()
+    // {
+    //     // DB::connection()->setDatabaseName('oas36ty_org_NanakOrg');
+    //     return $this->belongsToMany(\App\Models\User::class);
+    // }
 
     public function comments()
     {
