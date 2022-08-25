@@ -122,9 +122,9 @@ class TaskController extends Controller
             'contactPerson' => function($q){
                 $q->select('id', 'name');
             },
-            // 'users' => function($q){
-            //     $q->select('id','name');
-            // }
+            'users' => function($q){
+                $q->select('id','name');
+            }
         ])->latest()->get();
         // $user_details = CentralUser::find($)
 
