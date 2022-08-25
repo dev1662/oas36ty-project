@@ -122,9 +122,7 @@ class TaskController extends Controller
             'contactPerson' => function($q){
                 $q->select('id', 'name');
             },
-            'users' => function($q){
-                $q->select('id','name');
-            }
+            
         ])->latest()->get();
         // $user_details = CentralUser::find($)
 
@@ -440,17 +438,17 @@ class TaskController extends Controller
     {
         $validator = Validator::make(['task_id' => $id] + $request->all(), [
             'task_id' => 'required|exists:App\Models\Task,id',
-            'branch_id' => 'required|exists:App\Models\Branch,id',
-            'category_id' => 'nullable|exists:App\Models\Category,id',
-            'client_id' => 'nullable|exists:App\Models\Client,id',
-            'contact_person_id' => 'nullable|exists:App\Models\ContactPerson,id',
-            'user_id' => 'nullable|exists:App\Models\CentralUser,id',
+            'branch_id' => 'required',
+            'category_id' => 'nullable',
+            'client_id' => 'nullable',
+            'contact_person_id' => 'nullable',
+            'user_id' => 'nullable',
 
             'type' => 'required|in:lead,task',
             'subject' => 'required|max:255',
             'description' => 'nullable',
             'due_date' => 'required|date',
-            'priority' => 'required|in:1,2,3,4,5',
+            'priority' => 'required',
             'status' => 'required|in:open,completed,invoiced,closed',
         ]);
         if ($validator->fails()) {
@@ -459,7 +457,7 @@ class TaskController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-
+        return $request->all();
         $task = Task::find($id);
         if(!$task){
             $this->response["message"] = __('strings.update_failed');
