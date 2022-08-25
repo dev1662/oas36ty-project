@@ -35,8 +35,8 @@ class Task extends Model
     // }
     public function users()
     {
-        DB::connection()->setDatabaseName('oas36ty_org_NanakOrg');
-        return $this->belongsToMany(\App\Models\CentralUser::class,'users');
+        // DB::connection()->setDatabaseName('oas36ty_org_NanakOrg');
+        return $this->belongsToMany(\App\Models\CentralUser::class);
     }
 
     public function comments()
