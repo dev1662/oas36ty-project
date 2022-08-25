@@ -69,7 +69,7 @@ class CentralUser extends Authenticatable implements SyncMaster
             ->using(TenantPivot::class);
     }
     public function task(){
-        return $this->hasMany(\App\Models\Task::class,'tasks');
+        return $this->hasMany(\App\Models\Task::class);
     }
   
     public function getTenantModelName(): string
