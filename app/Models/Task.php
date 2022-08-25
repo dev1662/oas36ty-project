@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+
 
 class Task extends Model
 {
     use HasFactory, SoftDeletes;
-    public $table = 'oas36ty_org_NanakOrg.tasks';
+    // public $table = 'oas36ty_org_NanakOrg.tasks';
     const TYPE_LEAD = 'lead';
     const TYPE_TASK = 'task';
     
@@ -33,6 +35,7 @@ class Task extends Model
     // }
     public function users()
     {
+        DB::connection()->setDatabaseName('oas36ty_org_NanakOrg');
         return $this->belongsToMany(\App\Models\CentralUser::class);
     }
 
