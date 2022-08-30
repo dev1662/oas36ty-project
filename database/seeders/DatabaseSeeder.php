@@ -18,18 +18,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // \App\Models\User::factory(10)->create();
-        PriorityTask::create([
-            'icons' => '*'
-        ]);
-        PriorityTask::create([
-            'icons' => '* *'
-        ]);
-        PriorityTask::create([
-            'icons' => '* * *'
-        ]);
-        PriorityTask::create([
-            'icons' => '* * * *'
-        ]);
+
         $client = new ClientRepository();
 
         $client->createPasswordGrantClient(null, 'Default password grant client', config('app.url'));
