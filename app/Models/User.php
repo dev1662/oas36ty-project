@@ -82,7 +82,10 @@ class User extends Authenticatable implements Syncable
             'email_verified_at',
         ];
     }
-
+    // public function tasks()
+    // {
+    //     return $this->hasMany(Task::class);
+    // }
     public function tasks()
     {
         return $this->belongsToMany(Task::class, TaskUser::class, 'user_id', 'task_id');

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -20,6 +21,7 @@ use App\Models\User;
 use App\Mail\SingUpOTP as SingUpOTPMail;
 use App\Notifications\SignupEmailNotification;
 use Exception;
+// use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Notification as FacadesNotification;
@@ -36,14 +38,14 @@ class SignUpController extends Controller
      *     summary="Signup Send Email",
      *     description="Signup Send Email",
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *              type="object",
      *              @OA\Property(property="email", type="string", example="naveen.w3master@gmail.com"),
      *          )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -66,7 +68,7 @@ class SignUpController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|max:64',
         ]);
-        
+
         if($validator->fails()) {
             $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();
@@ -75,23 +77,23 @@ class SignUpController extends Controller
         }
         // Random OTP Generation
         $randomOTP = rand(100000, 999999);
-        
+
         $centralOnboarding = new CentralOnboarding($request->all());
         $centralOnboarding->otp = $randomOTP;
         $centralOnboarding->status = 'pending';
         if($centralOnboarding->save()){
-            
-          
+
+
                 //  Mail::to($centralOnboarding->email)->send(new SingUpOTPMail($randomOTP));
-            
-            
+
+
             $this->response["status"] = true;
             $this->response["message"] = __('strings.otp_sent_success');
             $this->response["data"] = [
                 'email' => $centralOnboarding->email,
                 'signup_token' => Crypt::encryptString($centralOnboarding->id),
             ];
-            
+
             // return response()->json($this->response);
             // return $this->response;
             // return $this->response;
@@ -110,7 +112,7 @@ class SignUpController extends Controller
      *     summary="Signup Verify Email",
      *     description="Signup Verify Email",
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *              type="object",
      *              @OA\Property(property="signup_token", type="string", example="XXXXXXXXXXXXXXXXX"),
@@ -119,7 +121,7 @@ class SignUpController extends Controller
      *          )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -157,7 +159,7 @@ class SignUpController extends Controller
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
-        
+
         $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNull('email_verified_at')->first();
         if(!$centralOnboarding){
             $this->response["message"] = __('strings.something_wrong');
@@ -193,7 +195,7 @@ class SignUpController extends Controller
      *     summary="Signup Organization",
      *     description="Signup Organization",
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *              type="object",
      *              @OA\Property(property="signup_token", type="string", example="XXXXXXXXXXXXXXXXX"),
@@ -203,7 +205,7 @@ class SignUpController extends Controller
      *          )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -242,7 +244,7 @@ class SignUpController extends Controller
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
-        
+
         $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNotNull('email_verified_at')->first();
         if(!$centralOnboarding){
             $this->response["message"] = __('strings.something_wrong');
@@ -254,7 +256,7 @@ class SignUpController extends Controller
         //     'data' => '',
         // ];
         // foreach($dbs as $d){
-        
+
         //    $us = $d->Database;
         //     if($us === config('tenancy.database.prefix'). $request->input('organization_url')){
         //         $original['data'] = $us;
@@ -262,7 +264,7 @@ class SignUpController extends Controller
         // }
         // if(empty($original['data'])){
 
-            
+
             $centralOnboarding->organization_name = $request->input('organization_name');
             $centralOnboarding->subdomain = $request->input('organization_url');
             $user= CentralOnboarding::where(['email'=> $request->email])->whereNotNull('organization_name') ;
@@ -271,8 +273,8 @@ class SignUpController extends Controller
                     // return response()->json($this->response['passwordNotRequired']);
                 }
             if($centralOnboarding->update()){
-    
-                
+
+
                 $this->response["status"] = true;
                 $this->response["message"] = __('strings.register_organization_success');
                 $this->response["data"] = [
@@ -285,7 +287,7 @@ class SignUpController extends Controller
             }
         // }else{
         //     $this->response["message"] = __('strings.register_organization_failed');
-        //     return response()->json($this->response, 401); 
+        //     return response()->json($this->response, 401);
         // }
         return response()->json($this->response);
     }
@@ -298,7 +300,7 @@ class SignUpController extends Controller
      *     summary="Signup Complete",
      *     description="Signup Complete",
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *              type="object",
      *              @OA\Property(property="signup_token", type="string", example="XXXXXXXXXXXXXXXXX"),
@@ -308,7 +310,7 @@ class SignUpController extends Controller
      *          )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -328,7 +330,6 @@ class SignUpController extends Controller
 
      public function complete(Request $request)
     {
-        
         if($request->password){
 
             $validator = Validator::make($request->all(), [
@@ -338,33 +339,33 @@ class SignUpController extends Controller
                 'password' => 'required|string|min:6|max:15',
             ]);
         }else{
-            
+
             $validator = Validator::make($request->all(), [
                 'signup_token' => 'required',
                 'email' => 'required|email|max:64|exists:App\Models\CentralOnboarding,email',
                 'name' => 'required|max:32',
                 // 'password' => 'required|string|min:6|max:15',
             ]);
-            
+
         }
-            
+
         if($validator->fails()) {
             $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();
             $this->response["errors"] = $validator->errors();
-            return response()->json($this->response, 422);
+            // return response()->json($this->response, 422);
         }
         try {
             $centralOnboardingID = Crypt::decryptString($request->input('signup_token'));
         } catch (DecryptException $e) {
             $this->response["message"] = __('strings.something_wrong');
-            return response()->json($this->response, 401);
+            // return response()->json($this->response, 401);
         }
-        
+
         $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNotNull('subdomain')->first();
         if(!$centralOnboarding){
             $this->response["message"] = __('strings.something_wrong');
-            return response()->json($this->response, 401);
+            // return response()->json($this->response, 401);
         }
         // return $centralOnboarding;
         $tenant = Tenant::create(['id' => $centralOnboarding->subdomain]);
@@ -376,6 +377,7 @@ class SignUpController extends Controller
 
         if($tenant){
             // if($user === null){
+                // return $request->all();
                 $centralOrganization = new CentralOrganization([
                     'name' => $centralOnboarding->organization_name,
                     'subdomain' => $centralOnboarding->subdomain,
@@ -394,20 +396,20 @@ class SignUpController extends Controller
                                 'password' => Hash::make($request->input('password')),
                                 'status' => CentralUser::STATUS_ACTIVE,
                                 ]
-                            );                           
+                            );
                             if(!$centralUser->hasVerifiedEmail()) $centralUser->markEmailAsVerified();
-                            
+
                             $centralUser->tenants()->attach($tenant);
-                            
+
                             $centralOnboarding->status = CentralOnboarding::STATUS_COMPLETED;
                             $centralOnboarding->update();
-                            
+
                             $this->response["status"] = true;
                             $this->response["message"] = __('strings.register_success');
-                            
+
                         } else {
                             $this->response["message"] = __('strings.register_failed');
-                            return response()->json($this->response, 401);
+                            // return response()->json($this->response, 401);
                         }
                     }else{
 
@@ -422,25 +424,25 @@ class SignUpController extends Controller
                                     // 'password' => Hash::make($request->input('password')),
                                     'status' => CentralUser::STATUS_ACTIVE,
                                     ]
-                                );                           
+                                );
                                 if(!$centralUser->hasVerifiedEmail()) $centralUser->markEmailAsVerified();
-                                
+
                                 $centralUser->tenants()->attach($tenant);
-                                
+
                                 $centralOnboarding->status = CentralOnboarding::STATUS_COMPLETED;
                                 $centralOnboarding->update();
-                                
+
                                 $this->response["status"] = true;
                                 $this->response["message"] = __('strings.register_success');
-                                
+
                             } else {
                                 $this->response["message"] = __('strings.register_failed');
-                                return response()->json($this->response, 401);
+                                // return response()->json($this->response, 401);
                             }
                     }
         } else {
             $this->response["message"] = __('strings.register_failed');
-            return response()->json($this->response, 401);
+            // return response()->json($this->response, 401);
         }
         return response()->json($this->response);
     }

@@ -14,11 +14,35 @@ use App\Models\CentralUser;
 use App\Models\User;
 
 use App\Mail\JoiningInvitation as JoiningInvitationMail;
+use Illuminate\Support\Facades\Config;
+use PDO;
 
 class UserController extends Controller
 {
+    public function switchingDB($dbName)
+    {
+        Config::set("database.connections.mysql", [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => $dbName,
+            'username' => env('DB_USERNAME','root'),
+            'password' => env('DB_PASSWORD',''),
+            'unix_socket' => env('DB_SOCKET',''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ]);
+    }
     /**
-     * 
+     *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"users"},
@@ -29,13 +53,13 @@ class UserController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="search", in="query", required=false, description="Search"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Fetched all records successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="array",
      *                  @OA\Items(
      *                      @OA\Property(
@@ -82,6 +106,9 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
+        $dbname = $request->header('X-Tenant');
+        $this->switchingDB('oas36ty_org_'.$dbname);
+        // return 'hh';
         $validator = Validator::make($request->all(), [
             'search' => 'nullable',
         ]);
@@ -105,7 +132,7 @@ class UserController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
      *     tags={"users"},
@@ -115,7 +142,7 @@ class UserController extends Controller
      *     description="Create User",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Naveen", description=""),
@@ -123,13 +150,13 @@ class UserController extends Controller
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Created new record successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="object",
      *                  @OA\Property(property="id", type="string", example="1"),
      *                  @OA\Property(property="name", type="string", example="Hyderabad Contacts", description=""),
@@ -151,10 +178,10 @@ class UserController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="email", 
+     *                  property="email",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -210,7 +237,7 @@ class UserController extends Controller
             $url = config('app.url').'/invitation?token='.Crypt::encryptString(json_encode($token));
             Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
         });
-        
+
         $result = User::select('id', 'name', 'email', 'status')->find($user->id);
 
         $this->response["status"] = true;
@@ -231,7 +258,7 @@ class UserController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Put(
      *     security={{"bearerAuth":{}}},
      *     tags={"users"},
@@ -242,14 +269,14 @@ class UserController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="email", type="string", example="naveen.w3master@gmail.com", description=""),
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -278,10 +305,10 @@ class UserController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="user_id", 
+     *                  property="user_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -363,9 +390,9 @@ class UserController extends Controller
         return response()->json($this->response);
     }
 
-    
+
     /**
-     * 
+     *
      * @OA\Delete(
      *     security={{"bearerAuth":{}}},
      *     tags={"users"},
@@ -376,7 +403,7 @@ class UserController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -405,10 +432,10 @@ class UserController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="user_id", 
+     *                  property="user_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -451,9 +478,9 @@ class UserController extends Controller
         return response()->json($this->response);
     }
 
-    
+
     /**
-     * 
+     *
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
      *     tags={"users"},
@@ -464,7 +491,7 @@ class UserController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -493,10 +520,10 @@ class UserController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="user_id", 
+     *                  property="user_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",

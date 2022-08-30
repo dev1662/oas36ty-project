@@ -36,7 +36,7 @@ class CategoryController extends Controller
         ]);
     }
     /**
-     * 
+     *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"categories"},
@@ -46,13 +46,13 @@ class CategoryController extends Controller
      *     description="Categories",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Fetched all data successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="array",
      *                  @OA\Items(
      *                      @OA\Property(
@@ -91,9 +91,9 @@ class CategoryController extends Controller
     {
         $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
         $dbname = strtolower($dbname);
-        // return $dbname;  
+        // return $dbname;
         $this->switchingDB($dbname);
-        $categories = Category::select('id', 'name','type')->get();
+        $categories = Category::select('id', 'name','type')->with('audits')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -102,7 +102,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
      *     tags={"categories"},
@@ -112,14 +112,14 @@ class CategoryController extends Controller
      *     description="Create Category",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Category Name", description=""),
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -141,10 +141,10 @@ class CategoryController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="name", 
+     *                  property="name",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -173,15 +173,15 @@ class CategoryController extends Controller
         $category = new Category($request->all());
         $category->status = Category::STATUS_ACTIVE;
         $category->save();
-        
+
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
     }
 
-    
+
     /**
-     * 
+     *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"categories"},
@@ -192,13 +192,13 @@ class CategoryController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="categoryID", in="path", required=true, description="Category ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Fetched data successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="array",
      *                  @OA\Items(
      *                      @OA\Property(
@@ -243,7 +243,7 @@ class CategoryController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        
+
         $category = Category::select('id', 'name')->find($id);
 
         $this->response["status"] = true;
@@ -253,7 +253,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Put(
      *     security={{"bearerAuth":{}}},
      *     tags={"categories"},
@@ -264,14 +264,14 @@ class CategoryController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="categoryID", in="path", required=true, description="Category ID"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Category name", description=""),
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -300,10 +300,10 @@ class CategoryController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="category_id", 
+     *                  property="category_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -345,7 +345,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Delete(
      *     security={{"bearerAuth":{}}},
      *     tags={"categories"},
@@ -356,7 +356,7 @@ class CategoryController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="categoryID", in="path", required=true, description="Category ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -385,10 +385,10 @@ class CategoryController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="category_id", 
+     *                  property="category_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",

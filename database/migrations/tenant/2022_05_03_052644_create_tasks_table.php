@@ -19,7 +19,7 @@ class CreateTasksTable extends Migration
             $table->foreignId('category_id')->nullable()->constrained();
             $table->foreignId('client_id')->nullable()->constrained();
             $table->foreignId('contact_person_id')->nullable()->constrained();
-            $table->foreignId('user_id')->nullable()->references('id')->on(config('database.connections.mysql.database') .'.users');
+            $table->foreignId('user_id')->nullable()->constrained();
             $table->enum('type', ['lead', 'task'])->default('lead');
             $table->string('subject');
             $table->longText('description')->nullable();

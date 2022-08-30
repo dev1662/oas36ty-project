@@ -13,7 +13,7 @@ use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Client;
 use App\Models\ContactPerson;
-
+use App\Models\TaskUser;
 use PDO;
 
 class TaskController extends Controller
@@ -41,7 +41,7 @@ class TaskController extends Controller
         ]);
     }
     /**
-     * 
+     *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"tasks"},
@@ -51,13 +51,13 @@ class TaskController extends Controller
      *     description="Tasks",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Fetched all data successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="array",
      *                  @OA\Items(
      *                      @OA\Property(
@@ -104,12 +104,13 @@ class TaskController extends Controller
 
     public function index(Request $request)
     {
-        
+        // return "hh";
+
         $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        $tasks = Task::select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status','created_at')->with([
+        $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status','created_at')->with([
             'branch' => function($q){
                 $q->select('id', 'name');
             },
@@ -122,10 +123,14 @@ class TaskController extends Controller
             'contactPerson' => function($q){
                 $q->select('id', 'name');
             },
-            // 'users' => function($q){
-            //     $q->select('id', 'name');
+            'users' => function($q){
+                $q->select('users.id', 'name');
+            },
+
+            // 'priorities' => function($q){
+            //     $q->select('id', 'icons');
             // },
-            
+
         ])->latest()->get();
         // $user_details = CentralUser::find($)
 
@@ -134,9 +139,44 @@ class TaskController extends Controller
         $this->response["data"] = $tasks;
         return response()->json($this->response);
     }
+    // public function leads(Request $request)
+    // {
+    //     return "hh";
+    //     $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
+    //     $dbname = config('tenancy.database.prefix').strtolower($dbname);
+    //     // return   $dbname;
+    //     $this->switchingDB($dbname);
+    //     $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status','created_at')->with([
+    //         'branch' => function($q){
+    //             $q->select('id', 'name');
+    //         },
+    //         'category' => function($q){
+    //             $q->select('id','name');
+    //         },
+    //         'client' => function($q){
+    //             $q->select('id', 'name');
+    //         },
+    //         'contactPerson' => function($q){
+    //             $q->select('id', 'name');
+    //         },
+    //         'users' => function($q){
+    //             $q->select('users.id', 'name');
+    //         },
+    //         // 'priorities' => function($q){
+    //         //     $q->select('id', 'icons');
+    //         // },
+
+    //     ])->latest()->get();
+    //     // $user_details = CentralUser::find($)
+
+    //     $this->response["status"] = true;
+    //     $this->response["message"] = __('strings.get_all_success');
+    //     $this->response["data"] = $tasks;
+    //     return response()->json($this->response);
+    // }
 
     /**
-     * 
+     *
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
      *     tags={"tasks"},
@@ -146,7 +186,7 @@ class TaskController extends Controller
      *     description="Create Task",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="branch_id", type="string", example="1", description=""),
@@ -161,7 +201,7 @@ class TaskController extends Controller
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -183,10 +223,10 @@ class TaskController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="subject", 
+     *                  property="subject",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -202,7 +242,7 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required',
             'category_id' => 'nullable',
@@ -224,33 +264,43 @@ class TaskController extends Controller
         }
         // return $request->branch_id['id'];
         for($i=0;$i<count($request->users);$i++){
-            
+
             $task = new Task();
 
                 $task->branch_id = $request->branch_id['id'];
-           
+
 
                 $task->category_id = $request->category_id['id'];
-     
+
 
                 $task->client_id = $request->client_id['id'];
-           
+
 
                 $task->contact_person_id = $request->contact_person_id['id'];
-            
+
             $task->user_id = $request->users[$i]['id'];
             $task->type = $request->type;
             $task->subject = $request->subject;
             $task->description = $request->description;
             $task->due_date = $request->due_date;
-            
+
                 $task->priority = $request->priority['id'];
-            
+
 
             // echo '<pre>';print_r($task);exit;
             $task->status = Task::STATUS_OPEN;
             // return $request->users[$i];
             $task->save();
+
+            $taskss = Task::find($task->id);
+
+            $taskUser = $taskss->users()->find($request->users[$i]['id']);
+            // if($taskUser){
+            //     $this->response["message"] = __('strings.store_failed');
+            //     return response()->json($this->response);
+            // }
+
+            $taskss->users()->attach($request->users[$i]['id']);
         }
 
         $data = [
@@ -260,16 +310,16 @@ class TaskController extends Controller
         $Category = Category::where(['id' => $request->category_id])->update($data);
         $Client = Client::where(['id' => $request->client_id])->update($data);
         $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
-        
-               
+
+
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
     }
 
-    
+
     /**
-     * 
+     *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"tasks"},
@@ -280,13 +330,13 @@ class TaskController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Fetched data successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="array",
      *                  @OA\Items(
      *                      @OA\Property(
@@ -341,7 +391,7 @@ class TaskController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        
+
         $task = Task::select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status')->with([
             'branch' => function($q){
                 $q->select('id', 'name');
@@ -364,7 +414,7 @@ class TaskController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Put(
      *     security={{"bearerAuth":{}}},
      *     tags={"tasks"},
@@ -375,7 +425,7 @@ class TaskController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="branch_id", type="string", example="1", description=""),
@@ -391,7 +441,7 @@ class TaskController extends Controller
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -420,10 +470,10 @@ class TaskController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="task_id", 
+     *                  property="task_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -460,15 +510,99 @@ class TaskController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        return $request->all();
-        $task = Task::find($id);
-        if(!$task){
-            $this->response["message"] = __('strings.update_failed');
-            return response()->json($this->response, 422);
+
+        // UPDATE TASK TABLE
+
+
+        if(gettype($request->status) === 'array'){
+            $updateTask = Task::where(['id' => $id])->update([
+                'subject' => $request->subject,
+                'description' => $request->description,
+                'branch_id' => $request->branch_id['id'],
+                'client_id' => $request->client_id['id'],
+                'category_id' => $request->category_id['id'],
+                'contact_person_id' => $request->contact_person_id['id'],
+                'type' => $request->type,
+                'due_date' => $request->due_date,
+                // 'priority' => $request->priority['id'],
+                'status' => $request->status['status']
+            ]);
+
+        }
+        // return $request->status['status'];
+        if(gettype($request->status) === 'string'){
+            $updateTask = Task::where(['id' => $id])->update([
+                'subject' => $request->subject,
+                'description' => $request->description,
+                'branch_id' => $request->branch_id['id'],
+                'client_id' => $request->client_id['id'],
+                'category_id' => $request->category_id['id'],
+                'contact_person_id' => $request->contact_person_id['id'],
+                'type' => $request->type,
+                'due_date' => $request->due_date,
+                // 'priority' => $request->priority['id'],
+                'status' => $request->status
+            ]);
+
         }
 
-        $task->fill($request->only(['task_id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status']));
-        $task->update();
+
+        // UPDATE FOREIGN KEY TABLES
+
+
+        $branch = Branch::where(['id' => $request->branch_id['id']])->update(['type' => 'dont_delete']);
+        $Category = Category::where(['id' => $request->category_id['id']])->update(['type' => 'dont_delete']);
+        $Client = Client::where(['id' => $request->client_id['id']])->update(['type' => 'dont_delete']);
+        $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id['id']])->update(['type' => 'dont_delete']);
+
+
+        $checkNewUser = array();
+        for ($i=0; $i < count($request->users); $i++) {
+            $checkNewUser = TaskUser::where(['user_id' =>  $request->users[$i]['id'], 'task_id' => $id])->get();
+        }
+        $user_values = [];
+        foreach($checkNewUser as $newUser){
+
+            $user_values[] =  $newUser->user_id;
+        }
+        // insert newly added data
+
+        foreach($request->users as $input_users){
+            if(!in_array($input_users['id'], $user_values)){
+                $new_taskUser = new TaskUser();
+                $new_taskUser->task_id = $id;
+                $new_taskUser->user_id = $input_users['id'];
+            }
+        }
+
+        // delete added user values
+
+        foreach($user_values as $user_row){
+            // return 'hh';
+            $actual_array = [];
+            foreach($request->users as $use){
+                $actual_array[] = $use['id'];
+            }
+
+            if(!in_array($user_row, $actual_array)){
+                return "user not present";
+                $delete_task_user = TaskUser::where(['user_id' => $user_row])->delete();
+            }
+        }
+
+        // return [
+        //     'data' => $request->all(),
+        //     'count' => count($checkNewUser)
+        // ];
+        // if($checkNewUser)
+        // $task = Task::find($id);
+        // if(!$task){
+        //     $this->response["message"] = __('strings.update_failed');
+        //     return response()->json($this->response, 422);
+        // }
+
+        // $task->fill($request->only(['task_id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status']));
+        // $task->update();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
@@ -476,7 +610,7 @@ class TaskController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Delete(
      *     security={{"bearerAuth":{}}},
      *     tags={"tasks"},
@@ -487,7 +621,7 @@ class TaskController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -516,10 +650,10 @@ class TaskController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="task_id", 
+     *                  property="task_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",

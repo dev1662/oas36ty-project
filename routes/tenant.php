@@ -49,9 +49,13 @@ Route::middleware([
             Route::apiResource('branches', BranchController::class);
             Route::apiResource('categories', CategoryController::class);
 
+            Route::get('dev', function(){
+                return response()->json("h");
+
+            });
             Route::apiResource('tasks', TaskController::class);
             Route::get('all-users', [ApiUserController::class, 'fetch']);
-            
+
             Route::post('users/{id}/deactivate', [UserController::class, 'deactivate']);
             Route::apiResource('users', UserController::class);
 
