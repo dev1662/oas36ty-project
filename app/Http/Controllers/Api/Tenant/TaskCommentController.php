@@ -5,15 +5,16 @@ namespace App\Http\Controllers\Api\Tenant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Validator;
+// use Illuminate\Support\FacadesValidator;
 
 use App\Models\Task;
 use App\Models\TaskComment;
+use Illuminate\Support\Facades\Validator;
 
 class TaskCommentController extends Controller
 {
     /**
-     * 
+     *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"taskComments"},
@@ -24,13 +25,13 @@ class TaskCommentController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Fetched all records successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="array",
      *                  @OA\Items(
      *                      @OA\Property(
@@ -80,7 +81,8 @@ class TaskCommentController extends Controller
         $taskComments = $task->comments()->with([
             'user' => function($q){
                 $q->select('id', 'name', 'email');
-            }
+            },
+            'audits',
         ])->select('id', 'user_id', 'comment', 'status')->latest()->get();
 
         $this->response["status"] = true;
@@ -90,7 +92,7 @@ class TaskCommentController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
      *     tags={"taskComments"},
@@ -101,14 +103,14 @@ class TaskCommentController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="comment", type="string", example="Task comment", description=""),
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -130,10 +132,10 @@ class TaskCommentController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="task_id", 
+     *                  property="task_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -167,7 +169,7 @@ class TaskCommentController extends Controller
         $taskComment->user_id = $user->id;
         $taskComment->status = TaskComment::STATUS_ACTIVE;
         $task->comments()->save($taskComment);
-        
+
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
@@ -185,7 +187,7 @@ class TaskCommentController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Put(
      *     security={{"bearerAuth":{}}},
      *     tags={"taskComments"},
@@ -197,14 +199,14 @@ class TaskCommentController extends Controller
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\Parameter(name="taskCommentID", in="path", required=true, description="Task Comment ID"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="comment", type="string", example="Task comment", description=""),
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -233,10 +235,10 @@ class TaskCommentController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="task_id", 
+     *                  property="task_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -280,7 +282,7 @@ class TaskCommentController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Delete(
      *     security={{"bearerAuth":{}}},
      *     tags={"taskComments"},
@@ -292,7 +294,7 @@ class TaskCommentController extends Controller
      *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
      *     @OA\Parameter(name="taskCommentID", in="path", required=true, description="Task Comment ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -321,10 +323,10 @@ class TaskCommentController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="task_id", 
+     *                  property="task_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",

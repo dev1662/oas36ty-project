@@ -36,7 +36,7 @@ class ClientController extends Controller
         ]);
     }
     /**
-     * 
+     *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"clients"},
@@ -46,13 +46,13 @@ class ClientController extends Controller
      *     description="Clients",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Fetched all data successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="array",
      *                  @OA\Items(
      *                      @OA\Property(
@@ -92,7 +92,7 @@ class ClientController extends Controller
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        $clients = Client::select('id', 'name','type')->get();
+        $clients = Client::select('id', 'name','type')->with('audits')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -101,7 +101,7 @@ class ClientController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
      *     tags={"clients"},
@@ -111,14 +111,14 @@ class ClientController extends Controller
      *     description="Create Client",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Client Name", description=""),
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -140,10 +140,10 @@ class ClientController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="name", 
+     *                  property="name",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -174,15 +174,15 @@ class ClientController extends Controller
         $client->user_id = $user->id;
         $client->status = Client::STATUS_ACTIVE;
         $client->save();
-        
+
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
     }
 
-    
+
     /**
-     * 
+     *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"clients"},
@@ -193,13 +193,13 @@ class ClientController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Fetched data successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="array",
      *                  @OA\Items(
      *                      @OA\Property(
@@ -244,7 +244,7 @@ class ClientController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        
+
         $client = Client::select('id', 'name')->find($id);
 
         $this->response["status"] = true;
@@ -254,7 +254,7 @@ class ClientController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Put(
      *     security={{"bearerAuth":{}}},
      *     tags={"clients"},
@@ -265,14 +265,14 @@ class ClientController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Client name", description=""),
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -301,10 +301,10 @@ class ClientController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="client_id", 
+     *                  property="client_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -345,7 +345,7 @@ class ClientController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Delete(
      *     security={{"bearerAuth":{}}},
      *     tags={"clients"},
@@ -356,7 +356,7 @@ class ClientController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -385,10 +385,10 @@ class ClientController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="client_id", 
+     *                  property="client_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",

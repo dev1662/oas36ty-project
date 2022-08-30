@@ -37,7 +37,7 @@ class ContactPersonPhoneController extends Controller
         ]);
     }
     /**
-     * 
+     *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"contactPersonPhones"},
@@ -48,13 +48,13 @@ class ContactPersonPhoneController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Fetched data successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="array",
      *                  @OA\Items(
      *                      @OA\Property(
@@ -103,15 +103,15 @@ class ContactPersonPhoneController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        
-        $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
+
+        $contactPerson = ContactPerson::select('id', 'name')->with('audits')->find($contactPersonID);
 
         if(!$contactPerson){
             $this->response["message"] = __('strings.get_all_failed');
             return response()->json($this->response);
         }
 
-        $result = $contactPerson->phones()->select('id', 'phone')->get();
+        $result = $contactPerson->phones()->select('id', 'phone')->with('audits')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -120,7 +120,7 @@ class ContactPersonPhoneController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
      *     tags={"contactPersonPhones"},
@@ -131,14 +131,14 @@ class ContactPersonPhoneController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="phone", type="string", example="Contact Person Phone", description=""),
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -160,10 +160,10 @@ class ContactPersonPhoneController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="phone", 
+     *                  property="phone",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -188,7 +188,7 @@ class ContactPersonPhoneController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        
+
         $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
         if(!$contactPerson){
@@ -199,14 +199,14 @@ class ContactPersonPhoneController extends Controller
         $contactPersonPhone = new ContactPersonPhone($request->all());
         $contactPersonPhone->status = ContactPersonPhone::STATUS_ACTIVE;
         $contactPerson->phones()->save($contactPersonPhone);
-        
+
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
     }
 
     /**
-     * 
+     *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"contactPersonPhones"},
@@ -218,13 +218,13 @@ class ContactPersonPhoneController extends Controller
      *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
      *     @OA\Parameter(name="contactPersonPhoneID", in="path", required=true, description="Contact Person Phone ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
      *              @OA\Property(property="message", type="string", example="Fetched data successfully"),
      *              @OA\Property(
-     *                  property="data", 
+     *                  property="data",
      *                  type="array",
      *                  @OA\Items(
      *                      @OA\Property(
@@ -270,7 +270,7 @@ class ContactPersonPhoneController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        
+
         $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
         if(!$contactPerson){
@@ -287,7 +287,7 @@ class ContactPersonPhoneController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Put(
      *     security={{"bearerAuth":{}}},
      *     tags={"contactPersonPhones"},
@@ -299,14 +299,14 @@ class ContactPersonPhoneController extends Controller
      *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
      *     @OA\Parameter(name="contactPersonPhoneID", in="path", required=true, description="Contact Person Phone ID"),
      *     @OA\RequestBody(
-     *          required=true, 
+     *          required=true,
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="phone", type="string", example="Contact Person Phone", description=""),
      *         )
      *     ),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -335,10 +335,10 @@ class ContactPersonPhoneController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="contact_person_id", 
+     *                  property="contact_person_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -388,7 +388,7 @@ class ContactPersonPhoneController extends Controller
     }
 
     /**
-     * 
+     *
      * @OA\Delete(
      *     security={{"bearerAuth":{}}},
      *     tags={"contactPersonPhones"},
@@ -400,7 +400,7 @@ class ContactPersonPhoneController extends Controller
      *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
      *     @OA\Parameter(name="contactPersonPhoneID", in="path", required=true, description="Contact Person Phone ID"),
      *     @OA\Response(
-     *          response=200, 
+     *          response=200,
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
@@ -429,10 +429,10 @@ class ContactPersonPhoneController extends Controller
      *              @OA\Property(property="message", type="string", example="Something went wrong!"),
      *              @OA\Property(property="code", type="string", example="INVALID"),
      *              @OA\Property(
-     *                  property="errors", 
+     *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="contact_person_id", 
+     *                  property="contact_person_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
@@ -471,7 +471,7 @@ class ContactPersonPhoneController extends Controller
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }
-        
+
         if ($contactPersonPhone->delete()) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');

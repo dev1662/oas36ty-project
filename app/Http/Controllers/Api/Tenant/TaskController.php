@@ -126,7 +126,7 @@ class TaskController extends Controller
             'users' => function($q){
                 $q->select('users.id', 'name');
             },
-
+            'audits',
             // 'priorities' => function($q){
             //     $q->select('id', 'icons');
             // },
@@ -526,7 +526,7 @@ class TaskController extends Controller
                 'contact_person_id' => $request->contact_person_id['id'],
                 'type' => $request->type,
                 'due_date' => $request->due_date,
-                // 'priority' => $request->priority['id'],
+                'priority' => $request->priority['id'],
                 'status' => $request->status['status'],
             ]);
 
