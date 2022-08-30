@@ -489,6 +489,7 @@ class TaskController extends Controller
 
     public function update(Request $request, $id)
     {
+        // return $request->all();
         $validator = Validator::make(['task_id' => $id] + $request->all(), [
             'task_id' => 'required|exists:App\Models\Task,id',
             'branch_id' => 'required',
@@ -514,8 +515,9 @@ class TaskController extends Controller
         // UPDATE TASK TABLE
 
 
-        if(gettype($request->status) === 'array'){
-            $updateTask = Task::where(['id' => $id])->update([
+
+            $updateTask = Task::find($id);
+                $updateTask->update([
                 'subject' => $request->subject,
                 'description' => $request->description,
                 'branch_id' => $request->branch_id['id'],
@@ -525,26 +527,10 @@ class TaskController extends Controller
                 'type' => $request->type,
                 'due_date' => $request->due_date,
                 // 'priority' => $request->priority['id'],
-                'status' => $request->status['status']
+                'status' => $request->status['status'],
             ]);
 
-        }
-        // return $request->status['status'];
-        if(gettype($request->status) === 'string'){
-            $updateTask = Task::where(['id' => $id])->update([
-                'subject' => $request->subject,
-                'description' => $request->description,
-                'branch_id' => $request->branch_id['id'],
-                'client_id' => $request->client_id['id'],
-                'category_id' => $request->category_id['id'],
-                'contact_person_id' => $request->contact_person_id['id'],
-                'type' => $request->type,
-                'due_date' => $request->due_date,
-                // 'priority' => $request->priority['id'],
-                'status' => $request->status
-            ]);
 
-        }
 
 
         // UPDATE FOREIGN KEY TABLES
