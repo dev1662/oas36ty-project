@@ -106,12 +106,20 @@ class TaskController extends Controller
     {
         // return "hh";
 
-        $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
+        $dbname = $request->header('X-Tenant');
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status','created_at')->with([
-            'branch' => function($q){
+        if($request->dev){
+            $value = $request->input('dev');
+            $tasks = Task::where(['subject'=>  $value] )->limit(25)->get();
+            // return $books;
+        
+        }
+        else{
+            
+            $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status','created_at')->with([
+                'branch' => function($q){
                 $q->select('id', 'name');
             },
             'category' => function($q){
@@ -128,10 +136,11 @@ class TaskController extends Controller
             },
             'audits',
             // 'priorities' => function($q){
-            //     $q->select('id', 'icons');
-            // },
-
-        ])->latest()->get();
+                //     $q->select('id', 'icons');
+                // },
+                
+                ])->latest()->get();
+            }
         // $user_details = CentralUser::find($)
 
         $this->response["status"] = true;
@@ -542,37 +551,41 @@ class TaskController extends Controller
         $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id['id']])->update(['type' => 'dont_delete']);
 
 
-        $checkNewUser = array();
-        for ($i=0; $i < count($request->users); $i++) {
-            $checkNewUser = TaskUser::where(['user_id' =>  $request->users[$i]['id'], 'task_id' => $id])->get();
-        }
+        // $checkNewUser = array();
+        // for ($i=0; $i < count($request->users); $i++) {
+            $checkNewUser = TaskUser::where(['task_id' => $id])->get();
+        // }
         $user_values = [];
         foreach($checkNewUser as $newUser){
 
             $user_values[] =  $newUser->user_id;
         }
         // insert newly added data
-
+        // return "insert";
         foreach($request->users as $input_users){
+            // return "forloop";
             if(!in_array($input_users['id'], $user_values)){
                 $new_taskUser = new TaskUser();
                 $new_taskUser->task_id = $id;
                 $new_taskUser->user_id = $input_users['id'];
+                $new_taskUser->save();
             }
         }
 
         // delete added user values
-
+        // return "h";
         foreach($user_values as $user_row){
-            // return 'hh';
             $actual_array = [];
             foreach($request->users as $use){
                 $actual_array[] = $use['id'];
             }
-
+            
+            // return $user_row;
             if(!in_array($user_row, $actual_array)){
-                return "user not present";
-                $delete_task_user = TaskUser::where(['user_id' => $user_row])->delete();
+                // return "user not present";
+                // TaskUser::where(['user_id' => $user_row])->delete();
+                  TaskUser::where(['user_id' => $user_row])->forceDelete();
+
             }
         }
 

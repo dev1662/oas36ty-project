@@ -18,6 +18,6 @@ class TaskUser extends Model implements Auditable
      * @var array
      */
     protected $fillable = [
-        'task_id', 'user_id',
+        'task_id', 'user_id'
     ];
 }

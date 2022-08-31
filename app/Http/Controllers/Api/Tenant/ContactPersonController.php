@@ -409,6 +409,10 @@ class ContactPersonController extends Controller
     {
         $validator = Validator::make(['contact_person_id' => $contactPersonID] + $request->all(), [
             'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
+            'contact_email_id' => 'required|exists:App\Models\ContactPersonEmail,id',
+            'contact_phone_id' => 'required|exists:App\Models\ContactPersonPhone,id',
+
+
             'name' => 'required|max:64',
         ]);
         if ($validator->fails()) {

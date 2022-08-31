@@ -107,7 +107,9 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $dbname = $request->header('X-Tenant');
-        $this->switchingDB('oas36ty_org_'.$dbname);
+        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+
+        $this->switchingDB($dbname);
         // return 'hh';
         $validator = Validator::make($request->all(), [
             'search' => 'nullable',
