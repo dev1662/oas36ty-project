@@ -243,7 +243,7 @@ class ContactPersonController extends Controller
         $contactPersonEmail = new ContactPersonEmail();
 
             $contactPersonEmail->contact_person_id = $id;
-            $contactPersonEmail->email = $request->email;
+            $contactPersonEmail->email = $request->email[0];
             $contactPersonEmail->status = ContactPersonEmail::STATUS_ACTIVE;
             $contactPersonEmail->save();
         }
@@ -260,7 +260,7 @@ class ContactPersonController extends Controller
         $contactPersonPhone = new ContactPersonPhone();
 
             $contactPersonPhone->contact_person_id = $id;
-                $contactPersonPhone->phone = $request->phone;
+                $contactPersonPhone->phone = $request->phone[0];
                 $contactPersonPhone->status = ContactPersonPhone::STATUS_ACTIVE;
                 $contactPersonPhone->save();
         }

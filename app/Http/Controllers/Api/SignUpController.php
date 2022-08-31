@@ -353,19 +353,19 @@ class SignUpController extends Controller
             $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();
             $this->response["errors"] = $validator->errors();
-            // return response()->json($this->response, 422);
+            return response()->json($this->response, 422);
         }
         try {
             $centralOnboardingID = Crypt::decryptString($request->input('signup_token'));
         } catch (DecryptException $e) {
             $this->response["message"] = __('strings.something_wrong');
-            // return response()->json($this->response, 401);
+            return response()->json($this->response, 401);
         }
 
         $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNotNull('subdomain')->first();
         if(!$centralOnboarding){
             $this->response["message"] = __('strings.something_wrong');
-            // return response()->json($this->response, 401);
+            return response()->json($this->response, 401);
         }
         // return $centralOnboarding;
         $tenant = Tenant::create(['id' => $centralOnboarding->subdomain]);
@@ -406,10 +406,10 @@ class SignUpController extends Controller
 
                             $this->response["status"] = true;
                             $this->response["message"] = __('strings.register_success');
-
+                            // return response()->json($this->response);
                         } else {
                             $this->response["message"] = __('strings.register_failed');
-                            // return response()->json($this->response, 401);
+                            return response()->json($this->response, 401);
                         }
                     }else{
 
@@ -434,15 +434,16 @@ class SignUpController extends Controller
 
                                 $this->response["status"] = true;
                                 $this->response["message"] = __('strings.register_success');
+                                // return response()->json($this->response);
 
                             } else {
                                 $this->response["message"] = __('strings.register_failed');
-                                // return response()->json($this->response, 401);
+                                return response()->json($this->response, 401);
                             }
                     }
         } else {
             $this->response["message"] = __('strings.register_failed');
-            // return response()->json($this->response, 401);
+            return response()->json($this->response, 401);
         }
         return response()->json($this->response);
     }
