@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\InitializeTenancyByRequestData;
@@ -67,10 +68,17 @@ Route::middleware([
             Route::apiResource('contact-people', ContactPersonController::class);
             Route::apiResource('contact-people.emails', ContactPersonEmailController::class);
             Route::apiResource('contact-people.phones', ContactPersonPhoneController::class);
+            Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
+            
         });
+        
     });
 });
 
+Route::prefix('v1')->group(function(){
+    Route::post('accept-invite', [UserController::class, 'AcceptInvite']);
+    Route::post('decline-invite', [UserController::class, 'declineInvite']);
+});
 InitializeTenancyByRequestData::$onFail = function ($exception, $request, $next) {
     return response()->json(['message' => 'Invalid Client!'], 400);
 };

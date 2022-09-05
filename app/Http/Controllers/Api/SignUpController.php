@@ -93,15 +93,11 @@ class SignUpController extends Controller
                 'email' => $centralOnboarding->email,
                 'signup_token' => Crypt::encryptString($centralOnboarding->id),
             ];
-
-            // return response()->json($this->response);
-            // return $this->response;
-            // return $this->response;
         } else {
             $this->response["message"] = __('strings.otp_sending_failed');
             return response()->json($this->response, 401);
         }
-        return response()->json($this->response);
+        return response()->json($this->response,200);
     }
 
     /**

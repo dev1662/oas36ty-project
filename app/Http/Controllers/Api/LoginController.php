@@ -92,7 +92,7 @@ class LoginController extends Controller
         tenancy()->initialize($tenant);
 
         
-        $user = User::where("email", $request->email)->first();
+        $user = User::where(["email" => $request->email, "status" => "active"])->first();
         if($user && Hash::check($request->password, $user->password)) {
 
             $result = array(

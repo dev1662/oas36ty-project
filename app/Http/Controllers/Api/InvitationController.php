@@ -12,6 +12,8 @@ use Illuminate\Contracts\Encryption\DecryptException;
 
 use App\Models\CentralUser;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash as FacadesHash;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class InvitationController extends Controller
 {
@@ -63,7 +65,7 @@ class InvitationController extends Controller
      */
 
     public function check(Request $request){
-        $validator = Validator::make($request->all(), [
+        $validator = FacadesValidator::make($request->all(), [
             'token' => 'required',
         ]);
 
@@ -155,7 +157,7 @@ class InvitationController extends Controller
      */
 
     public function accept(Request $request){
-        $validator = Validator::make($request->all(), [
+        $validator = FacadesValidator::make($request->all(), [
             'token' => 'required',
             'password' => 'nullable|string|min:6|max:15',
         ]);
@@ -190,7 +192,7 @@ class InvitationController extends Controller
                 });
                 if($user && $user->status == User::STATUS_PENDING) {
 
-                    if($request->password) $centralUser->password = Hash::make($request->password);
+                    if($request->password) $centralUser->password = FacadesHash::make($request->password);
                     $centralUser->status = CentralUser::STATUS_ACTIVE;
                     $centralUser->update();
 
@@ -261,7 +263,7 @@ class InvitationController extends Controller
      */
 
     public function decline(Request $request){
-        $validator = Validator::make($request->all(), [
+        $validator = FacadesValidator::make($request->all(), [
             'token' => 'required',
         ]);
 

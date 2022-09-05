@@ -35,9 +35,20 @@ class AuthServiceProvider extends ServiceProvider
         }
 
         ResetPassword::createUrlUsing(function ($user, string $token) {
-            // return config('app.url').'/reset-password?token='.$token;
-            return 'https://app-office36ty.protracked.in/reset-password?token='.$token;
+            return config('app.url').'/reset-password?token='.$token;
+            // return '/reset-password?token='.$token;
 
         });
+        // ResetPassword::createUrlUsing(function ($user, string $token) {
+        //     return config('app.url').'/invitation?token='.$token;
+        //     // return config('app.url').'/invitation?token='.$token;
+
+        // });
+        // ResetPassword::createUrlUsing(function ($user, string $token) {
+        //     return config('app.url').'/accept-invitation?token='.$token;
+        //     // return config('app.url').'/invitation?token='.$token;
+
+        // });
+
     }
 }

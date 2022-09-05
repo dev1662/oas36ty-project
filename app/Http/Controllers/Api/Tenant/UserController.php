@@ -14,7 +14,9 @@ use App\Models\CentralUser;
 use App\Models\User;
 
 use App\Mail\JoiningInvitation as JoiningInvitationMail;
+use App\Models\Branch;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Password;
 use PDO;
 
 class UserController extends Controller
@@ -199,9 +201,11 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+    
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64',
             'email' => 'required|email|max:64|unique:App\Models\User,email',
+            // 'token' => 'required'
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -209,8 +213,16 @@ class UserController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+      // check if the main users table has email already
 
-        $centralUser = tenancy()->central(function ($tenant) use($request) {
+      $result= [];
+      $count = CentralUser::where('email', $request->email)->get();
+    //   return sizeof( $count);
+      if(sizeof($count) > 0){
+        // return "no";
+          $centralUser = tenancy()->central(function ($tenant) use($request) {
+            //   $centralUser = CentralUser::where('email', $request->email)->get();
+            // return $centralUser
             $centralUser = CentralUser::firstOrCreate(
                 [
                     'email' => $request->email
@@ -219,28 +231,72 @@ class UserController extends Controller
                     'name' => $request->name,
                     'status' => CentralUser::STATUS_PENDING,
                 ]
-            );
-            $centralUser->tenants()->attach($tenant);
-            return $centralUser;
-        });
+                );
+              $centralUser->tenants()->attach($tenant);
+              return $centralUser;
+            });
+            // return $centralUser;
+            $user = User::where('email', $centralUser->email)->first();
+            if($request->name != $user->name)  $user->display_name = $request->name;
+            $user->status = User::STATUS_PENDING;
+            $user->update();
+            // return $user;
+            tenancy()->central(function ($tenant) use($centralUser) {
+                $organization = $tenant->organization()->first();
+                $token = [
+                    'tenant_id' => $organization->tenant_id,
+                    'email' => $centralUser->email,
+                ];
+            
+                $url = config('app.url').'/accept-invitation?token='.Crypt::encryptString(json_encode($token));
 
-        $user = User::where('email', $centralUser->email)->first();
-        if($request->name != $user->name) $user->display_name = $request->name;
-        $user->status = User::STATUS_PENDING;
-        $user->update();
-
-        // Joining Invitation Mail from Organization. -> Join / Decline
-        tenancy()->central(function ($tenant) use($centralUser) {
-            $organization = $tenant->organization()->first();
-            $token = [
-                'tenant_id' => $organization->tenant_id,
-                'email' => $centralUser->email,
-            ];
-            $url = config('app.url').'/invitation?token='.Crypt::encryptString(json_encode($token));
-            Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
-        });
-
-        $result = User::select('id', 'name', 'email', 'status')->find($user->id);
+            
+                Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
+                
+            });
+            $result = User::select('id', 'name', 'email', 'status')->find($user->id);
+        }
+        // return "hb";
+        
+        if(sizeof($count) === 0){
+            // return "h";
+            
+            $centralUser = tenancy()->central(function ($tenant) use($request) {
+            $centralUser = CentralUser::firstOrCreate(
+                [
+                    'email' => $request->email
+                ],
+                [
+                    'name' => $request->name,
+                    'status' => CentralUser::STATUS_PENDING,
+                    ]
+                );
+                $centralUser->tenants()->attach($tenant);
+                return $centralUser;
+            });
+            
+            $user = User::where('email', $centralUser->email)->first();
+            if($request->name != $user->name)  $user->display_name = $request->name;
+            $user->status = User::STATUS_PENDING;
+            $user->update();
+            
+            // Joining Invitation Mail from Organization. -> Join / Decline
+            tenancy()->central(function ($tenant) use($centralUser) {
+                $organization = $tenant->organization()->first();
+                $token = [
+                    'tenant_id' => $organization->tenant_id,
+                    'email' => $centralUser->email,
+                ];
+                
+                $url = config('app.url').'/invitation?token='.Crypt::encryptString(json_encode($token));
+                
+                Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
+                
+            });
+            
+            
+            $result = User::select('id', 'name', 'email', 'status')->find($user->id);
+        }
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
@@ -248,6 +304,95 @@ class UserController extends Controller
         return response()->json($this->response);
     }
 
+    public function AcceptInvite(Request $request)
+    {
+        
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+             // 'token' => 'required'
+         ]);
+         if ($validator->fails()) {
+             $this->response["code"] = "INVALID";
+             $this->response["message"] = $validator->errors()->first();
+             $this->response["errors"] = $validator->errors();
+             return response()->json($this->response, 422);
+         }
+         
+         $user_details = Crypt::decryptString($request->token);
+        $obj = json_decode($user_details);
+        // return $obj;
+        $dbname = $request->header('X-Tenant');
+        if($dbname){
+
+            $this->switchingDB('oas36ty_org_'.$dbname);
+        }
+        if(!$dbname){
+            
+            $this->switchingDB('oas36ty_org_'.$obj->tenant_id);
+        }
+        // return"gg";
+       
+        // return $obj->email;
+        $user =  User::where('email', $obj->email)->update([
+            'status' => User::STATUS_ACTIVE
+        ]);
+       if($user){
+           $this->response["status"] = true;
+           $this->response["message"] = __('strings.invitation_accept_success');
+           return response()->json($this->response);
+        }
+        $this->response["message"] = __('strings.invitation_accept_failed');
+        return response()->json($this->response);
+
+    }
+    public function declineInvite(Request $request)
+    {
+        // return 'j';
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+             // 'token' => 'required'
+         ]);
+         if ($validator->fails()) {
+             $this->response["code"] = "INVALID";
+             $this->response["message"] = $validator->errors()->first();
+             $this->response["errors"] = $validator->errors();
+             return response()->json($this->response, 422);
+         }
+         
+         $user_details = Crypt::decryptString($request->token);
+        $obj = json_decode($user_details);
+     
+      
+        //  $centralUser->tenants()->attach($obj->tenant_id);
+       
+        $dbname = $request->header('X-Tenant');
+        if($dbname){
+            // return $dbname;
+            // $dbname = config('tenancy.database.prefix').strtolower($dbname);
+            $this->switchingDB('oas36ty_org_'.$dbname);
+        }
+        if(!$dbname){
+            
+            $this->switchingDB('oas36ty_org_'.$obj->tenant_id);
+        }
+
+        $user =  User::where('email', $obj->email)->update([
+            'status' => User::STATUS_DECLINED
+        ]);
+    
+        
+       if($user){
+           $this->response["status"] = true;
+           $this->response["message"] = __('strings.invitation_decline_success');
+           return response()->json($this->response);
+        }
+        $this->response["message"] = __('strings.invitation_decline_failed');
+        return response()->json($this->response);
+
+    }
+
+
+   
     /**
      * Display the specified resource.
      *

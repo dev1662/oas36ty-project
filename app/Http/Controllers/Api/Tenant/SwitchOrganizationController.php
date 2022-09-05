@@ -15,6 +15,7 @@ use App\Models\User;
 
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\OrganizationResource;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class SwitchOrganizationController extends Controller
 {
@@ -64,7 +65,7 @@ class SwitchOrganizationController extends Controller
 
         $user = $request->user();
 
-        $validator = Validator::make($request->all(), [
+        $validator = FacadesValidator::make($request->all(), [
             'tenant_id' => 'required|exists:App\Models\Tenant,id',
         ]);
 
@@ -75,7 +76,7 @@ class SwitchOrganizationController extends Controller
 
         // Check is the new Tenants related to this User
         $centralUser = tenancy()->central(function ($tenant) use($user) {
-            return CentralUser::where('email', $user->email)->first();
+            return CentralUser::where(['email' => $user->email])->first();
         });
         
         $newTenant = $centralUser->tenants()->with('organization')->find($request->tenant_id);
@@ -86,18 +87,20 @@ class SwitchOrganizationController extends Controller
         
         // tenancy()->initialize($newTenant);
         $newUser = $newTenant->run(function ($tenant) use($user) {
-            return User::where("email", $user->email)->first();
+            return User::where(["email" => $user->email])->first();
         });
         $newUserToken = $newTenant->run(function ($tenant) use($newUser) {
             return $newUser->createToken("Tenant: " . $newUser->name . " (" . $newUser->email . ")")->accessToken;
         });
 
-        $newUser = User::where("email", $user->email)->first();
+        $newUser = User::where(["email" => $user->email, 'status' => User::STATUS_ACTIVE])->first();
         if(!$newUser) {
             $this->response["message"] = 'User not exists in the Tenant!';
             return response()->json($this->response, 422);
         }
+        // $all_tenant = TenantResource::collection($centralUser->tenants()->with('organization')->get());
 
+        // return $all_tenant; 
         $result = array(
             'token' => $newUserToken,
             'name' => $newUser->name,

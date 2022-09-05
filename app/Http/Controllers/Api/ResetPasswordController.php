@@ -9,12 +9,41 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\DB;
 use Hash;
-use Validator;
+// use Validator;
 
 use App\Models\CentralUser;
+use App\Models\User;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash as FacadesHash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use PDO;
 
 class ResetPasswordController extends Controller
 {
+    public function switchingDB($dbName)
+    {
+        Config::set("database.connections.mysql", [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => $dbName,
+            'username' => env('DB_USERNAME','root'),
+            'password' => env('DB_PASSWORD',''),
+            'unix_socket' => env('DB_SOCKET',''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ]);
+    }
     /**
      * @OA\Post(
      *     tags={"auth"},
@@ -77,19 +106,55 @@ class ResetPasswordController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-
+    
+        
         $status = Password::broker('central_users')->reset(
             $request->only('email', 'password', 'token'),
             function ($user, $password) {
                 $user->forceFill([
-                    'password' => Hash::make($password)
+                    'password' => FacadesHash::make($password)
                 ]);
-    
+                // return "hh";
+                
                 $user->save();
-    
+                
                 event(new PasswordReset($user));
             }
         );
+        // if(Str::length($request->token) === 64){
+            
+        //     $status = Password::broker('central_users')->reset(
+        //         $request->only('email', 'password', 'token'),
+        //         function ($user, $password) {
+        //             $user->forceFill([
+        //                 'password' => FacadesHash::make($password)
+        //             ]);
+        //             // return $user;
+                    
+        //             $user->save();
+                    
+        //             event(new PasswordReset($user));
+        //         }
+        //     );
+        // }
+        // if(Str::length($request->token) > 64){
+        //     $tok= Crypt::decryptString($request->token);
+        //     return $tok;
+        //     $status = Password::broker('central_users')->reset(
+        //         $request->only('email', 'password'),
+        //         function ($user, $password) {
+        //             $user->forceFill([
+        //                 'password' => FacadesHash::make($password)
+        //             ]);
+        //             // return $user;
+                    
+        //             $user->save();
+                    
+        //             event(new PasswordReset($user));
+        //         }
+        //     );
+        // }
+       
         
         if ($status === Password::PASSWORD_RESET) {
             $this->response["status"] = true;
@@ -113,6 +178,53 @@ class ResetPasswordController extends Controller
         //     return response()->json($this->response);
         // }
         
+        $this->response["message"] = __('strings.reset_password_failed');
+        return response()->json($this->response);
+    }
+    public function setPassword(Request $request)
+    {
+        $dbname = $request->header('X-Tenant');
+        $this->switchingDB('oas36ty_org_'.$dbname);
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|string|min:6|max:15',
+        ]);
+        // return "hh";
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+        
+        if(CentralUser::where('email', $request->email) && User::where('email', $request->email)){
+
+            // $token = Crypt::decryptString($request->token);
+            $centralUser = tenancy()->central(function ($tenant) use($request) {
+            $centralUser = CentralUser::where('email', $request->email)->update(
+                [
+                    'password' => FacadesHash::make($request->password)
+                ],
+              
+            );
+            // return $tenant;
+            // $centralUser->tenants()->attach($tenant);
+            return $centralUser;
+        });
+        // return $centralUser;
+        $user = User::where('email', $request->email)->update([
+            'password' => FacadesHash::make($request->password),
+            'status' => 'active'
+        ]);
+    }
+        
+
+        if ($user) {
+            $this->response["status"] = true;
+            $this->response["message"] = __('strings.reset_password_success');
+            return response()->json($this->response);
+        }
         $this->response["message"] = __('strings.reset_password_failed');
         return response()->json($this->response);
     }
