@@ -24,7 +24,9 @@ use App\Http\Controllers\Api\Tenant\ContactPersonController;
 use App\Http\Controllers\Api\Tenant\ContactPersonEmailController;
 use App\Http\Controllers\Api\Tenant\ContactPersonPhoneController;
 use App\Http\Controllers\Api\UserController as ApiUserController;
-
+use App\Http\Controllers\Api\Tenant\MailConfigController;
+use App\Http\Controllers\Api\Tenant\EmailOutboundController;
+use App\Http\Controllers\Api\Tenant\EmailInboundController;
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -69,6 +71,23 @@ Route::middleware([
             Route::apiResource('contact-people.emails', ContactPersonEmailController::class);
             Route::apiResource('contact-people.phones', ContactPersonPhoneController::class);
             Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
+
+            //------------------------EmailConfig -----------------------------
+            Route::apiResource('email-outbound', EmailOutboundController::class);
+            Route::apiResource('email-inbound', EmailInboundController::class);
+
+
+
+
+            Route::get('/outbound-mail',[MailConfigController::class,'index'])->name('outbound.mail.index');
+            Route::post('/outbound-mail-update',[MailConfigController::class,'outboundMailUpdate'])->name('outbound.mail.update');
+            Route::post('/outbound-mail-create',[MailConfigController::class,'outboundMailCreate'])->name('outbound.mail.create');
+            Route::post('/inbound-mail-update',[MailConfigController::class,'inboundMailUpdate'])->name('inbound.mail.update');
+            Route::post('/inbound-mail-create',[MailConfigController::class,'inboundMailCreate'])->name('inbound.mail.create');
+
+            Route::post('/send', [MailConfigController::class,'SendEmail']);
+            Route::post('/get-email', [MailConfigController::class,'RecievedEmail']);
+
             
         });
         
