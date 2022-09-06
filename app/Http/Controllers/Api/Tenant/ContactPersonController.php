@@ -408,12 +408,12 @@ class ContactPersonController extends Controller
     public function update(Request $request, $contactPersonID)
     {
         $validator = Validator::make(['contact_person_id' => $contactPersonID] + $request->all(), [
-            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
-            'contact_email_id' => 'required|exists:App\Models\ContactPersonEmail,id',
-            'contact_phone_id' => 'required|exists:App\Models\ContactPersonPhone,id',
-
-
             'name' => 'required|max:64',
+            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
+            // 'contact_email_id' => 'required|exists:App\Models\ContactPersonEmail,id',
+            // 'contact_phone_id' => 'required|exists:App\Models\ContactPersonPhone,id',
+
+
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -421,6 +421,120 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+        // if(count($request->emails) > )
+        $emails = ContactPersonEmail::where('contact_person_id', $request->contact_person_id)->get();
+        $count_of_emails = count($emails);
+        $phones = ContactPersonPhone::where('contact_person_id', $request->contact_person_id)->get();
+        $count_of_phones = count($phones);
+
+        $email_values = [];
+        foreach($emails as $newUser){
+
+            $email_values[] =  $newUser->email;
+        }
+
+        $phone_values = [];
+        foreach($phones as $newUser){
+
+            $phone_values[] =  $newUser->phone;
+        }
+
+
+        if(count($request->emails) === $count_of_emails){
+            // update emails if count of records is same but email is different      
+            for($i = 0; $i<count($request->emails); $i++){
+                // return $key;
+                if(!in_array($request->emails[$i], $email_values)){           
+                    return $request->emails[$i];
+                    $update_emails = ContactPersonEmail::where(['contact_person_id' => $contactPersonID, 'email' => $request->emails[$i]])->update([
+                        'email' => $request->emails[$i],
+                    ]);
+                }
+            }
+        }
+    
+        if(count($request->emails) === $count_of_emails){
+             // update phones if count of records is same but email is different      
+             for($i = 0; $i<count($request->phones); $i++){
+                // return $key;
+                if(!in_array($request->phones[$i], $phone_values)){           
+                    return $request->phones[$i];
+                    $update_phones = ContactPersonPhone::where(['contact_person_id' => $contactPersonID, 'phone' => $request->phones[$i]])->update([
+                        'phone' => $request->phones[$i],
+                    ]);
+                }
+            }
+        }
+        // return $phone_values;
+        if(count($request->emails) > $count_of_emails){
+           
+            // add new email records
+
+            // $newRecords = [];
+            for($i = 0; $i<count($request->emails); $i++){
+                // return $key;
+                if(!in_array($request->emails[$i], $email_values)){
+                    
+                    // return $request->emails[1];
+
+                    // return $request->emails[$i];
+                    $add_email = new ContactPersonEmail();
+                    $add_email->contact_person_id = $request->contact_person_id;
+                    $add_email->email = $request->emails[$i];
+                    $add_email->status = ContactPersonEmail::STATUS_ACTIVE;
+                    $add_email->save();
+
+                }
+            }
+            // return $newRecords;     
+        }
+        if(count($request->phones) > $count_of_phones){
+           
+            // add new phones records
+
+            // $newRecords = [];
+            for($i = 0; $i<count($request->phones); $i++){
+                // return $key;
+                if(!in_array($request->phones[$i], $phone_values)){
+                    
+                    // return $request->emails[1];
+
+                    // return $request->phones[$i];
+                    $add_phones = new ContactPersonPhone();
+                    $add_phones->contact_person_id = $contactPersonID;
+                    $add_phones->phone = $request->phones[$i];
+                    $add_phones->status = ContactPersonPhone::STATUS_ACTIVE;
+                    $add_phones->save();
+                }
+            }
+            // return $newRecords;
+        }
+
+     
+        // delete  the email values if there are not present in the request
+        if($count_of_emails > count($request->emails)){
+
+            for($i = 0; $i<count($email_values); $i++){
+                // return $key;
+                if(!in_array($email_values[$i], $request->emails)){           
+                    // return $email_values[$i];
+                    ContactPersonEmail::where(['contact_person_id' => $contactPersonID, 'email' => $email_values[$i]])->forceDelete();
+                }
+            }
+        }
+        if($count_of_phones > count($request->phones)){
+
+            // delete  the phone values if there are not present in the request
+            
+        for($i = 0; $i<count($phone_values); $i++){
+            // return $key;
+            if(!in_array($phone_values[$i], $request->phones)){           
+                // return $phone_values[$i];
+                ContactPersonPhone::where(['contact_person_id' => $contactPersonID, 'phone' => $phone_values[$i]])->forceDelete();
+
+            }
+        }
+    }
 
         $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 

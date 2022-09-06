@@ -93,7 +93,7 @@ class SwitchOrganizationController extends Controller
             return $newUser->createToken("Tenant: " . $newUser->name . " (" . $newUser->email . ")")->accessToken;
         });
 
-        $newUser = User::where(["email" => $user->email, 'status' => User::STATUS_ACTIVE])->first();
+        $newUser = User::where(["email" => $user->email])->first();
         if(!$newUser) {
             $this->response["message"] = 'User not exists in the Tenant!';
             return response()->json($this->response, 422);

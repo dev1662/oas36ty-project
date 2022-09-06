@@ -68,7 +68,6 @@ Route::middleware([
             Route::apiResource('contact-people', ContactPersonController::class);
             Route::apiResource('contact-people.emails', ContactPersonEmailController::class);
             Route::apiResource('contact-people.phones', ContactPersonPhoneController::class);
-            Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
             
         });
         
@@ -76,6 +75,7 @@ Route::middleware([
 });
 
 Route::prefix('v1')->group(function(){
+    Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
     Route::post('accept-invite', [UserController::class, 'AcceptInvite']);
     Route::post('decline-invite', [UserController::class, 'declineInvite']);
 });

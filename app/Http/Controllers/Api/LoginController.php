@@ -16,10 +16,35 @@ use App\Models\User;
 
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\OrganizationResource;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use PDO;
 
 class LoginController extends Controller
 {
+    public function switchingDB($dbName)
+    {
+        Config::set("database.connections.mysql", [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => $dbName,
+            'username' => env('DB_USERNAME','root'),
+            'password' => env('DB_PASSWORD',''),
+            'unix_socket' => env('DB_SOCKET',''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ]);
+    }
     /**
      * @OA\Post(
      *     tags={"auth"},
@@ -85,15 +110,16 @@ class LoginController extends Controller
         // $credentials = $request->only('email', 'password');
         // $credentials = array_merge($credentials, ['status' => 'active']);
 
-        $centralUser = CentralUser::where("email", $request->email)->first();
+        $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
 
         $tenant = $centralUser->tenants()->with('organization')->first();
-            
         tenancy()->initialize($tenant);
-
         
-        $user = User::where(["email" => $request->email, "status" => "active"])->first();
+        $user = User::where(["email" => $request->email])->first();
+    
+        
         if($user && Hash::check($request->password, $user->password)) {
+        //    $resource=  TenantResource::collection($centralUser->tenants()->with('organization')->get());
 
             $result = array(
                 'token' => $user->createToken("Tenant: " . $user->name . " (" . $user->email . ")")->accessToken,
@@ -102,7 +128,7 @@ class LoginController extends Controller
                 'current_tenant' => new TenantResource($tenant),
                 'all_tenants' => TenantResource::collection($centralUser->tenants()->with('organization')->get()),
             );
-            // Session::put('key', 'value');
+            // Session::put(';key', 'value');
             // session()->save();
             // $request->session()->put('key', 'value');
             // save();
