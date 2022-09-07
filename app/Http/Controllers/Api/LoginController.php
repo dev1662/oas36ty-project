@@ -92,7 +92,16 @@ class LoginController extends Controller
         $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
 
         $tenant = $centralUser->tenants()->with('organization')->first();
-        tenancy()->initialize($tenant);
+        if($tenant){
+
+            tenancy()->initialize($tenant);
+        }
+        if(!$tenant){
+            // $this->response["status"] = true;
+            $this->response["message"] = __('strings.something_wrong');
+            return response()->json($this->response, 401);
+
+        }
         
         $user = User::where(["email" => $request->email])->first();
     
