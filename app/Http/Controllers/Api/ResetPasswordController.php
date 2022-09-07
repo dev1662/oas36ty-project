@@ -220,7 +220,7 @@ class ResetPasswordController extends Controller
         $tenant = $mainUser->tenants()->find($tokenData->tenant_id);
         $user = $tenant->run(function ($tenant) use ($mainUser) {
         return $user = User::where('email', $mainUser->email)->update([
-            'password' => FacadesHash::make($mainUser->password),
+            'password' => $mainUser->password,
             'status' => 'active'
         ]);
     });
