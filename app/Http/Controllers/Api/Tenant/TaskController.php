@@ -110,9 +110,9 @@ class TaskController extends Controller
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        if($request->dev){
-            $value = $request->input('dev');
-            $tasks = Task::where(['subject'=>  $value] )->limit(25)->get();
+        if($request->status){
+            $value = $request->input('status');
+            $tasks = Task::where(['status'=>  $value] )->get();
             // return $books;
         
         }
@@ -272,9 +272,8 @@ class TaskController extends Controller
             return response()->json($this->response, 422);
         }
         // return $request->branch_id['id'];
-        for($i=0;$i<count($request->users);$i++){
-
-            $task = new Task();
+        
+        $task = new Task();
 
                 $task->branch_id = $request->branch_id['id'];
 
@@ -287,7 +286,7 @@ class TaskController extends Controller
 
                 $task->contact_person_id = $request->contact_person_id['id'];
 
-            $task->user_id = $request->users[$i]['id'];
+            // $task->user_id = $request->users[$i]['id'];
             $task->type = $request->type;
             $task->subject = $request->subject;
             $task->description = $request->description;
@@ -300,6 +299,7 @@ class TaskController extends Controller
             $task->status = Task::STATUS_OPEN;
             // return $request->users[$i];
             $task->save();
+            for($i=0;$i<count($request->users);$i++){
 
             $taskss = Task::find($task->id);
 

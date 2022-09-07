@@ -94,6 +94,7 @@ Route::middleware([
 });
 
 Route::prefix('v1')->group(function(){
+    Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
     Route::post('accept-invite', [UserController::class, 'AcceptInvite']);
     Route::post('decline-invite', [UserController::class, 'declineInvite']);
 });

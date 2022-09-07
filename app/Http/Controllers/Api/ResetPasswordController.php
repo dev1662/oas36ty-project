@@ -183,8 +183,7 @@ class ResetPasswordController extends Controller
     }
     public function setPassword(Request $request)
     {
-        $dbname = $request->header('X-Tenant');
-        $this->switchingDB('oas36ty_org_'.$dbname);
+
         $validator = Validator::make($request->all(), [
             'token' => 'required',
             'email' => 'required|email',
@@ -197,26 +196,34 @@ class ResetPasswordController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+        // return "hh";
         
+
         if(CentralUser::where('email', $request->email) && User::where('email', $request->email)){
 
             // $token = Crypt::decryptString($request->token);
-            $centralUser = tenancy()->central(function ($tenant) use($request) {
+            // $centralUser = tenancy()->central(function ($tenant) use($request) {
             $centralUser = CentralUser::where('email', $request->email)->update(
                 [
-                    'password' => FacadesHash::make($request->password)
+                    'password' => FacadesHash::make($request->password),
+                    'status' => 'active'
                 ],
               
             );
             // return $tenant;
             // $centralUser->tenants()->attach($tenant);
-            return $centralUser;
-        });
+            // return $centralUser;
+        // });
         // return $centralUser;
-        $user = User::where('email', $request->email)->update([
-            'password' => FacadesHash::make($request->password),
+        $tokenData = json_decode(Crypt::decryptString($request->token));
+        $mainUser = CentralUser::where('email', $tokenData->email)->first();
+        $tenant = $mainUser->tenants()->find($tokenData->tenant_id);
+        $user = $tenant->run(function ($tenant) use ($mainUser) {
+        return $user = User::where('email', $mainUser->email)->update([
+            'password' => $mainUser->password,
             'status' => 'active'
         ]);
+    });
     }
         
 

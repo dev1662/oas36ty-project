@@ -94,7 +94,7 @@ class BranchController extends Controller
 
     public function index(Request $request)
     {
-        $dbname = $request->header('X-Tenant'); //json_decode($request->header('currrent'))->tenant->organization->name;
+        $dbname = $request->header('X-Tenant');
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
