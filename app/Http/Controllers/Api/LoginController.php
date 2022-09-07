@@ -104,7 +104,12 @@ class LoginController extends Controller
         }
         
         $user = User::where(["email" => $request->email])->first();
-    
+        if(!$user){
+            // $this->response["status"] = true;
+            $this->response["message"] = __('strings.something_wrong');
+            return response()->json($this->response, 401);
+
+        }
         
         if($user && Hash::check($request->password, $user->password)) {
         //    $resource=  TenantResource::collection($centralUser->tenants()->with('organization')->get());
