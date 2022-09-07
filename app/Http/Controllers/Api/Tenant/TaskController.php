@@ -130,7 +130,7 @@ class TaskController extends Controller
     // public function leads(Request $request)
     // {
     //     return "hh";
-    //     $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
+    //$dbname = $request->header('X-Tenant');
     //     $dbname = config('tenancy.database.prefix').strtolower($dbname);
     //     // return   $dbname;
     //     $this->switchingDB($dbname);

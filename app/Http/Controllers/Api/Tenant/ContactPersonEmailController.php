@@ -69,7 +69,7 @@ class ContactPersonEmailController extends Controller
      */
     public function index(Request $request,$contactPersonID)
     {
-        $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
+   $dbname = $request->header('X-Tenant');
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);

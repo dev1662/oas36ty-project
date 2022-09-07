@@ -68,7 +68,7 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
-        $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
+   $dbname = $request->header('X-Tenant');
         $dbname = strtolower($dbname);
         // return $dbname;
         $this->switchingDB($dbname);
