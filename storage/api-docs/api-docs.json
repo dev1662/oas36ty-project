@@ -155,91 +155,7 @@
                 }
             }
         },
-        "/invitation/check": {
-            "post": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Check Invitation Status",
-                "description": "Check Invitation Status",
-                "operationId": "postInvitationCheck",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "token": {
-                                        "type": "string",
-                                        "example": "XXXXXXXXXXXXXXXXXXXXXXXXXX"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Checked successfully"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Something went wrong!"
-                                        },
-                                        "code": {
-                                            "type": "string",
-                                            "example": "INVALID"
-                                        },
-                                        "errors": {
-                                            "properties": {
-                                                "token": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string",
-                                                        "example": "The selected token is invalid."
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/invitation/accept": {
+        "/accept-invite": {
             "post": {
                 "tags": [
                     "auth"
@@ -256,10 +172,6 @@
                                     "token": {
                                         "type": "string",
                                         "example": "XXXXXXXXXXXXXXXXXXXXXXXXXX"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": ""
                                     }
                                 },
                                 "type": "object"
@@ -327,7 +239,7 @@
                 }
             }
         },
-        "/invitation/decline": {
+        "/decline-invite": {
             "post": {
                 "tags": [
                     "auth"

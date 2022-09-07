@@ -17,53 +17,7 @@ use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class InvitationController extends Controller
 {
-    /**
-     * @OA\Post(
-     *     tags={"auth"},
-     *     path="/invitation/check",
-     *     operationId="postInvitationCheck",
-     *     summary="Check Invitation Status",
-     *     description="Check Invitation Status",
-     *     @OA\RequestBody(
-     *          required=true, 
-     *          @OA\JsonContent(
-     *              type="object",
-     *              @OA\Property(property="token", type="string", example="XXXXXXXXXXXXXXXXXXXXXXXXXX"),
-     *          )
-     *     ),
-     *     @OA\Response(
-     *          response=200, 
-     *          description="Successful Response",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Checked successfully"),
-     *          )
-     *     ),
-     *     @OA\Response(
-     *          response=422,
-     *          description="Validation Response",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
-     *              @OA\Property(property="code", type="string", example="INVALID"),
-     *              @OA\Property(
-     *                  property="errors", 
-     *                  type="object",
-     *                      @OA\Property(
-     *                  property="token", 
-     *                  type="array",
-     *                  @OA\Items(
-     *                         type="string",
-     *                         example="The selected token is invalid."
-     *                  ),
-     *              ),
-     *                  ),
-     *              ),
-     *          )
-     *     ),
-     * )
-     */
-
+   
     public function check(Request $request){
         $validator = FacadesValidator::make($request->all(), [
             'token' => 'required',
@@ -111,7 +65,7 @@ class InvitationController extends Controller
     /**
      * @OA\Post(
      *     tags={"auth"},
-     *     path="/invitation/accept",
+     *     path="/accept-invite",
      *     operationId="postInvitationAccept",
      *     summary="Accept Invitation",
      *     description="Accept Invitation",
@@ -120,7 +74,7 @@ class InvitationController extends Controller
      *          @OA\JsonContent(
      *              type="object",
      *              @OA\Property(property="token", type="string", example="XXXXXXXXXXXXXXXXXXXXXXXXXX"),
-     *              @OA\Property(property="password", type="string", example=""),
+     *             
      *          )
      *     ),
      *     @OA\Response(
@@ -218,7 +172,7 @@ class InvitationController extends Controller
     /**
      * @OA\Post(
      *     tags={"auth"},
-     *     path="/invitation/decline",
+     *     path="/decline-invite",
      *     operationId="postInvitationDecline",
      *     summary="Decline Invitation",
      *     description="Decline Invitation",
