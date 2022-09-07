@@ -16,6 +16,7 @@ use App\Models\User;
 
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\OrganizationResource;
+use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -103,15 +104,14 @@ class LoginController extends Controller
             return response()->json($this->response, 401);
 
         }
-        
-        $user = User::where(["email" => $request->email])->first();
-        // return $user;
-        if(!$user){
-            // $this->response["status"] = true;
-            $this->response["message"] = __('strings.something_wrong');
-            return response()->json($this->response, 401);
+        try{
 
+            $user = User::where(["email" => $request->email])->first();
+        }catch(Exception $ex){
+            return $this->response['message']= "User Not found";
         }
+        // return $user;
+        
         
         if($user && Hash::check($request->password, $user->password)) {
         //    $resource=  TenantResource::collection($centralUser->tenants()->with('organization')->get());
