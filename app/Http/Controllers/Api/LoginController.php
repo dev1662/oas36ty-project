@@ -108,7 +108,8 @@ class LoginController extends Controller
 
             $user = User::where(["email" => $request->email])->first();
         }catch(Exception $ex){
-            return $this->response['message']= "User Not found";
+            $this->response['message']= "User Not found";
+            return response()->json($this->response, 401);
         }
         // return $user;
         
