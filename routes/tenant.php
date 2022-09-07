@@ -75,9 +75,8 @@ Route::middleware([
             //------------------------EmailConfig -----------------------------
             Route::apiResource('email-outbound', EmailOutboundController::class);
             Route::apiResource('email-inbound', EmailInboundController::class);
-
-
-
+            Route::post('email-outbound-status', [EmailOutboundController::class, 'update_active_inactive_status']);
+            Route::post('email-inbound-status', [EmailInboundController::class, 'update_active_inactive_status']);
 
             Route::get('/outbound-mail',[MailConfigController::class,'index'])->name('outbound.mail.index');
             Route::post('/outbound-mail-update',[MailConfigController::class,'outboundMailUpdate'])->name('outbound.mail.update');

@@ -529,7 +529,7 @@ class EmailOutboundController extends Controller
      *          description="Successful Response",
      *          @OA\JsonContent(
      *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Created new record successfully"),
+     *              @OA\Property(property="message", type="string", example="Record updated successfully"),
      *              @OA\Property(
      *                  property="data",
      *                  type="object",
@@ -768,6 +768,157 @@ class EmailOutboundController extends Controller
         $this->response["message"] = __('strings.destroy_failed');
         return response()->json($this->response, 422);
     }catch (Exception $ex) {
+        return response()->json([
+            'error' => $this->error,
+            'status_code' => $ex->getCode(),
+            'message' => $ex->getMessage(),
+            'result' => $this->result
+      ]);
+    }
+
+    }
+
+  
+    /**
+     *
+     * @OA\Post(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Mail Setting"},
+     *     path="/email-outbound-status",
+     *     operationId="postEmailOutboundStatus",
+     *     summary="Status Outbound",
+     *     description="Status Outbound",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     * 
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *              @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Record updated successfully"),
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="object",
+     *                   @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="mail_transport",
+     *                         type="string",
+     *                         example="smtp"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="mail_host",
+     *                         type="string",
+     *                         example="smtp.gmail.com"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="mail_port",
+     *                         type="integer",
+     *                         example="465"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="mail_username",
+     *                         type="string",
+     *                         example="robin@gmail.com"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="mail_password",
+     *                         type="string",
+     *                         example="igffghjkl"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="mail_encryption",
+     *                         type="string",
+     *                         example="robin@gmail.com"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="status",
+     *                         type="enum",
+     *                         example="inactive"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="created_at",
+     *                         type="timestamp",
+     *                         example="2022-09-02T06:01:37.000000Z"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="updated_at",
+     *                        type="timestamp",
+     *                         example="2022-09-02T06:01:37.000000Z"
+     *                      ),
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="email",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected email is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
+
+    public function update_active_inactive_status(Request $request){
+        try{
+            $validator = Validator::make(['emailOutbound_id'=>$request->input('id')], [
+                'emailOutbound_id' => 'required|exists:App\Models\EmailOutbound,id',
+               
+            ]);
+            if ($validator->fails()) {
+                $this->response["code"] = "INVALID";
+                $this->response["message"] = $validator->errors()->first();
+                $this->response["errors"] = $validator->errors();
+                return response()->json($this->response, 422);
+            }
+
+            EmailOutbound::where('id',$request->input('id'))->update(['status'=>'inactive']);
+            $check =  EmailOutbound::where('mail_username','!=',null)->update(['status'=>'active']);
+            if($check){
+                $this->response["status"] = true;
+                $this->response["message"] = __('strings.update_success');
+                $this->response['data'] = EmailOutbound::where(['id' => $request->input('id')])->first();
+                return response()->json($this->response);
+            }
+    
+
+        }catch (Exception $ex) {
         return response()->json([
             'error' => $this->error,
             'status_code' => $ex->getCode(),
