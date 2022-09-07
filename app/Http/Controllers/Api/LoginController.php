@@ -105,7 +105,7 @@ class LoginController extends Controller
         }
         
         $user = User::where(["email" => $request->email])->first();
-        return $user;
+        // return $user;
         if(!$user){
             // $this->response["status"] = true;
             $this->response["message"] = __('strings.something_wrong');
