@@ -400,10 +400,13 @@ class UserController extends Controller
                         $user->update();
                     });
 
-                    $centralUser->tenants()->with('organization')->latest('id')->first()->pivot->forceDelete();
+                    $tenant_users = $centralUser->tenants()->with('organization')->latest('id')->first();
+                    if($tenant_users->pivot->forceDelete()){
+
                     $this->response["status"] = true;
                     $this->response["message"] = __('strings.invitation_decline_success');
                     return response()->json($this->response);
+                    }
                 }
                 $this->response["message"] = __('strings.invitation_decline_failed');
                 return response()->json($this->response);
