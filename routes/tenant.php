@@ -86,6 +86,7 @@ Route::middleware([
 
             Route::post('/send', [MailConfigController::class,'SendEmail']);
             Route::post('/get-email', [MailConfigController::class,'RecievedEmail']);
+            Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);
 
             
         });
