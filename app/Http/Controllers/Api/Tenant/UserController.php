@@ -200,7 +200,7 @@ class UserController extends Controller
      *     ),
      * )
      */
-
+    
     public function store(Request $request)
     {
 
@@ -216,6 +216,7 @@ class UserController extends Controller
             return response()->json($this->response, 422);
         }
         // check if the main users table has email already
+        // $base_url= 'https://app-office36ty.protracked.in';
 
         $result = [];
         $count = CentralUser::where('email', $request->email)->get();
@@ -249,8 +250,7 @@ class UserController extends Controller
                     'tenant_id' => $organization->tenant_id,
                     'email' => $centralUser->email,
                 ];
-
-                $url = config('app.url') . '/accept-invitation?token=' . Crypt::encryptString(json_encode($token));
+                $url = 'https://app-office36ty.protracked.in/accept-invitation?token=' . Crypt::encryptString(json_encode($token));
 
 
                 Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
@@ -289,7 +289,7 @@ class UserController extends Controller
                     'email' => $centralUser->email,
                 ];
 
-                $url = config('app.url') . '/invitation?token=' . Crypt::encryptString(json_encode($token));
+                $url = 'https://app-office36ty.protracked.in/invitation?token=' . Crypt::encryptString(json_encode($token));
 
                 Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
             });
