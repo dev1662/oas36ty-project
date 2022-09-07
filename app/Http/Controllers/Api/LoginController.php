@@ -100,7 +100,7 @@ class LoginController extends Controller
         }
         if(!$tenant){
             // $this->response["status"] = true;
-            $this->response["message"] = __('strings.something_wrong');
+            $this->response["message"] = 'Tenant Not Found';
             return response()->json($this->response, 401);
 
         }
