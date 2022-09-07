@@ -202,7 +202,7 @@ class ResetPasswordController extends Controller
         if(CentralUser::where('email', $request->email) && User::where('email', $request->email)){
 
             // $token = Crypt::decryptString($request->token);
-            $centralUser = tenancy()->central(function ($tenant) use($request) {
+            // $centralUser = tenancy()->central(function ($tenant) use($request) {
             $centralUser = CentralUser::where('email', $request->email)->update(
                 [
                     'password' => FacadesHash::make($request->password),
@@ -212,8 +212,8 @@ class ResetPasswordController extends Controller
             );
             // return $tenant;
             // $centralUser->tenants()->attach($tenant);
-            return $centralUser;
-        });
+            // return $centralUser;
+        // });
         // return $centralUser;
         $tokenData = json_decode(Crypt::decryptString($request->token));
         $mainUser = CentralUser::where('email', $tokenData->email)->first();
