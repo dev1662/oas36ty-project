@@ -92,6 +92,7 @@ class LoginController extends Controller
         $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
 
         $tenant = $centralUser->tenants()->with('organization')->first();
+        return $tenant;
         if($tenant){
 
             tenancy()->initialize($tenant);
