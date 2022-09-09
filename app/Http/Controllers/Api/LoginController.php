@@ -16,6 +16,8 @@ use App\Models\User;
 
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\OrganizationResource;
+use Exception;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -109,18 +111,41 @@ class LoginController extends Controller
 
         // $credentials = $request->only('email', 'password');
         // $credentials = array_merge($credentials, ['status' => 'active']);
+        
 
-        $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
+            $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
+        
 
-        $tenant = $centralUser->tenants()->with('organization')->first();
+        // return $centralUser;
+
+        // try{
+
+            $tenant = $centralUser->tenants()->with('organization')->first();
+        // }catch(Exception $ex){
+        //     return $this->response["message"] = 'Tenant Not Found';
+        //     return response()->json($this->response, 401);
+        // }
         tenancy()->initialize($tenant);
-        
-        $user = User::where(["email" => $request->email])->first();
-    
-        
-        if($user && Hash::check($request->password, $user->password)) {
-        //    $resource=  TenantResource::collection($centralUser->tenants()->with('organization')->get());
+        // try{
 
+            $user = User::where(["email" => $request->email])->first();
+        // }catch(Exception $ex){
+        //     return $this->response["message"] = ' user not found';
+        //     return response()->json($this->response, 401);
+        // }
+        // try{
+
+
+        //     $user = User::where(["email" => $request->email])->first();
+        // }catch(Exception $ex){
+        //    return response()->json($ex->getMessage());
+        // }
+        // if(status)
+        // return $user;
+
+        if($user && Hash::check($request->password, $user->password)) {
+            // if($user && FacadesAuth::attempt($credentials)){
+        //    $resource=  TenantResource::collection($centralUser->tenants()->with('organization')->get());
             $result = array(
                 'token' => $user->createToken("Tenant: " . $user->name . " (" . $user->email . ")")->accessToken,
                 'name' => $user->name,

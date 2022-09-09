@@ -198,14 +198,15 @@ class ResetPasswordController extends Controller
         }
         // return "hh";
         
-
+        $hash_password = FacadesHash::make($request->password);
+        // return FacadesHash::make($request->password);
         if(CentralUser::where('email', $request->email) && User::where('email', $request->email)){
 
             // $token = Crypt::decryptString($request->token);
             // $centralUser = tenancy()->central(function ($tenant) use($request) {
             $centralUser = CentralUser::where('email', $request->email)->update(
                 [
-                    'password' => FacadesHash::make($request->password),
+                    'password' => $hash_password,
                     'status' => 'active'
                 ],
               
@@ -220,7 +221,7 @@ class ResetPasswordController extends Controller
         $tenant = $mainUser->tenants()->find($tokenData->tenant_id);
         $user = $tenant->run(function ($tenant) use ($mainUser) {
         return $user = User::where('email', $mainUser->email)->update([
-            'password' => FacadesHash::make($mainUser->password),
+            'password' => $mainUser->password,
             'status' => 'active'
         ]);
     });

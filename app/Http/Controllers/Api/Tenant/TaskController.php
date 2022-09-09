@@ -18,28 +18,7 @@ use PDO;
 
 class TaskController extends Controller
 {
-    public function switchingDB($dbName)
-    {
-        Config::set("database.connections.mysql", [
-            'driver' => 'mysql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => $dbName,
-            'username' => env('DB_USERNAME','root'),
-            'password' => env('DB_PASSWORD',''),
-            'unix_socket' => env('DB_SOCKET',''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
-        ]);
-    }
+
     /**
      *
      * @OA\Get(
@@ -107,42 +86,191 @@ class TaskController extends Controller
         // return "hh";
 
         $dbname = $request->header('X-Tenant');
-        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+        $dbname = config('tenancy.database.prefix') . strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        if($request->status){
-            $value = $request->input('status');
-            $tasks = Task::where(['status'=>  $value] )->get();
-            // return $books;
-        
-        }
-        else{
-            
-            $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status','created_at')->with([
-                'branch' => function($q){
-                $q->select('id', 'name');
-            },
-            'category' => function($q){
-                $q->select('id','name');
-            },
-            'client' => function($q){
-                $q->select('id', 'name');
-            },
-            'contactPerson' => function($q){
-                $q->select('id', 'name');
-            },
-            'users' => function($q){
-                $q->select('users.id', 'name');
-            },
-            'audits',
-            // 'priorities' => function($q){
+    
+
+            $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                'branch' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'category' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'client' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'contactPerson' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'users' => function ($q) {
+                    $q->select('users.id', 'name');
+                },
+                'audits',
+                // 'priorities' => function($q){
                 //     $q->select('id', 'icons');
                 // },
-                
-                ])->latest()->get();
-            }
+
+            ])->latest()->get();
+        
         // $user_details = CentralUser::find($)
 
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.get_all_success');
+        $this->response["data"] = $tasks;
+        return response()->json($this->response);
+    }
+    public function filterData(Request $request)
+    {
+        // return $request->all();
+        if ($request->status) {
+
+
+            $tasks = Task::where(['status' => strtolower($request->status)])->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                'branch' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'category' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'client' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'contactPerson' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'users' => function ($q) {
+                    $q->select('users.id', 'name');
+                },
+                'audits',
+                // 'priorities' => function($q){
+                //     $q->select('id', 'icons');
+                // },
+
+            ])->latest()->get();
+        }
+        if($request->client){
+            $tasks = Task::where('client_id', $request->client['id'])->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                'branch' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'category' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'client' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'contactPerson' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'users' => function ($q) {
+                    $q->select('users.id', 'name');
+                },
+                'audits',
+                // 'priorities' => function($q){
+                //     $q->select('id', 'icons');
+                // },
+
+            ])->latest()->get();
+        }
+        if($request->priority){
+            $tasks = Task::where('priority', $request->priority['id'])->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                'branch' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'category' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'client' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'contactPerson' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'users' => function ($q) {
+                    $q->select('users.id', 'name');
+                },
+                'audits',
+                // 'priorities' => function($q){
+                //     $q->select('id', 'icons');
+                // },
+
+            ])->latest()->get();
+        }
+        if($request->category){
+            $tasks = Task::where('category_id', $request->category['id'])->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                'branch' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'category' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'client' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'contactPerson' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'users' => function ($q) {
+                    $q->select('users.id', 'name');
+                },
+                'audits',
+                // 'priorities' => function($q){
+                //     $q->select('id', 'icons');
+                // },
+
+            ])->latest()->get();
+        }
+        if($request->contact){
+            $tasks = Task::where('contact_person_id', $request->contact['id'])->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                'branch' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'category' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'client' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'contactPerson' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'users' => function ($q) {
+                    $q->select('users.id', 'name');
+                },
+                'audits',
+                // 'priorities' => function($q){
+                //     $q->select('id', 'icons');
+                // },
+
+            ])->latest()->get();
+        }
+        if($request->search){
+            $tasks = Task::where('subject', 'like', '%'. $request->search . '%')->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                'branch' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'category' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'client' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'contactPerson' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'users' => function ($q) {
+                    $q->select('users.id', 'name');
+                },
+                'audits',
+                // 'priorities' => function($q){
+                //     $q->select('id', 'icons');
+                // },
+
+            ])->latest()->get();
+        }
+       
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] = $tasks;
@@ -151,7 +279,7 @@ class TaskController extends Controller
     // public function leads(Request $request)
     // {
     //     return "hh";
-    //     $dbname = json_decode($request->header('currrent'))->tenant->organization->name;
+    // $dbname = $request->header('X-Tenant');
     //     $dbname = config('tenancy.database.prefix').strtolower($dbname);
     //     // return   $dbname;
     //     $this->switchingDB($dbname);
@@ -272,34 +400,34 @@ class TaskController extends Controller
             return response()->json($this->response, 422);
         }
         // return $request->branch_id['id'];
-        
+
         $task = new Task();
 
-                $task->branch_id = $request->branch_id['id'];
+        $task->branch_id = $request->branch_id['id'];
 
 
-                $task->category_id = $request->category_id['id'];
+        $task->category_id = $request->category_id['id'];
 
 
-                $task->client_id = $request->client_id['id'];
+        $task->client_id = $request->client_id['id'];
 
 
-                $task->contact_person_id = $request->contact_person_id['id'];
+        $task->contact_person_id = $request->contact_person_id['id'];
 
-            // $task->user_id = $request->users[$i]['id'];
-            $task->type = $request->type;
-            $task->subject = $request->subject;
-            $task->description = $request->description;
-            $task->due_date = $request->due_date;
+        // $task->user_id = $request->users[$i]['id'];
+        $task->type = $request->type;
+        $task->subject = $request->subject;
+        $task->description = $request->description;
+        $task->due_date = $request->due_date;
 
-                $task->priority = $request->priority['id'];
+        $task->priority = $request->priority['id'];
 
 
-            // echo '<pre>';print_r($task);exit;
-            $task->status = Task::STATUS_OPEN;
-            // return $request->users[$i];
-            $task->save();
-            for($i=0;$i<count($request->users);$i++){
+        // echo '<pre>';print_r($task);exit;
+        $task->status = Task::STATUS_OPEN;
+        // return $request->users[$i];
+        $task->save();
+        for ($i = 0; $i < count($request->users); $i++) {
 
             $taskss = Task::find($task->id);
 
@@ -402,16 +530,16 @@ class TaskController extends Controller
         }
 
         $task = Task::select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status')->with([
-            'branch' => function($q){
+            'branch' => function ($q) {
                 $q->select('id', 'name');
             },
-            'category' => function($q){
+            'category' => function ($q) {
                 $q->select('id', 'name');
             },
-            'client' => function($q){
+            'client' => function ($q) {
                 $q->select('id', 'name');
             },
-            'contactPerson' => function($q){
+            'contactPerson' => function ($q) {
                 $q->select('id', 'name');
             }
         ])->find($id);
@@ -525,19 +653,19 @@ class TaskController extends Controller
 
 
 
-            $updateTask = Task::find($id);
-                $updateTask->update([
-                'subject' => $request->subject,
-                'description' => $request->description,
-                'branch_id' => $request->branch_id['id'],
-                'client_id' => $request->client_id['id'],
-                'category_id' => $request->category_id['id'],
-                'contact_person_id' => $request->contact_person_id['id'],
-                'type' => $request->type,
-                'due_date' => $request->due_date,
-                'priority' => $request->priority['id'],
-                'status' => $request->status['status'],
-            ]);
+        $updateTask = Task::find($id);
+        $updateTask->update([
+            'subject' => $request->subject,
+            'description' => $request->description,
+            'branch_id' => $request->branch_id['id'],
+            'client_id' => $request->client_id['id'],
+            'category_id' => $request->category_id['id'],
+            'contact_person_id' => $request->contact_person_id['id'],
+            'type' => $request->type,
+            'due_date' => $request->due_date,
+            'priority' => $request->priority['id'],
+            'status' => $request->status['status'],
+        ]);
 
 
 
@@ -553,18 +681,18 @@ class TaskController extends Controller
 
         // $checkNewUser = array();
         // for ($i=0; $i < count($request->users); $i++) {
-            $checkNewUser = TaskUser::where(['task_id' => $id])->get();
+        $checkNewUser = TaskUser::where(['task_id' => $id])->get();
         // }
         $user_values = [];
-        foreach($checkNewUser as $newUser){
+        foreach ($checkNewUser as $newUser) {
 
             $user_values[] =  $newUser->user_id;
         }
         // insert newly added data
         // return "insert";
-        foreach($request->users as $input_users){
+        foreach ($request->users as $input_users) {
             // return "forloop";
-            if(!in_array($input_users['id'], $user_values)){
+            if (!in_array($input_users['id'], $user_values)) {
                 $new_taskUser = new TaskUser();
                 $new_taskUser->task_id = $id;
                 $new_taskUser->user_id = $input_users['id'];
@@ -574,18 +702,17 @@ class TaskController extends Controller
 
         // delete added user values
         // return "h";
-        foreach($user_values as $user_row){
+        foreach ($user_values as $user_row) {
             $actual_array = [];
-            foreach($request->users as $use){
+            foreach ($request->users as $use) {
                 $actual_array[] = $use['id'];
             }
-            
+
             // return $user_row;
-            if(!in_array($user_row, $actual_array)){
+            if (!in_array($user_row, $actual_array)) {
                 // return "user not present";
                 // TaskUser::where(['user_id' => $user_row])->delete();
-                  TaskUser::where(['user_id' => $user_row])->forceDelete();
-
+                TaskUser::where(['user_id' => $user_row])->forceDelete();
             }
         }
 
@@ -679,7 +806,7 @@ class TaskController extends Controller
         }
 
         $task = Task::find($id);
-        if(!$task){
+        if (!$task) {
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }

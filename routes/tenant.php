@@ -68,15 +68,18 @@ Route::middleware([
             Route::apiResource('contact-people', ContactPersonController::class);
             Route::apiResource('contact-people.emails', ContactPersonEmailController::class);
             Route::apiResource('contact-people.phones', ContactPersonPhoneController::class);
-            
+            Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);
         });
         
     });
 });
 
 Route::prefix('v1')->group(function(){
+    //new user
     Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
+    // existing user accept
     Route::post('accept-invite', [UserController::class, 'AcceptInvite']);
+    // existing user decline
     Route::post('decline-invite', [UserController::class, 'declineInvite']);
 });
 InitializeTenancyByRequestData::$onFail = function ($exception, $request, $next) {
