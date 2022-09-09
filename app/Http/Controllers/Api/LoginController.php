@@ -74,7 +74,7 @@ class LoginController extends Controller
      */
 
     public function index(Request $request){ 
-        
+    
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:App\Models\User,email',
             'password' => 'required',
@@ -89,21 +89,26 @@ class LoginController extends Controller
 
         // $credentials = $request->only('email', 'password');
         // $credentials = array_merge($credentials, ['status' => 'active']);
+        try{
+            
+            $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
+        }catch(Exception $ex){
+            $this->response['message']= "User Not found";
+            return response()->json($this->response, 401);
+        }
+        try{
 
-        $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
-
-        $tenant = $centralUser->tenants()->with('organization')->first();
+            $tenant = $centralUser->tenants()->with('organization')->first();
+        }catch(Exception $ex){
+            $this->response['message']= "Tenant Not found";
+            return response()->json($this->response, 401);
+        }
         
-        if($tenant){
+        
 
             tenancy()->initialize($tenant);
-        }
-        if(!$tenant){
-            // $this->response["status"] = true;
-            $this->response["message"] = 'Tenant Not Found';
-            return response()->json($this->response, 401);
-
-        }
+        
+      
         try{
 
             $user = User::where(["email" => $request->email])->first();
