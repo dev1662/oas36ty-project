@@ -92,6 +92,7 @@ Route::middleware([
 
             Route::post('/send', [MailConfigController::class,'SendEmail']);
             Route::post('/get-email', [MailConfigController::class,'RecievedEmail']);
+            Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);
 
             
         });
@@ -100,8 +101,11 @@ Route::middleware([
 });
 
 Route::prefix('v1')->group(function(){
+    //new user
     Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
+    // existing user accept
     Route::post('accept-invite', [UserController::class, 'AcceptInvite']);
+    // existing user decline
     Route::post('decline-invite', [UserController::class, 'declineInvite']);
 });
 InitializeTenancyByRequestData::$onFail = function ($exception, $request, $next) {
