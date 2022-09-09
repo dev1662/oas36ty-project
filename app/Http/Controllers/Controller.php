@@ -6,9 +6,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Config;
 use PDO;
-
+use Illuminate\Support\Facades\Config;
 /**
  * @OA\Server(
  *  url="https://api-office36ty.protracked.in/v1",
@@ -18,10 +17,15 @@ use PDO;
  *  url="http://192.168.1.10:8000/v1",
  *  description="Localhost"
  * )
+ *  @OA\Server(
+ *  url="http://127.0.0.1:8000/v1",
+ *  description="Localhost"
+ * )
  * @OA\Info(
  *    title="API Documentation",
  *    version="1.0.0",
  * )
+ * 
  * @OA\SecurityScheme(
  *  description="Execute Login or Signup APIs to get the authentication token",
  *  name="Token Based Authentication",
@@ -46,6 +50,16 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     public $response = array("status" => false, "message" => "Something went wrong!");
+
+    protected function makeJson() {
+        return response()->json([
+                    'error' => $this->error,
+                    'status_code' => $this->status_code,
+                    'message' => $this->message,
+                    'result' => $this->result
+        ]);
+    }
+
     public function switchingDB($dbName)
     {
         Config::set("database.connections.mysql", [

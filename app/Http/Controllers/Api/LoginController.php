@@ -17,7 +17,6 @@ use App\Models\User;
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\OrganizationResource;
 use Exception;
-use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -25,28 +24,7 @@ use PDO;
 
 class LoginController extends Controller
 {
-    public function switchingDB($dbName)
-    {
-        Config::set("database.connections.mysql", [
-            'driver' => 'mysql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => $dbName,
-            'username' => env('DB_USERNAME','root'),
-            'password' => env('DB_PASSWORD',''),
-            'unix_socket' => env('DB_SOCKET',''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
-        ]);
-    }
+    
     /**
      * @OA\Post(
      *     tags={"auth"},
@@ -111,38 +89,31 @@ class LoginController extends Controller
 
         // $credentials = $request->only('email', 'password');
         // $credentials = array_merge($credentials, ['status' => 'active']);
+
+        $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
+
+        $tenant = $centralUser->tenants()->with('organization')->first();
         
+        if($tenant){
 
-            $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
-        
+            tenancy()->initialize($tenant);
+        }
+        if(!$tenant){
+            // $this->response["status"] = true;
+            $this->response["message"] = 'Tenant Not Found';
+            return response()->json($this->response, 401);
 
-        // return $centralUser;
-
-        // try{
-
-            $tenant = $centralUser->tenants()->with('organization')->first();
-        // }catch(Exception $ex){
-        //     return $this->response["message"] = 'Tenant Not Found';
-        //     return response()->json($this->response, 401);
-        // }
-        tenancy()->initialize($tenant);
-        // try{
+        }
+        try{
 
             $user = User::where(["email" => $request->email])->first();
-        // }catch(Exception $ex){
-        //     return $this->response["message"] = ' user not found';
-        //     return response()->json($this->response, 401);
-        // }
-        // try{
-
-
-        //     $user = User::where(["email" => $request->email])->first();
-        // }catch(Exception $ex){
-        //    return response()->json($ex->getMessage());
-        // }
-        // if(status)
+        }catch(Exception $ex){
+            $this->response['message']= "User Not found";
+            return response()->json($this->response, 401);
+        }
         // return $user;
-
+        
+        
         if($user && Hash::check($request->password, $user->password)) {
             // if($user && FacadesAuth::attempt($credentials)){
         //    $resource=  TenantResource::collection($centralUser->tenants()->with('organization')->get());
@@ -163,10 +134,10 @@ class LoginController extends Controller
             $this->response["status"] = true;
             $this->response["message"] = __('strings.login_success');
             $this->response["data"] = $result;
+            return response()->json($this->response);
         } else { 
             $this->response["message"] = __('strings.login_failed');
             return response()->json($this->response, 200);
         } 
-        return response()->json($this->response);
     }
 }

@@ -13,7 +13,7 @@ use PDO;
 
 class CategoryController extends Controller
 {
-  
+    
     /**
      *
      * @OA\Get(
@@ -68,7 +68,7 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
-    $dbname = $request->header('X-Tenant');
+   $dbname = $request->header('X-Tenant');
         $dbname = strtolower($dbname);
         // return $dbname;
         $this->switchingDB($dbname);

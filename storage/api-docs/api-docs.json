@@ -12,6 +12,10 @@
         {
             "url": "http://192.168.1.10:8000/v1",
             "description": "Localhost"
+        },
+        {
+            "url": "http://127.0.0.1:8000/v1",
+            "description": "Localhost"
         }
     ],
     "paths": {
@@ -4207,6 +4211,1776 @@
                                                     "items": {
                                                         "type": "string",
                                                         "example": "The selected contact_person_id is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/email-inbound": {
+            "get": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Email settings",
+                "description": "Email settings",
+                "operationId": "getInboundEmails",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all records successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "mail_transport": {
+                                                        "type": "string",
+                                                        "example": "imap"
+                                                    },
+                                                    "mail_host": {
+                                                        "type": "string",
+                                                        "example": "imap.gmail.com"
+                                                    },
+                                                    "mail_port": {
+                                                        "type": "integer",
+                                                        "example": "993"
+                                                    },
+                                                    "mail_username": {
+                                                        "type": "string",
+                                                        "example": "robin@gmail.com"
+                                                    },
+                                                    "mail_password": {
+                                                        "type": "string",
+                                                        "example": "igffghjkl"
+                                                    },
+                                                    "mail_encryption": {
+                                                        "type": "string",
+                                                        "example": "robin@gmail.com"
+                                                    },
+                                                    "status": {
+                                                        "type": "enum",
+                                                        "example": "inactive"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Create Inbound",
+                "description": "Create Inbound",
+                "operationId": "postEmailInbound",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "mail_transport": {
+                                        "type": "string",
+                                        "example": "imap"
+                                    },
+                                    "mail_host": {
+                                        "type": "string",
+                                        "example": "imap.gmail.com"
+                                    },
+                                    "mail_port": {
+                                        "type": "integer",
+                                        "example": "993"
+                                    },
+                                    "mail_username": {
+                                        "type": "string",
+                                        "example": "robin@gmail.com"
+                                    },
+                                    "mail_password": {
+                                        "type": "string",
+                                        "example": "igffghjkl"
+                                    },
+                                    "mail_encryption": {
+                                        "type": "string",
+                                        "example": "robin@gmail.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Created new record successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "mail_transport": {
+                                                    "type": "string",
+                                                    "example": "imap"
+                                                },
+                                                "mail_host": {
+                                                    "type": "string",
+                                                    "example": "imap.gmail.com"
+                                                },
+                                                "mail_port": {
+                                                    "type": "integer",
+                                                    "example": "993"
+                                                },
+                                                "mail_username": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "mail_password": {
+                                                    "type": "string",
+                                                    "example": "igffghjkl"
+                                                },
+                                                "mail_encryption": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "status": {
+                                                    "type": "enum",
+                                                    "example": "inactive"
+                                                },
+                                                "created_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected email is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/email-inbound/{emailInboundID}": {
+            "get": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Inbound Email Details",
+                "description": "Inbound Email Details",
+                "operationId": "showEmailsInbound",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "emailInboundID",
+                        "in": "path",
+                        "description": "emailInbound ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all records successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "mail_transport": {
+                                                        "type": "string",
+                                                        "example": "imap"
+                                                    },
+                                                    "mail_host": {
+                                                        "type": "string",
+                                                        "example": "imap.gmail.com"
+                                                    },
+                                                    "mail_port": {
+                                                        "type": "integer",
+                                                        "example": "993"
+                                                    },
+                                                    "mail_username": {
+                                                        "type": "string",
+                                                        "example": "robin@gmail.com"
+                                                    },
+                                                    "mail_password": {
+                                                        "type": "string",
+                                                        "example": "igffghjkl"
+                                                    },
+                                                    "mail_encryption": {
+                                                        "type": "string",
+                                                        "example": "robin@gmail.com"
+                                                    },
+                                                    "status": {
+                                                        "type": "enum",
+                                                        "example": "inactive"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Update Inbound",
+                "description": "Update Inbound",
+                "operationId": "putEmailInbound",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "emailInboundID",
+                        "in": "path",
+                        "description": "Email Inbound ID",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "mail_transport": {
+                                        "type": "string",
+                                        "example": "imap"
+                                    },
+                                    "mail_host": {
+                                        "type": "string",
+                                        "example": "imap.gmail.com"
+                                    },
+                                    "mail_port": {
+                                        "type": "integer",
+                                        "example": "993"
+                                    },
+                                    "mail_username": {
+                                        "type": "string",
+                                        "example": "robin@gmail.com"
+                                    },
+                                    "mail_password": {
+                                        "type": "string",
+                                        "example": "igffghjkl"
+                                    },
+                                    "mail_encryption": {
+                                        "type": "string",
+                                        "example": "robin@gmail.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Updated record successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "mail_transport": {
+                                                    "type": "string",
+                                                    "example": "imap"
+                                                },
+                                                "mail_host": {
+                                                    "type": "string",
+                                                    "example": "imap.gmail.com"
+                                                },
+                                                "mail_port": {
+                                                    "type": "integer",
+                                                    "example": "993"
+                                                },
+                                                "mail_username": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "mail_password": {
+                                                    "type": "string",
+                                                    "example": "igffghjkl"
+                                                },
+                                                "mail_encryption": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "status": {
+                                                    "type": "enum",
+                                                    "example": "inactive"
+                                                },
+                                                "created_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected email is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Delete Inbound",
+                "description": "Delete Inbound",
+                "operationId": "deleteEmailInbound",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "emailInboundID",
+                        "in": "path",
+                        "description": "Email Inbound ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deleted successfully!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "branch_id": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected branch_id is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/email-inbound-status": {
+            "post": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Status Inbound",
+                "description": "Status Inbound",
+                "operationId": "postEmailInboundStatus",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Record updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "mail_transport": {
+                                                    "type": "string",
+                                                    "example": "imap"
+                                                },
+                                                "mail_host": {
+                                                    "type": "string",
+                                                    "example": "imap.gmail.com"
+                                                },
+                                                "mail_port": {
+                                                    "type": "integer",
+                                                    "example": "993"
+                                                },
+                                                "mail_username": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "mail_password": {
+                                                    "type": "string",
+                                                    "example": "igffghjkl"
+                                                },
+                                                "mail_encryption": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "status": {
+                                                    "type": "enum",
+                                                    "example": "inactive"
+                                                },
+                                                "created_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected email is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/email-outbound": {
+            "get": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Email settings",
+                "description": "Email settings",
+                "operationId": "getEmails",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all records successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "mail_transport": {
+                                                        "type": "string",
+                                                        "example": "smtp"
+                                                    },
+                                                    "mail_host": {
+                                                        "type": "string",
+                                                        "example": "smtp.gmail.com"
+                                                    },
+                                                    "mail_port": {
+                                                        "type": "integer",
+                                                        "example": "465"
+                                                    },
+                                                    "mail_username": {
+                                                        "type": "string",
+                                                        "example": "robin@gmail.com"
+                                                    },
+                                                    "mail_password": {
+                                                        "type": "string",
+                                                        "example": "igffghjkl"
+                                                    },
+                                                    "mail_encryption": {
+                                                        "type": "string",
+                                                        "example": "robin@gmail.com"
+                                                    },
+                                                    "status": {
+                                                        "type": "enum",
+                                                        "example": "inactive"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Create Outbound",
+                "description": "Create Outbound",
+                "operationId": "postEmailOutbound",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "mail_transport": {
+                                        "type": "string",
+                                        "example": "smtp"
+                                    },
+                                    "mail_host": {
+                                        "type": "string",
+                                        "example": "smtp.gmail.com"
+                                    },
+                                    "mail_port": {
+                                        "type": "integer",
+                                        "example": "465"
+                                    },
+                                    "mail_username": {
+                                        "type": "string",
+                                        "example": "robin@gmail.com"
+                                    },
+                                    "mail_password": {
+                                        "type": "string",
+                                        "example": "igffghjkl"
+                                    },
+                                    "mail_encryption": {
+                                        "type": "string",
+                                        "example": "robin@gmail.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Created new record successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "mail_transport": {
+                                                    "type": "string",
+                                                    "example": "smtp"
+                                                },
+                                                "mail_host": {
+                                                    "type": "string",
+                                                    "example": "smtp.gmail.com"
+                                                },
+                                                "mail_port": {
+                                                    "type": "integer",
+                                                    "example": "465"
+                                                },
+                                                "mail_username": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "mail_password": {
+                                                    "type": "string",
+                                                    "example": "igffghjkl"
+                                                },
+                                                "mail_encryption": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "status": {
+                                                    "type": "enum",
+                                                    "example": "inactive"
+                                                },
+                                                "created_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected email is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/email-outbound/{emailOutboundID}": {
+            "get": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Outbound Email Details",
+                "description": "Outbound Email Details",
+                "operationId": "showEmails",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "emailOutboundID",
+                        "in": "path",
+                        "description": "emailOutbound ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all records successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "mail_transport": {
+                                                        "type": "string",
+                                                        "example": "smtp"
+                                                    },
+                                                    "mail_host": {
+                                                        "type": "string",
+                                                        "example": "smtp.gmail.com"
+                                                    },
+                                                    "mail_port": {
+                                                        "type": "integer",
+                                                        "example": "465"
+                                                    },
+                                                    "mail_username": {
+                                                        "type": "string",
+                                                        "example": "robin@gmail.com"
+                                                    },
+                                                    "mail_password": {
+                                                        "type": "string",
+                                                        "example": "igffghjkl"
+                                                    },
+                                                    "mail_encryption": {
+                                                        "type": "string",
+                                                        "example": "robin@gmail.com"
+                                                    },
+                                                    "status": {
+                                                        "type": "enum",
+                                                        "example": "inactive"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Update Outbound",
+                "description": "Update Outbound",
+                "operationId": "putEmailOutbound",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "emailOutboundID",
+                        "in": "path",
+                        "description": "Email Outbound ID",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "mail_transport": {
+                                        "type": "string",
+                                        "example": "smtp"
+                                    },
+                                    "mail_host": {
+                                        "type": "string",
+                                        "example": "smtp.gmail.com"
+                                    },
+                                    "mail_port": {
+                                        "type": "integer",
+                                        "example": "465"
+                                    },
+                                    "mail_username": {
+                                        "type": "string",
+                                        "example": "robin@gmail.com"
+                                    },
+                                    "mail_password": {
+                                        "type": "string",
+                                        "example": "igffghjkl"
+                                    },
+                                    "mail_encryption": {
+                                        "type": "string",
+                                        "example": "robin@gmail.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Record updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "mail_transport": {
+                                                    "type": "string",
+                                                    "example": "smtp"
+                                                },
+                                                "mail_host": {
+                                                    "type": "string",
+                                                    "example": "smtp.gmail.com"
+                                                },
+                                                "mail_port": {
+                                                    "type": "integer",
+                                                    "example": "465"
+                                                },
+                                                "mail_username": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "mail_password": {
+                                                    "type": "string",
+                                                    "example": "igffghjkl"
+                                                },
+                                                "mail_encryption": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "status": {
+                                                    "type": "enum",
+                                                    "example": "inactive"
+                                                },
+                                                "created_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected email is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Delete Outbound",
+                "description": "Delete Outbound",
+                "operationId": "deleteEmailOutbound",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "emailOutboundID",
+                        "in": "path",
+                        "description": "Email Outbound ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deleted successfully!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "branch_id": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected branch_id is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/email-outbound-status": {
+            "post": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Status Outbound",
+                "description": "Status Outbound",
+                "operationId": "postEmailOutboundStatus",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Record updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "mail_transport": {
+                                                    "type": "string",
+                                                    "example": "smtp"
+                                                },
+                                                "mail_host": {
+                                                    "type": "string",
+                                                    "example": "smtp.gmail.com"
+                                                },
+                                                "mail_port": {
+                                                    "type": "integer",
+                                                    "example": "465"
+                                                },
+                                                "mail_username": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "mail_password": {
+                                                    "type": "string",
+                                                    "example": "igffghjkl"
+                                                },
+                                                "mail_encryption": {
+                                                    "type": "string",
+                                                    "example": "robin@gmail.com"
+                                                },
+                                                "status": {
+                                                    "type": "enum",
+                                                    "example": "inactive"
+                                                },
+                                                "created_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "timestamp",
+                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected email is invalid."
                                                     }
                                                 }
                                             },

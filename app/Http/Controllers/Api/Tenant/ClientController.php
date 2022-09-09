@@ -13,7 +13,7 @@ use PDO;
 
 class ClientController extends Controller
 {
-
+  
     /**
      *
      * @OA\Get(
@@ -67,7 +67,7 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
-    $dbname = $request->header('X-Tenant');
+   $dbname = $request->header('X-Tenant');
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);

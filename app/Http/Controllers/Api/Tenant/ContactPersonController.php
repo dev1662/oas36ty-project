@@ -15,10 +15,10 @@ use PDO;
 
 class ContactPersonController extends Controller
 {
-
+   
     public function getDataForLeads(Request $request)
     {
-    $dbname = $request->header('X-Tenant');
+   $dbname = $request->header('X-Tenant');
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
@@ -85,7 +85,7 @@ class ContactPersonController extends Controller
      */
     public function index(Request $request)
     {
-    $dbname = $request->header('X-Tenant');
+        $dbname = $request->header('X-Tenant');
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);

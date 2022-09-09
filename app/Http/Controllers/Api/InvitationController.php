@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class InvitationController extends Controller
 {
-    
+   
     public function check(Request $request){
         $validator = FacadesValidator::make($request->all(), [
             'token' => 'required',
