@@ -27,6 +27,8 @@ use App\Http\Controllers\Api\UserController as ApiUserController;
 use App\Http\Controllers\Api\Tenant\MailConfigController;
 use App\Http\Controllers\Api\Tenant\EmailOutboundController;
 use App\Http\Controllers\Api\Tenant\EmailInboundController;
+use App\Http\Controllers\Api\Tenant\EmailMasterController;
+
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -73,10 +75,14 @@ Route::middleware([
             Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
 
             //------------------------EmailConfig -----------------------------
+            Route::post('/store-email',[EmailMasterController::class,'storeMail']);
+            Route::post('/get-emails',[EmailMasterController::class,'getEmailCredential']);
+
             Route::apiResource('email-outbound', EmailOutboundController::class);
             Route::apiResource('email-inbound', EmailInboundController::class);
             Route::post('email-outbound-status', [EmailOutboundController::class, 'update_active_inactive_status']);
             Route::post('email-inbound-status', [EmailInboundController::class, 'update_active_inactive_status']);
+           
 
             Route::get('/outbound-mail',[MailConfigController::class,'index'])->name('outbound.mail.index');
             Route::post('/outbound-mail-update',[MailConfigController::class,'outboundMailUpdate'])->name('outbound.mail.update');

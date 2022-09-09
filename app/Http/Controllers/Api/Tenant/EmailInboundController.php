@@ -149,6 +149,11 @@ class EmailInboundController extends Controller
      *          required=true,
      *          @OA\JsonContent(
      *             type="object",
+     *               @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
      *              @OA\Property(
      *                         property="mail_transport",
      *                         type="string",
@@ -223,7 +228,7 @@ class EmailInboundController extends Controller
      *                       @OA\Property(
      *                         property="mail_encryption",
      *                         type="string",
-     *                         example="robin@gmail.com"
+     *                         example="ssl / tls / starttls"
      *                      ),
      *                      @OA\Property(
      *                         property="status",
@@ -278,12 +283,13 @@ class EmailInboundController extends Controller
     {
         try{
             $validator =  Validator::make(request()->all(), [
-                'mail_transport'  => 'required| ',
+                'id'=>'required',
+                'mail_transport'  => 'required',
                 'mail_host'       => 'required',
                 'mail_port'       => 'required|in:110,995,993,143',
-                'mail_username'   => 'required|unique:email_inbound',
+                'mail_username'   => 'required|unique:App\Models\EmailInbound',
                 'mail_password'   => 'required',
-                'mail_encryption' => 'required|in:tls,ssl',
+                'mail_encryption' => 'required|in:tls,ssl,starttls',
                 
             ]
         );
@@ -295,6 +301,7 @@ class EmailInboundController extends Controller
                 return response()->json($this->response, 422);
             }
             $data = [
+                'id'=>$request->input('id'),
                 'mail_transport'  => $request->input('mail_transport'),
                 'mail_host'       => $request->input('mail_host'),
                 'mail_port'       => $request->input('mail_port'),
@@ -304,6 +311,7 @@ class EmailInboundController extends Controller
                 
             ];
     
+            // return $data;
            
             $check =  EmailInbound::create($data);
     
@@ -627,9 +635,9 @@ class EmailInboundController extends Controller
                 'mail_transport'  => 'required| ',
                 'mail_host'       => 'required',
                 'mail_port'       => 'required|in:110,995,993,143',
-                'mail_username'   => 'sometimes|required|unique:email_inbound'.',id,'.$request->id,
+                'mail_username'   => 'sometimes|required|unique:App\Models\EmailInbound'.',id,'.$request->id,
                 'mail_password'   => 'required',
-                'mail_encryption' => 'required|in:tls,ssl',
+                'mail_encryption' => 'required|in:tls,ssl,starttls',
                 
             ]
         );
@@ -780,121 +788,121 @@ class EmailInboundController extends Controller
 
 
      
-    /**
-     *
-     * @OA\Post(
-     *     security={{"bearerAuth":{}}},
-     *     tags={"Mail Setting"},
-     *     path="/email-inbound-status",
-     *     operationId="postEmailInboundStatus",
-     *     summary="Status Inbound",
-     *     description="Status Inbound",
-     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     * 
-     *     @OA\RequestBody(
-     *          required=true,
-     *          @OA\JsonContent(
-     *             type="object",
-     *              @OA\Property(
-     *                         property="id",
-     *                         type="integer",
-     *                         example="1"
-     *                      ),
-     *         )
-     *     ),
-     *     @OA\Response(
-     *          response=200,
-     *          description="Successful Response",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="status", type="boolean", example=true),
-     *              @OA\Property(property="message", type="string", example="Record updated successfully"),
-     *              @OA\Property(
-     *                  property="data",
-     *                  type="object",
-     *                  @OA\Property(
-     *                         property="id",
-     *                         type="integer",
-     *                         example="1"
-     *                      ),
-     *                      @OA\Property(
-     *                         property="mail_transport",
-     *                         type="string",
-     *                         example="imap"
-     *                      ),
-     *                      @OA\Property(
-     *                         property="mail_host",
-     *                         type="string",
-     *                         example="imap.gmail.com"
-     *                      ),
-     *                      @OA\Property(
-     *                         property="mail_port",
-     *                         type="integer",
-     *                         example="993"
-     *                      ),
-     *                      @OA\Property(
-     *                         property="mail_username",
-     *                         type="string",
-     *                         example="robin@gmail.com"
-     *                      ),
-     *                      @OA\Property(
-     *                         property="mail_password",
-     *                         type="string",
-     *                         example="igffghjkl"
-     *                      ),
-     *                       @OA\Property(
-     *                         property="mail_encryption",
-     *                         type="string",
-     *                         example="robin@gmail.com"
-     *                      ),
-     *                      @OA\Property(
-     *                         property="status",
-     *                         type="enum",
-     *                         example="inactive"
-     *                      ),
-     *                       @OA\Property(
-     *                         property="created_at",
-     *                         type="timestamp",
-     *                         example="2022-09-02T06:01:37.000000Z"
-     *                      ),
-     *                       @OA\Property(
-     *                         property="updated_at",
-     *                        type="timestamp",
-     *                         example="2022-09-02T06:01:37.000000Z"
-     *                      ),
-     *              ),
-     *          )
-     *     ),
-     *     @OA\Response(
-     *          response=401,
-     *          description="Unauthorized Response",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
-     *          )
-     *     ),
-     *     @OA\Response(
-     *          response=422,
-     *          description="Validation Response",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="status", type="boolean", example=false),
-     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
-     *              @OA\Property(property="code", type="string", example="INVALID"),
-     *              @OA\Property(
-     *                  property="errors",
-     *                  type="object",
-     *                      @OA\Property(
-     *                  property="email",
-     *                  type="array",
-     *                  @OA\Items(
-     *                         type="string",
-     *                         example="The selected email is invalid."
-     *                  ),
-     *              ),
-     *                  ),
-     *              ),
-     *          )
-     *     ),
-     * )
-     */
+    // /**
+    //  *
+    //  * @OA\Post(
+    //  *     security={{"bearerAuth":{}}},
+    //  *     tags={"Mail Setting"},
+    //  *     path="/email-inbound-status",
+    //  *     operationId="postEmailInboundStatus",
+    //  *     summary="Status Inbound",
+    //  *     description="Status Inbound",
+    //  *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+    //  * 
+    //  *     @OA\RequestBody(
+    //  *          required=true,
+    //  *          @OA\JsonContent(
+    //  *             type="object",
+    //  *              @OA\Property(
+    //  *                         property="id",
+    //  *                         type="integer",
+    //  *                         example="1"
+    //  *                      ),
+    //  *         )
+    //  *     ),
+    //  *     @OA\Response(
+    //  *          response=200,
+    //  *          description="Successful Response",
+    //  *          @OA\JsonContent(
+    //  *              @OA\Property(property="status", type="boolean", example=true),
+    //  *              @OA\Property(property="message", type="string", example="Record updated successfully"),
+    //  *              @OA\Property(
+    //  *                  property="data",
+    //  *                  type="object",
+    //  *                  @OA\Property(
+    //  *                         property="id",
+    //  *                         type="integer",
+    //  *                         example="1"
+    //  *                      ),
+    //  *                      @OA\Property(
+    //  *                         property="mail_transport",
+    //  *                         type="string",
+    //  *                         example="imap"
+    //  *                      ),
+    //  *                      @OA\Property(
+    //  *                         property="mail_host",
+    //  *                         type="string",
+    //  *                         example="imap.gmail.com"
+    //  *                      ),
+    //  *                      @OA\Property(
+    //  *                         property="mail_port",
+    //  *                         type="integer",
+    //  *                         example="993"
+    //  *                      ),
+    //  *                      @OA\Property(
+    //  *                         property="mail_username",
+    //  *                         type="string",
+    //  *                         example="robin@gmail.com"
+    //  *                      ),
+    //  *                      @OA\Property(
+    //  *                         property="mail_password",
+    //  *                         type="string",
+    //  *                         example="igffghjkl"
+    //  *                      ),
+    //  *                       @OA\Property(
+    //  *                         property="mail_encryption",
+    //  *                         type="string",
+    //  *                         example="robin@gmail.com"
+    //  *                      ),
+    //  *                      @OA\Property(
+    //  *                         property="status",
+    //  *                         type="enum",
+    //  *                         example="inactive"
+    //  *                      ),
+    //  *                       @OA\Property(
+    //  *                         property="created_at",
+    //  *                         type="timestamp",
+    //  *                         example="2022-09-02T06:01:37.000000Z"
+    //  *                      ),
+    //  *                       @OA\Property(
+    //  *                         property="updated_at",
+    //  *                        type="timestamp",
+    //  *                         example="2022-09-02T06:01:37.000000Z"
+    //  *                      ),
+    //  *              ),
+    //  *          )
+    //  *     ),
+    //  *     @OA\Response(
+    //  *          response=401,
+    //  *          description="Unauthorized Response",
+    //  *          @OA\JsonContent(
+    //  *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+    //  *          )
+    //  *     ),
+    //  *     @OA\Response(
+    //  *          response=422,
+    //  *          description="Validation Response",
+    //  *          @OA\JsonContent(
+    //  *              @OA\Property(property="status", type="boolean", example=false),
+    //  *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+    //  *              @OA\Property(property="code", type="string", example="INVALID"),
+    //  *              @OA\Property(
+    //  *                  property="errors",
+    //  *                  type="object",
+    //  *                      @OA\Property(
+    //  *                  property="email",
+    //  *                  type="array",
+    //  *                  @OA\Items(
+    //  *                         type="string",
+    //  *                         example="The selected email is invalid."
+    //  *                  ),
+    //  *              ),
+    //  *                  ),
+    //  *              ),
+    //  *          )
+    //  *     ),
+    //  * )
+    //  */
 
     public function update_active_inactive_status(Request $request){
         try{

@@ -9,5 +9,18 @@ class EmailOutbound extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    public $table = 'email_outbound';
+    public $table = 'emails_outbound_setting';
+    public $incrementing = false;
+
+    protected $fillable = [
+        'id',
+        'mail_transport',
+        'mail_host',
+        'mail_port',
+        'mail_username',
+        'mail_password',
+        'mail_encryption',
+        'status',
+    ];
+
 }

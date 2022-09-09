@@ -49,6 +49,13 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    protected $error = true;
+    protected $status_code = 404;
+    protected $message = "Invalid request format";
+    protected $result;
+    protected $requestParams = [];
+    protected $headersParams = [];
+
     public $response = array("status" => false, "message" => "Something went wrong!");
 
     protected function makeJson() {

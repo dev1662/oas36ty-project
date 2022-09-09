@@ -4467,6 +4467,10 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
                                     "mail_transport": {
                                         "type": "string",
                                         "example": "imap"
@@ -4540,7 +4544,7 @@
                                                 },
                                                 "mail_encryption": {
                                                     "type": "string",
-                                                    "example": "robin@gmail.com"
+                                                    "example": "ssl / tls / starttls"
                                                 },
                                                 "status": {
                                                     "type": "enum",
@@ -5048,14 +5052,222 @@
                 ]
             }
         },
-        "/email-inbound-status": {
+        "/get-emails": {
             "post": {
                 "tags": [
                     "Mail Setting"
                 ],
-                "summary": "Status Inbound",
-                "description": "Status Inbound",
-                "operationId": "postEmailInboundStatus",
+                "summary": "Fetch Emails",
+                "description": "Fetch Emails",
+                "operationId": "getMasterEmails",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all records successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "robin@gmail.com"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "inactive / active"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    },
+                                                    "email_inbound": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "mail_transport": {
+                                                                    "type": "string",
+                                                                    "example": "imap"
+                                                                },
+                                                                "mail_host": {
+                                                                    "type": "string",
+                                                                    "example": "imap.gmail.com"
+                                                                },
+                                                                "mail_port": {
+                                                                    "type": "integer",
+                                                                    "example": "993"
+                                                                },
+                                                                "mail_username": {
+                                                                    "type": "string",
+                                                                    "example": "robin@gmail.com"
+                                                                },
+                                                                "mail_password": {
+                                                                    "type": "string",
+                                                                    "example": "igffghjkl"
+                                                                },
+                                                                "mail_encryption": {
+                                                                    "type": "string",
+                                                                    "example": "robin@gmail.com"
+                                                                },
+                                                                "status": {
+                                                                    "type": "enum",
+                                                                    "example": "inactive"
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "timestamp",
+                                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                                },
+                                                                "updated_at": {
+                                                                    "type": "timestamp",
+                                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "email_outbound": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "mail_transport": {
+                                                                    "type": "string",
+                                                                    "example": "smtp"
+                                                                },
+                                                                "mail_host": {
+                                                                    "type": "string",
+                                                                    "example": "smtp.gmail.com"
+                                                                },
+                                                                "mail_port": {
+                                                                    "type": "integer",
+                                                                    "example": "465"
+                                                                },
+                                                                "mail_username": {
+                                                                    "type": "string",
+                                                                    "example": "robin@gmail.com"
+                                                                },
+                                                                "mail_password": {
+                                                                    "type": "string",
+                                                                    "example": "igffghjkl"
+                                                                },
+                                                                "mail_encryption": {
+                                                                    "type": "string",
+                                                                    "example": "robin@gmail.com"
+                                                                },
+                                                                "status": {
+                                                                    "type": "enum",
+                                                                    "example": "inactive"
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "timestamp",
+                                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                                },
+                                                                "updated_at": {
+                                                                    "type": "timestamp",
+                                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/store-email": {
+            "post": {
+                "tags": [
+                    "Mail Setting"
+                ],
+                "summary": "Add new Email",
+                "description": "Add new Email",
+                "operationId": "postStoreEmail",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
@@ -5067,9 +5279,9 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "id": {
-                                        "type": "integer",
-                                        "example": "1"
+                                    "email": {
+                                        "type": "string",
+                                        "example": "robin@gmail.com"
                                     }
                                 },
                                 "type": "object"
@@ -5090,7 +5302,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Record updated successfully"
+                                            "example": "Created new record successfully"
                                         },
                                         "data": {
                                             "properties": {
@@ -5098,41 +5310,13 @@
                                                     "type": "integer",
                                                     "example": "1"
                                                 },
-                                                "mail_transport": {
-                                                    "type": "string",
-                                                    "example": "imap"
-                                                },
-                                                "mail_host": {
-                                                    "type": "string",
-                                                    "example": "imap.gmail.com"
-                                                },
-                                                "mail_port": {
-                                                    "type": "integer",
-                                                    "example": "993"
-                                                },
-                                                "mail_username": {
-                                                    "type": "string",
-                                                    "example": "robin@gmail.com"
-                                                },
-                                                "mail_password": {
-                                                    "type": "string",
-                                                    "example": "igffghjkl"
-                                                },
-                                                "mail_encryption": {
+                                                "email": {
                                                     "type": "string",
                                                     "example": "robin@gmail.com"
                                                 },
                                                 "status": {
-                                                    "type": "enum",
-                                                    "example": "inactive"
-                                                },
-                                                "created_at": {
-                                                    "type": "timestamp",
-                                                    "example": "2022-09-02T06:01:37.000000Z"
-                                                },
-                                                "updated_at": {
-                                                    "type": "timestamp",
-                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                    "type": "string",
+                                                    "example": "active / inactive"
                                                 }
                                             },
                                             "type": "object"
@@ -5352,6 +5536,10 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
                                     "mail_transport": {
                                         "type": "string",
                                         "example": "smtp"
@@ -5914,161 +6102,6 @@
                                                     "items": {
                                                         "type": "string",
                                                         "example": "The selected branch_id is invalid."
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/email-outbound-status": {
-            "post": {
-                "tags": [
-                    "Mail Setting"
-                ],
-                "summary": "Status Outbound",
-                "description": "Status Outbound",
-                "operationId": "postEmailOutboundStatus",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/tenant--header"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "id": {
-                                        "type": "integer",
-                                        "example": "1"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Record updated successfully"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "example": "1"
-                                                },
-                                                "mail_transport": {
-                                                    "type": "string",
-                                                    "example": "smtp"
-                                                },
-                                                "mail_host": {
-                                                    "type": "string",
-                                                    "example": "smtp.gmail.com"
-                                                },
-                                                "mail_port": {
-                                                    "type": "integer",
-                                                    "example": "465"
-                                                },
-                                                "mail_username": {
-                                                    "type": "string",
-                                                    "example": "robin@gmail.com"
-                                                },
-                                                "mail_password": {
-                                                    "type": "string",
-                                                    "example": "igffghjkl"
-                                                },
-                                                "mail_encryption": {
-                                                    "type": "string",
-                                                    "example": "robin@gmail.com"
-                                                },
-                                                "status": {
-                                                    "type": "enum",
-                                                    "example": "inactive"
-                                                },
-                                                "created_at": {
-                                                    "type": "timestamp",
-                                                    "example": "2022-09-02T06:01:37.000000Z"
-                                                },
-                                                "updated_at": {
-                                                    "type": "timestamp",
-                                                    "example": "2022-09-02T06:01:37.000000Z"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthorized access!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Something went wrong!"
-                                        },
-                                        "code": {
-                                            "type": "string",
-                                            "example": "INVALID"
-                                        },
-                                        "errors": {
-                                            "properties": {
-                                                "email": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string",
-                                                        "example": "The selected email is invalid."
                                                     }
                                                 }
                                             },
