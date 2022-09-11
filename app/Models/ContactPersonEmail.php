@@ -20,7 +20,7 @@ class ContactPersonEmail extends Model implements Auditable
      * @var array
      */
     protected $fillable = [
-        'contact_person_id', 'email', 'status',
+        'contact_person_id', 'email',
     ];
 
     public function contactPerson()

@@ -33,6 +33,7 @@ class User extends Authenticatable implements Syncable
         'global_id',
         'name',
         'display_name',
+        'avatar',
         'email',
         'password',
         'email_verified_at',
@@ -94,5 +95,8 @@ class User extends Authenticatable implements Syncable
     public function toDos()
     {
         return $this->hasMany(ToDo::class);
+    }
+    public function userEmails(){
+        return $this->hasOne(UserEmail::class);
     }
 }

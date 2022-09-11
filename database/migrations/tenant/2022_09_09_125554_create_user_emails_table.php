@@ -19,7 +19,8 @@ class CreateUserEmailsTable extends Migration
             $table->unsignedBigInteger('emails_setting_id');
 
             $table->timestamps();
-            
+            $table->softDeletes();
+
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('emails_setting_id')->references('id')->on('emails_settings')->onUpdate('cascade')->onDelete('cascade');
         });

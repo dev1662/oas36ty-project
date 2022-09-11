@@ -167,7 +167,6 @@ class TaskCommentController extends Controller
 
         $taskComment = new TaskComment($request->all());
         $taskComment->user_id = $user->id;
-        $taskComment->status = TaskComment::STATUS_ACTIVE;
         $task->comments()->save($taskComment);
 
         $this->response["status"] = true;

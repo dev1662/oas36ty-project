@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Tenant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\EmailInbound;
+use App\Models\EmailMaster;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -281,15 +282,16 @@ class EmailInboundController extends Controller
      */
     public function store(Request $request)
     {
+        
         try{
             $validator =  Validator::make(request()->all(), [
-                'id'=>'required',
-                'mail_transport'  => 'required',
+                'id'=>'required|exists:App\Models\EmailMaster,id|unique:App\Models\EmailMaster,id',
+                'mail_transport.option'  => 'required|in:pop,imap',
                 'mail_host'       => 'required',
                 'mail_port'       => 'required|in:110,995,993,143',
                 'mail_username'   => 'required|unique:App\Models\EmailInbound',
                 'mail_password'   => 'required',
-                'mail_encryption' => 'required|in:tls,ssl,starttls',
+                'mail_encryption.option' => 'required|in:tls,ssl,starttls',
                 
             ]
         );
@@ -300,21 +302,25 @@ class EmailInboundController extends Controller
                 $this->response["errors"] = $validator->errors();
                 return response()->json($this->response, 422);
             }
+
             $data = [
                 'id'=>$request->input('id'),
-                'mail_transport'  => $request->input('mail_transport'),
+                'mail_transport'  => $request->input('mail_transport')['option'],
                 'mail_host'       => $request->input('mail_host'),
                 'mail_port'       => $request->input('mail_port'),
                 'mail_username'   => $request->input('mail_username'),
                 'mail_password'   => $request->input('mail_password'),
-                'mail_encryption' => $request->input('mail_encryption'),
+                'mail_encryption' => $request->input('mail_encryption')['option'],
                 
             ];
+         
     
             // return $data;
            
             $check =  EmailInbound::create($data);
-    
+            EmailMaster::where(['id' => $request->input('id')])->update([
+                'inbound_status' => 'tick'
+            ]);
             if ($check) {
                 $this->response["status"] = true;
                 $this->response["message"] = __('strings.store_success');

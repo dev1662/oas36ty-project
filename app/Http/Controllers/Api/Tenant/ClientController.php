@@ -67,6 +67,7 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
+
    $dbname = $request->header('X-Tenant');
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
@@ -151,7 +152,6 @@ class ClientController extends Controller
 
         $client = new Client($request->all());
         $client->user_id = $user->id;
-        $client->status = Client::STATUS_ACTIVE;
         $client->save();
 
         $this->response["status"] = true;

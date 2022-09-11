@@ -16,8 +16,12 @@ class CreateEmailsSettingTable extends Migration
         Schema::create('emails_settings', function (Blueprint $table) {
             $table->id();
             $table->string('email');
-            $table->enum('status', ['active', 'inactive'])->default('inactive');
+            $table->enum('inbound_status', ['tick', 'cross', 'alert'])->default('cross');
+            $table->enum('outbound_status', ['tick', 'cross', 'alert'])->default('cross');
+            
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 

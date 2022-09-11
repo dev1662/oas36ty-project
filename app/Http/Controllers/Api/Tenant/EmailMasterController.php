@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Tenant;
 use App\Http\Controllers\Controller;
 use App\Models\EmailMaster;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -12,36 +13,6 @@ use Illuminate\Support\Facades\Validator;
 class EmailMasterController extends Controller
 {
 
-    public function __construct() {
-        $this->result = new \stdClass();
-
-        //getting method name
-        
-		$fullroute = \Route::currentRouteAction();
-        $method_name = explode('@', $fullroute)[1];
-
-        $methods_arr = ['getEmailCredential'];
-
-        //setting user id which will be accessable for all functions 
-        if (in_array($method_name, $methods_arr)) {
-            $access_token = apache_request_headers()['X-Tenant'];
-            $auth = DB::table('oauth_access_tokens')
-                    ->where('id', $access_token)
-                    ->orderBy('created_at', 'desc')
-                    ->first();
-            if ($auth) {
-                 $this->user_id = $auth->user_id;
-            } else {
-                return response()->json([
-                            'error' => true,
-                            'status_code' => 301,
-                            'message' => "Invalid access token",
-                            'result' => (object) []
-                ]);
-            }
-        }
-
-    }
     
      /**
      *
@@ -335,7 +306,7 @@ class EmailMasterController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        // Random OTP Generation
+        
        $update = EmailMaster::create(['email'=>$request->email]);
 
         if($update){
@@ -351,5 +322,68 @@ class EmailMasterController extends Controller
     }
 
 
+    public function show(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:App\Models\EmailMaster,id',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
 
+        $data = EmailMaster::find($request->id);
+
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.get_one_success');
+        $this->response["data"] = $data;
+        return response()->json($this->response);
+    }
+    public function update(Request $request, $id)
+    {
+        try{
+            // return $id;
+             $validator =  Validator::make(['id'=>$id] + $request->all(), [
+                 'id' => 'required|exists:App\Models\EmailMaster,id',
+                  'email' => 'required|email'
+                 
+             ]
+         );
+            
+             if ($validator->fails()) {
+                 $this->response["code"] = "INVALID";
+                 $this->response["message"] = $validator->errors()->first();
+                 $this->response["errors"] = $validator->errors();
+                 return response()->json($this->response, 422);
+             }
+             $data = [
+                // 'id'=> $request->input('id'),
+                'email' => $request->input('email'),              
+             ];
+     
+            
+             $check =  EmailMaster::where(['id' => $id])->update($data);
+     
+             if ($check) {
+                
+                 $this->response["status"] = true;
+                 $this->response["message"] = __('strings.update_success');
+                 $this->response['data'] = EmailMaster::where(['id' => $id])->first();
+                 return response()->json($this->response);
+     
+             } else {
+                 return response()->json('Something went wrong !!!');
+             }
+     
+         }catch (Exception $ex) {
+             return response()->json([
+                 'error' => $this->error,
+                 'status_code' => $ex->getCode(),
+                 'message' => $ex->getMessage(),
+                 'result' => $this->result
+     ]);
+         }
+    }
 }

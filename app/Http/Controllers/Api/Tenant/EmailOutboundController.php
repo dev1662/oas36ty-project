@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Models\EmailMaster;
 use Illuminate\Http\Request;
 use App\Models\EmailOutbound;
 use Exception;
@@ -283,13 +284,13 @@ class EmailOutboundController extends Controller
     {
         try{
             $validator =  Validator::make(request()->all(), [
-                'id'=>'required',
+                'id'=>'required|exists:App\Models\EmailMaster,id|unique:App\Models\EmailMaster,id',
                 'mail_transport'  => 'required| ',
                 'mail_host'       => 'required',
                 'mail_port'       => 'required|in:25,465,587,2525',
                 'mail_username'   => 'required|unique:App\Models\EmailOutbound',
                 'mail_password'   => 'required',
-                'mail_encryption' => 'required|in:tls,ssl,starttls',
+                'mail_encryption.option' => 'required|in:tls,ssl,starttls',
                 
             ]
         );
@@ -307,13 +308,15 @@ class EmailOutboundController extends Controller
                 'mail_port'       => $request->input('mail_port'),
                 'mail_username'   => $request->input('mail_username'),
                 'mail_password'   => $request->input('mail_password'),
-                'mail_encryption' => $request->input('mail_encryption'),
+                'mail_encryption' => $request->input('mail_encryption')['option'],
                
             ];
     
-           
+        
             $check =  EmailOutbound::create($data);
-    
+            EmailMaster::where(['id' => $request->input('id')])->update([
+                'outbound_status' => 'tick'
+            ]);
             if ($check) {
                 $this->response["status"] = true;
                 $this->response["message"] = __('strings.store_success');

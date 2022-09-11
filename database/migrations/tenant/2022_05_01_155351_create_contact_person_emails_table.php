@@ -19,7 +19,7 @@ class CreateContactPersonEmailsTable extends Migration
             $table->string('email', 64);
             $table->timestamps();
             $table->softDeletes();
-            $table->enum('status', ['active', 'inactive'])->default('inactive');
+            // $table->enum('status', ['active', 'inactive'])->default('inactive');
         });
     }
 

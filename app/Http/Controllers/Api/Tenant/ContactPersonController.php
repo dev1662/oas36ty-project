@@ -202,7 +202,6 @@ class ContactPersonController extends Controller
         // return $request->all();
         $contactPerson = new ContactPerson();
         $contactPerson->name = $request->name;
-        $contactPerson->status = ContactPerson::STATUS_ACTIVE;
         $contactPerson->save();
         // $id = DB::getPdo()->lastInsertId();;
         $id = $contactPerson->id;
@@ -214,7 +213,6 @@ class ContactPersonController extends Controller
 
             $contactPersonEmail->contact_person_id = $id;
             $contactPersonEmail->email = $request->email[$i];
-            $contactPersonEmail->status = ContactPersonEmail::STATUS_ACTIVE;
             // return $contactPersonEmail
             $contactPersonEmail->save();
             }
@@ -223,7 +221,6 @@ class ContactPersonController extends Controller
 
             $contactPersonEmail->contact_person_id = $id;
             $contactPersonEmail->email = $request->email[0];
-            $contactPersonEmail->status = ContactPersonEmail::STATUS_ACTIVE;
             $contactPersonEmail->save();
         }
         if(count($request->phone) > 1){
@@ -232,7 +229,6 @@ class ContactPersonController extends Controller
 
                 $contactPersonPhone->contact_person_id = $id;
                 $contactPersonPhone->phone = $request->phone[$i];
-                $contactPersonPhone->status = ContactPersonPhone::STATUS_ACTIVE;
                 $contactPersonPhone->save();
             }
         }else{
@@ -240,7 +236,6 @@ class ContactPersonController extends Controller
 
             $contactPersonPhone->contact_person_id = $id;
                 $contactPersonPhone->phone = $request->phone[0];
-                $contactPersonPhone->status = ContactPersonPhone::STATUS_ACTIVE;
                 $contactPersonPhone->save();
         }
         $this->response["status"] = true;
@@ -460,7 +455,6 @@ class ContactPersonController extends Controller
                     $add_email = new ContactPersonEmail();
                     $add_email->contact_person_id = $request->contact_person_id;
                     $add_email->email = $request->emails[$i];
-                    $add_email->status = ContactPersonEmail::STATUS_ACTIVE;
                     $add_email->save();
 
                 }
@@ -482,7 +476,6 @@ class ContactPersonController extends Controller
                     $add_phones = new ContactPersonPhone();
                     $add_phones->contact_person_id = $contactPersonID;
                     $add_phones->phone = $request->phones[$i];
-                    $add_phones->status = ContactPersonPhone::STATUS_ACTIVE;
                     $add_phones->save();
                 }
             }

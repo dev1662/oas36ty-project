@@ -158,7 +158,7 @@ class BranchController extends Controller
         }
 
         $branch = new Branch($request->all());
-        $branch->status = Branch::STATUS_ACTIVE;
+        
         $branch->save();
 
         $this->response["status"] = true;

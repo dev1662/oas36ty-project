@@ -20,7 +20,7 @@ class Client extends Model implements Auditable
      * @var array
      */
     protected $fillable = [
-        'user_id', 'name','type', 'status',
+        'user_id', 'name','type',
     ];
     public function task()
     {

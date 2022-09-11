@@ -19,7 +19,7 @@ class CreateContactPersonPhonesTable extends Migration
             $table->string('phone', 20);
             $table->timestamps();
             $table->softDeletes();
-            $table->enum('status', ['active', 'inactive'])->default('inactive');
+            // $table->enum('status', ['active', 'inactive'])->default('inactive');
         });
     }
 

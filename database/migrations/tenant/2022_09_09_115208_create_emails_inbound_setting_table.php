@@ -23,6 +23,8 @@ class CreateEmailsInboundSettingTable extends Migration
             $table->string('mail_encryption');
             // $table->enum('status', ['active', 'inactive'])->default('inactive');
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 

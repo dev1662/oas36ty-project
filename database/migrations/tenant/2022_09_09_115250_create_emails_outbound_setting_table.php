@@ -24,6 +24,8 @@ class CreateEmailsOutboundSettingTable extends Migration
             // $table->string('mail_from');
             // $table->enum('status', ['active', 'inactive'])->default('inactive');
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 

@@ -20,7 +20,7 @@ class CreateTaskCommentsTable extends Migration
             $table->longText('comment')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->enum('status', ['active', 'inactive'])->default('inactive');
+            // $table->enum('status', ['active', 'inactive'])->default('inactive');
         });
     }
 

@@ -21,7 +21,7 @@ class Category extends Model implements Auditable
      * @var array
      */
     protected $fillable = [
-        'name', 'type','status',
+        'name', 'type'
     ];
     public function task()
     {

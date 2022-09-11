@@ -20,7 +20,7 @@ class TaskComment extends Model implements Auditable
      * @var array
      */
     protected $fillable = [
-        'task_id', 'user_id', 'comment', 'status',
+        'task_id', 'user_id', 'comment',
     ];
 
     public function user()

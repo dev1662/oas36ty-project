@@ -64,7 +64,7 @@ class SwitchOrganizationController extends Controller
     public function index(Request $request){ 
 
         $user = $request->user();
-
+      
         $validator = FacadesValidator::make($request->all(), [
             'tenant_id' => 'required|exists:App\Models\Tenant,id',
         ]);

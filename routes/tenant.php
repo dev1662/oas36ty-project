@@ -77,6 +77,8 @@ Route::middleware([
             //------------------------EmailConfig -----------------------------
             Route::post('/store-email',[EmailMasterController::class,'storeMail']);
             Route::post('/get-emails',[EmailMasterController::class,'getEmailCredential']);
+            Route::post('/find-emails',[EmailMasterController::class,'show']);
+            Route::match(['put', 'patch'],'update-email/{id}', [EmailMasterController::class, 'update']);
 
             Route::apiResource('email-outbound', EmailOutboundController::class);
             Route::apiResource('email-inbound', EmailInboundController::class);
@@ -84,14 +86,8 @@ Route::middleware([
             Route::post('email-inbound-status', [EmailInboundController::class, 'update_active_inactive_status']);
            
 
-            Route::get('/outbound-mail',[MailConfigController::class,'index'])->name('outbound.mail.index');
-            Route::post('/outbound-mail-update',[MailConfigController::class,'outboundMailUpdate'])->name('outbound.mail.update');
-            Route::post('/outbound-mail-create',[MailConfigController::class,'outboundMailCreate'])->name('outbound.mail.create');
-            Route::post('/inbound-mail-update',[MailConfigController::class,'inboundMailUpdate'])->name('inbound.mail.update');
-            Route::post('/inbound-mail-create',[MailConfigController::class,'inboundMailCreate'])->name('inbound.mail.create');
 
-            Route::post('/send', [MailConfigController::class,'SendEmail']);
-            Route::post('/get-email', [MailConfigController::class,'RecievedEmail']);
+         
             Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);
 
             

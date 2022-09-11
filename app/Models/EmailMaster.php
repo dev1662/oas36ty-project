@@ -4,16 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class EmailMaster extends Model
+class EmailMaster extends Model implements Auditable
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
+    use \OwenIt\Auditing\Auditable;
+
     protected $guarded = [];
     public $table = 'emails_settings';
 
     protected $fillable = [
         'email',
-        'status',
+        'inbound_status',
+        'outbound_status',
+
     ];
 
 public function emailInbound(){
@@ -27,5 +33,7 @@ public function emailInbound(){
     
     }
 
-
+    public function userEmails(){
+        return $this->hasOne(UserEmail::class);
+    }
 }

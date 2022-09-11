@@ -150,7 +150,6 @@ class CategoryController extends Controller
         }
 
         $category = new Category($request->all());
-        $category->status = Category::STATUS_ACTIVE;
         $category->save();
 
         $this->response["status"] = true;

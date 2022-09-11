@@ -106,7 +106,7 @@ class UserController extends Controller
 
         $search = $request->search;
 
-        $users = User::select('id', 'name', 'email', 'status')->where(function ($q) use ($search) {
+        $users = User::select('id', 'name','avatar', 'email', 'status')->where(function ($q) use ($search) {
             if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
         })->latest()->get();
 
@@ -220,6 +220,7 @@ class UserController extends Controller
             // return $centralUser;
             $user = User::where('email', $centralUser->email)->first();
             if ($request->name != $user->name)  $user->display_name = $request->name;
+            $user->avatar =  'https://ui-avatars.com/api/?name='.$request->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
             // return $user;
@@ -247,7 +248,9 @@ class UserController extends Controller
                         'email' => $request->email
                     ],
                     [
+
                         'name' => $request->name,
+                       
                         'status' => CentralUser::STATUS_PENDING,
                     ]
                 );
@@ -257,6 +260,7 @@ class UserController extends Controller
 
             $user = User::where('email', $centralUser->email)->first();
             if ($request->name != $user->name)  $user->display_name = $request->name;
+            $user->avatar =  'https://ui-avatars.com/api/?name='.$request->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
 
@@ -379,9 +383,12 @@ class UserController extends Controller
                         $user->status = User::STATUS_DECLINED;
                         $user->update();
                     });
-
-                    $tenant_users = $centralUser->tenants()->with('organization')->latest('id')->first();
-                    if($tenant_users->pivot->forceDelete()){
+                        // return $tokenData;
+                    $tenant_users = $centralUser->tenants()->where('tenant_id', $tokenData->tenant_id)->first();
+                    
+                    
+                    
+                        if($tenant_users->pivot->forceDelete()){
 
                     $this->response["status"] = true;
                     $this->response["message"] = __('strings.invitation_decline_success');

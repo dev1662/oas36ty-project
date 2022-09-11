@@ -4,10 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+// use OwenIt\Auditing\Contracts\Audit;
+use OwenIt\Auditing\Contracts\Auditable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class EmailOutbound extends Model
+class EmailOutbound extends Model implements Auditable
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
+    use \OwenIt\Auditing\Auditable;
+
     protected $guarded = [];
     public $table = 'emails_outbound_setting';
     public $incrementing = false;
