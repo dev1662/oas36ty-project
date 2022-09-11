@@ -284,7 +284,7 @@ class EmailOutboundController extends Controller
     {
         try{
             $validator =  Validator::make(request()->all(), [
-                'id'=>'required|exists:App\Models\EmailMaster,id|unique:App\Models\EmailMaster,id',
+                'id'=>'required|exists:App\Models\EmailMaster,id|unique:App\Models\EmailOutbound,id',
                 'mail_transport'  => 'required| ',
                 'mail_host'       => 'required',
                 'mail_port'       => 'required|in:25,465,587,2525',
