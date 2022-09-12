@@ -15,6 +15,7 @@ use App\Models\User;
 
 use App\Mail\JoiningInvitation as JoiningInvitationMail;
 use App\Models\Branch;
+use App\Models\EmailMaster;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -23,7 +24,21 @@ use PDO;
 
 class UserController extends Controller
 {
+    public function get_emails_to_assign(Request $request){
+
+        $dbname = $request->header('X-Tenant'); //json_decode($request->header('currrent'))->tenant->organization->name;
+        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+        // return   $dbname;
+        $this->switchingDB($dbname);
     
+        $details_arr = EmailMaster::where(['inbound_status' =>'tick', 'outbound_status' => 'tick'])->with(['emailInbound','emailOutbound'])->get();
+    
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.get_all_success');
+        $this->response["data"] = $details_arr ?? [];
+        return response()->json($this->response);
+    
+        }
     /**
      *
      * @OA\Get(
@@ -86,7 +101,7 @@ class UserController extends Controller
      *     ),
      * )
      */
-
+    
     public function index(Request $request)
     {
         $dbname = $request->header('X-Tenant');
@@ -527,10 +542,13 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = $request->user();
+        return $user;
 
         $validator = Validator::make(['user_id' => $id] + $request->all(), [
             'user_id' => 'required|exists:App\Models\User,id',
-            'email' => 'required|email|max:64|unique:App\Models\User,email',
+            'image' => 'required|image',
+            'name' => 'required',
+            'email' => 'required|email|max:64|',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
