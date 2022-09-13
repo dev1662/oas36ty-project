@@ -311,7 +311,7 @@ class EmailOutboundController extends Controller
                 'mail_encryption' => $request->input('mail_encryption')['option'],
                
             ];
-    
+          
         
             $check =  EmailOutbound::create($data);
             EmailMaster::where(['id' => $request->input('id')])->update([
@@ -639,7 +639,7 @@ class EmailOutboundController extends Controller
                 'mail_port'       => 'required|in:25,465,587,2525',
                 'mail_username'   => 'sometimes|required|unique:App\Models\EmailOutbound'.',id,'.$request->id,
                 'mail_password'   => 'required',
-                'mail_encryption' => 'required|in:tls,ssl,starttls',
+                'mail_encryption.option' => 'required|in:tls,ssl,starttls',
                
             ]
         );
@@ -657,10 +657,10 @@ class EmailOutboundController extends Controller
                 'mail_port'       => $request->input('mail_port'),
                 'mail_username'   => $request->input('mail_username'),
                 'mail_password'   => $request->input('mail_password'),
-                'mail_encryption' => $request->input('mail_encryption'),
+                'mail_encryption' => $request->input('mail_encryption')['option'],
                
             ];
-    
+            
            
             $check =  EmailOutbound::where(['id' => $id])->update($data);
     

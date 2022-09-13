@@ -334,7 +334,7 @@ class EmailMasterController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $data = EmailMaster::find($request->id);
+        $data = EmailMaster::where('id',$request->id)->with(['emailInbound','emailOutbound'])->first();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
