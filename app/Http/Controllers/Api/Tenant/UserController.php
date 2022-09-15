@@ -36,7 +36,7 @@ class UserController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
 
-        $details_arr = EmailMaster::where(['inbound_status' => 'tick', 'outbound_status' => 'tick'])->with(['emailInbound', 'emailOutbound'])->get();
+        $details_arr = EmailMaster::with(['emailInbound', 'emailOutbound'])->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -126,7 +126,7 @@ class UserController extends Controller
         $search = $request->search;
         // tenantdevCentrik
 
-        $path = storage_path('/app');
+        $path = 'tenant'.$request->header('X-Tenant').'/';
         // return $path;
         $users = User::select('id', 'name', 'avatar', 'email', 'status')->where(function ($q) use ($search) {
             if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
@@ -245,7 +245,7 @@ class UserController extends Controller
             // return $centralUser;
             $user = User::where('email', $centralUser->email)->first();
             if ($request->name != $user->name)  $user->display_name = $request->name;
-            $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
+            // $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
             // return $user;
@@ -285,7 +285,7 @@ class UserController extends Controller
 
             $user = User::where('email', $centralUser->email)->first();
             if ($request->name != $user->name)  $user->display_name = $request->name;
-            $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
+            // $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
 
