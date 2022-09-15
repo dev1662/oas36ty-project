@@ -8247,6 +8247,12 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "naveen.w3master@gmail.com"
+                                    },
+                                    "image": {
+                                        "description": "",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "example": ""
                                     }
                                 },
                                 "type": "object"

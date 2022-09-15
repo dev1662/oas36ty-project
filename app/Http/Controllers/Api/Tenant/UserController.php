@@ -16,29 +16,33 @@ use App\Models\User;
 use App\Mail\JoiningInvitation as JoiningInvitationMail;
 use App\Models\Branch;
 use App\Models\EmailMaster;
+use App\Models\UserEmail;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use PDO;
 
 class UserController extends Controller
 {
-    public function get_emails_to_assign(Request $request){
+    public function get_emails_to_assign(Request $request)
+    {
 
         $dbname = $request->header('X-Tenant'); //json_decode($request->header('currrent'))->tenant->organization->name;
-        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+        $dbname = config('tenancy.database.prefix') . strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-    
-        $details_arr = EmailMaster::where(['inbound_status' =>'tick', 'outbound_status' => 'tick'])->with(['emailInbound','emailOutbound'])->get();
-    
+
+        $details_arr = EmailMaster::where(['inbound_status' => 'tick', 'outbound_status' => 'tick'])->with(['emailInbound', 'emailOutbound'])->get();
+
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] = $details_arr ?? [];
         return response()->json($this->response);
-    
-        }
+    }
     /**
      *
      * @OA\Get(
@@ -101,7 +105,7 @@ class UserController extends Controller
      *     ),
      * )
      */
-    
+
     public function index(Request $request)
     {
         $dbname = $request->header('X-Tenant');
@@ -120,14 +124,20 @@ class UserController extends Controller
         }
 
         $search = $request->search;
+        // tenantdevCentrik
 
-        $users = User::select('id', 'name','avatar', 'email', 'status')->where(function ($q) use ($search) {
+        $path = storage_path('/app');
+        // return $path;
+        $users = User::select('id', 'name', 'avatar', 'email', 'status')->where(function ($q) use ($search) {
             if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
         })->latest()->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
-        $this->response["data"] = $users;
+        $this->response["data"] =
+         ["users" => $users,
+         "path" => $path
+        ];
         return response()->json($this->response);
     }
 
@@ -194,7 +204,7 @@ class UserController extends Controller
      *     ),
      * )
      */
-    
+
     public function store(Request $request)
     {
 
@@ -235,7 +245,7 @@ class UserController extends Controller
             // return $centralUser;
             $user = User::where('email', $centralUser->email)->first();
             if ($request->name != $user->name)  $user->display_name = $request->name;
-            $user->avatar =  'https://ui-avatars.com/api/?name='.$request->name;
+            $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
             // return $user;
@@ -265,7 +275,7 @@ class UserController extends Controller
                     [
 
                         'name' => $request->name,
-                       
+
                         'status' => CentralUser::STATUS_PENDING,
                     ]
                 );
@@ -275,7 +285,7 @@ class UserController extends Controller
 
             $user = User::where('email', $centralUser->email)->first();
             if ($request->name != $user->name)  $user->display_name = $request->name;
-            $user->avatar =  'https://ui-avatars.com/api/?name='.$request->name;
+            $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
 
@@ -302,7 +312,7 @@ class UserController extends Controller
         return response()->json($this->response);
     }
 
-    
+
     public function AcceptInvite(Request $request)
     {
 
@@ -398,16 +408,16 @@ class UserController extends Controller
                         $user->status = User::STATUS_DECLINED;
                         $user->update();
                     });
-                        // return $tokenData;
+                    // return $tokenData;
                     $tenant_users = $centralUser->tenants()->where('tenant_id', $tokenData->tenant_id)->first();
-                    
-                    
-                    
-                        if($tenant_users->pivot->forceDelete()){
 
-                    $this->response["status"] = true;
-                    $this->response["message"] = __('strings.invitation_decline_success');
-                    return response()->json($this->response);
+
+
+                    if ($tenant_users->pivot->forceDelete()) {
+
+                        $this->response["status"] = true;
+                        $this->response["message"] = __('strings.invitation_decline_success');
+                        return response()->json($this->response);
                     }
                 }
                 $this->response["message"] = __('strings.invitation_decline_failed');
@@ -462,7 +472,7 @@ class UserController extends Controller
 
     }
 
- 
+
 
     /**
      * Display the specified resource.
@@ -491,6 +501,8 @@ class UserController extends Controller
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="email", type="string", example="naveen.w3master@gmail.com", description=""),
+     *             @OA\Property(property="image", type="string", example="", description="", format="binary"),
+     * 
      *         )
      *     ),
      *     @OA\Response(
@@ -542,13 +554,13 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = $request->user();
-        return $user;
+
 
         $validator = Validator::make(['user_id' => $id] + $request->all(), [
             'user_id' => 'required|exists:App\Models\User,id',
-            'image' => 'required|image',
+            'image' => 'required',
             'name' => 'required',
-            'email' => 'required|email|max:64|',
+            'emails' => 'required',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -557,54 +569,60 @@ class UserController extends Controller
             return response()->json($this->response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        $tenantName = $request->header('X-Tenant');
+        $tenantName = config('tenancy.database.prefix').strtolower($tenantName);
+
+        // return $request->image;
+        $base64_image = $request->input('image'); // your base64 encoded     
+        @list($type, $file_data) = explode(';', $base64_image);
+        @list(, $file_data) = explode(',', $file_data);
+        $imageName = Str::random(10) . '.' . 'png';
+        
+        Storage::disk('local')->put($imageName, base64_decode($file_data));
         $member = User::find($id);
-        if ($member->status != User::STATUS_PENDING) {
+        if ($member->status == User::STATUS_PENDING) {
             $this->response["message"] = __('strings.update_failed');
             return response()->json($this->response, Response::HTTP_FORBIDDEN);
         }
+        // return $member;
 
         $oldCentralUser = tenancy()->central(function ($tenant) use ($member) {
             return CentralUser::where(['email' => $member->email])->first();
         });
-        $newCentralUser = tenancy()->central(function ($tenant) use ($request) {
-            return CentralUser::where(['email' => $request->email])->first();
-        });
+      
         $oldCentralUserTenantsCount = tenancy()->central(function ($tenant) use ($oldCentralUser) {
             return $oldCentralUser->tenants()->count();
         });
-
-        if ($oldCentralUserTenantsCount == 1 && !$newCentralUser) {
-            $member->email = $request->email;
-            $member->update();
-        } else {
-            if (!$newCentralUser) {
-                $newCentralUser = tenancy()->central(function ($tenant) use ($request, $member) {
-                    return CentralUser::create([
-                        'name' => $member->name,
-                        'email' => $request->email,
-                        'status' => CentralUser::STATUS_PENDING,
-                    ]);
-                });
-            }
-
-            tenancy()->central(function ($tenant) use ($oldCentralUser, $newCentralUser) {
-                $tenant->users()->detach($oldCentralUser->global_id);
-            });
-
-            $member->global_id = $newCentralUser->global_id;
-            $member->email = $request->email;
+       
+        if ($oldCentralUserTenantsCount == 1) {
+            $member->name = $request->name;
+            $member->avatar = $imageName;
             $member->update();
 
-            tenancy()->central(function ($tenant) use ($oldCentralUser, $newCentralUser) {
-                $tenant->users()->syncWithoutDetaching([$newCentralUser->global_id]);
-            });
-
-            if ($oldCentralUserTenantsCount == 1) {
-                tenancy()->central(function ($tenant) use ($oldCentralUser) {
-                    $oldCentralUser->delete();
-                });
-            }
         }
+        // $tenant = $oldCentralUser->tenants()->find($tenantName);
+        // return $id;
+        $this->switchingDB($tenantName);
+            // $user = $tenant->run(function ($tenant) use ($oldCentralUser, $request) {
+                foreach($request->emails as $all_email){
+                    
+                     UserEmail::create([
+                        'user_id' => $id,
+                        'emails_setting_id' => $all_email['id']
+                        
+                    ]);
+                }
+            // });
+ //else {
+      
+
+            
+            // if ($oldCentralUserTenantsCount == 1) {
+            //     tenancy()->central(function ($tenant) use ($oldCentralUser) {
+            //         $oldCentralUser->delete();
+            //     });
+            // }
+        //}
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
