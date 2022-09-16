@@ -577,8 +577,8 @@ class UserController extends Controller
         @list($type, $file_data) = explode(';', $base64_image);
         @list(, $file_data) = explode(',', $file_data);
         $imageName = Str::random(10) . '.' . 'png';
-        
-        Storage::disk('local')->put($imageName, base64_decode($file_data));
+        // $imageName->store('images');
+        Storage::disk('public')->put($imageName, base64_decode($file_data));
         $member = User::find($id);
         if ($member->status == User::STATUS_PENDING) {
             $this->response["message"] = __('strings.update_failed');
