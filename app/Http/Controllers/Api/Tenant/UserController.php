@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\TestQueueRecieveEmail;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
@@ -17,6 +18,7 @@ use App\Mail\JoiningInvitation as JoiningInvitationMail;
 use App\Models\Branch;
 use App\Models\EmailMaster;
 use App\Models\UserEmail;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +30,17 @@ use PDO;
 
 class UserController extends Controller
 {
+    public function __construct(Request $request)
+    {
+    
+        // $request_email = json_decode($request->header('currrent'))->email;
+        // $centralUser = CentralUser::where('email', $request_email)->first();
+        // $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
+        // tenancy()->initialize($tenant);
+        // return $request_email;die;
+       
+            // Artisan::call('queue:listen');
+    }
     public function get_emails_to_assign(Request $request)
     {
 
@@ -126,7 +139,8 @@ class UserController extends Controller
         $search = $request->search;
         // tenantdevCentrik
 
-        $path = 'tenant'.$request->header('X-Tenant').'/';
+        $path = 'http://localhost/oas36ty/local_api/storage/tenant'.$request->header('X-Tenant').'/';
+
         // return $path;
         $users = User::select('id', 'name', 'avatar', 'email', 'status')->where(function ($q) use ($search) {
             if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
@@ -138,6 +152,20 @@ class UserController extends Controller
          ["users" => $users,
          "path" => $path
         ];
+        // $request_email = json_decode($request->header('currrent'))->email;
+
+        // $email_master = EmailMaster::where('email', $request_email)->with(['emailInbound', 'emailOutbound'])->first();
+        // $data = [
+        //     'mail_host' => $email_master->emailInbound->mail_host,
+        //     'mail_transport' => $email_master->emailInbound->mail_transport,
+        //     'mail_encryption' => $email_master->emailInbound->mail_encryption,
+        //     'mail_username' => $email_master->emailInbound->mail_username,
+        //     'mail_password' => $email_master->emailInbound->mail_password,
+        //     'mail_port' => $email_master->emailInbound->mail_port,
+            
+        // ];
+        // dispatch(new TestQueueRecieveEmail($data))->afterResponse();
+            // Artisan::call('queue:listen');
         return response()->json($this->response);
     }
 
@@ -573,12 +601,8 @@ class UserController extends Controller
         $tenantName = config('tenancy.database.prefix').strtolower($tenantName);
 
         // return $request->image;
-        $base64_image = $request->input('image'); // your base64 encoded     
-        @list($type, $file_data) = explode(';', $base64_image);
-        @list(, $file_data) = explode(',', $file_data);
-        $imageName = Str::random(10) . '.' . 'png';
-        // $imageName->store('images');
-        Storage::disk('public')->put($imageName, base64_decode($file_data));
+        
+        // $path = tenant_asset($stored);
         $member = User::find($id);
         if ($member->status == User::STATUS_PENDING) {
             $this->response["message"] = __('strings.update_failed');
@@ -593,7 +617,12 @@ class UserController extends Controller
         $oldCentralUserTenantsCount = tenancy()->central(function ($tenant) use ($oldCentralUser) {
             return $oldCentralUser->tenants()->count();
         });
-       
+        $base64_image = $request->input('image'); // your base64 encoded     
+        @list($type, $file_data) = explode(';', $base64_image);
+        @list(, $file_data) = explode(',', $file_data);
+        $imageName = Str::random(10) . '.' . 'png';
+
+        Storage::put($imageName, base64_decode($file_data));
         if ($oldCentralUserTenantsCount == 1) {
             $member->name = $request->name;
             $member->avatar = $imageName;
@@ -605,12 +634,21 @@ class UserController extends Controller
         $this->switchingDB($tenantName);
             // $user = $tenant->run(function ($tenant) use ($oldCentralUser, $request) {
                 foreach($request->emails as $all_email){
-                    
-                     UserEmail::create([
-                        'user_id' => $id,
-                        'emails_setting_id' => $all_email['id']
+                   $exists_user_emails =  UserEmail::where(['user_id' => $id, 'emails_setting_id' => $all_email['id']])->get();
+
+                    if(count($exists_user_emails) > 1){
+                        $this->response["message"] = 'Emails are already assigned choose another email';
+                        return response()->json($this->response,500);
+                    }else{
+
+                        UserEmail::create([
+                           'user_id' => $id,
+                           'emails_setting_id' => $all_email['id']
+                           
+                       ]);
                         
-                    ]);
+                    }
+                    
                 }
             // });
  //else {
@@ -625,7 +663,11 @@ class UserController extends Controller
         //}
 
         $this->response["status"] = true;
-        $this->response["message"] = __('strings.update_success');
+        $this->response["message"] = [
+            'msg' => __('strings.update_success'),
+    
+        ];
+   
         return response()->json($this->response);
     }
 
