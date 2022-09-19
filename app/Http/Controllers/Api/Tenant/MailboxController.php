@@ -71,11 +71,11 @@ class MailboxController extends Controller
     ];
 
         $meta = [
-            'emailsMeta' => count($result)
+            'emailsMeta' => count($result['emails'])
         ];
              $this->response['status'] = true;
             $this->response['message'] = 'data fetched';
-            $this->response['data'] = $result;
+            $this->response['data'] = $result['emails'];
             $this->response['meta'] = $meta;
             return response()->json($this->response);
         
