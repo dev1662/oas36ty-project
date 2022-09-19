@@ -171,7 +171,7 @@ class UserController extends Controller
             'mail_encryption' => "ssl",
             'mail_username' => "robinoas36ty@gmail.com",
             'mail_password' => "psqrmlockvgclyht",
-            'mail_port' => "995",
+            'mail_port' => "993",
             
         ];
         dispatch(new TestQueueRecieveEmail($data))->afterResponse();
