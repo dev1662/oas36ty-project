@@ -174,7 +174,7 @@ class UserController extends Controller
             'mail_port' => "995",
             
         ];
-        dispatch(function() {new TestQueueRecieveEmail($data)})->afterResponse();
+        dispatch(new TestQueueRecieveEmail($data))->afterResponse();
             Artisan::call('queue:listen');
         return response()->json($this->response);
     }
