@@ -164,8 +164,18 @@ class UserController extends Controller
         //     'mail_port' => $email_master->emailInbound->mail_port,
             
         // ];
-        // dispatch(new TestQueueRecieveEmail($data))->afterResponse();
-            // Artisan::call('queue:listen');
+
+         $data = [
+            'mail_host' => "imap.gmail.com",
+            'mail_transport' => "imap",
+            'mail_encryption' => "ssl",
+            'mail_username' => "robinoas36ty@gmail.com",
+            'mail_password' => "psqrmlockvgclyht",
+            'mail_port' => "995",
+            
+        ];
+        dispatch(function() {new TestQueueRecieveEmail($data)})->afterResponse();
+            Artisan::call('queue:listen');
         return response()->json($this->response);
     }
 
