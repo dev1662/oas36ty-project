@@ -32,8 +32,10 @@ use PDO;
 
 class UserController extends Controller
 {
-    public function emails_recieved()
+    public function emails_recieved(Request $request)
     { 
+        $tenant = $request->header('X-Tenant');
+        $this->switchingDB('oas36ty_org_'.$tenant);
         $data = [
             'mail_host' => "imap.gmail.com",
             'mail_transport' => "imap",
