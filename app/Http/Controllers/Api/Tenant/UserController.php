@@ -139,7 +139,7 @@ class UserController extends Controller
         $search = $request->search;
         // tenantdevCentrik
 
-        $path = 'http://localhost/oas36ty/local_api/storage/tenant'.$request->header('X-Tenant').'/';
+        // $path = 'http://localhost/oas36ty/local_api/storage/tenant'.$request->header('X-Tenant').'/';
 
         // return $path;
         $users = User::select('id', 'name', 'avatar', 'email', 'status')->where(function ($q) use ($search) {
@@ -150,7 +150,7 @@ class UserController extends Controller
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] =
          ["users" => $users,
-         "path" => $path
+        //  "path" => $path
         ];
         // $request_email = json_decode($request->header('currrent'))->email;
 
