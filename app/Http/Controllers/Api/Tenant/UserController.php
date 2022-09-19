@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Mail\JoiningInvitation as JoiningInvitationMail;
 use App\Models\Branch;
 use App\Models\EmailMaster;
+use App\Models\Mailbox;
 use App\Models\UserEmail;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
@@ -31,9 +32,130 @@ use PDO;
 
 class UserController extends Controller
 {
-    public function __construct(Request $request)
-    {
+    public function emails_recieved()
+    { 
+        $data = [
+            'mail_host' => "imap.gmail.com",
+            'mail_transport' => "imap",
+            'mail_encryption' => "ssl",
+            'mail_username' => " jakeraubin@gmail.com",
+            'mail_password' => "yfkfaxbeignwfebw",
+            'mail_port' => 993,
+            
+        ];
     
+        $host = '{'.$data['mail_host'].':'.$data['mail_port'].'/'.$data['mail_transport'].'/'.$data['mail_encryption'].'}';
+        // return $host;
+        // / Your gmail credentials /
+        $user = $data['mail_username'];
+        $password = $data['mail_password'];
+        
+        // / Establish a IMAP connection /
+        $conn = imap_open($host, $user, $password)
+        
+        or die('unable to connect Gmail: ' . imap_last_error());
+        $mails = imap_search($conn, 'ALL');
+        // / loop through each email id mails are available. /
+        if ($mails) {
+            rsort($mails);
+            // / For each email /
+            foreach ($mails as $email_number) {
+                $headers = imap_fetch_overview($conn, $email_number, 0);
+        
+                // $structure = imap_fetchstructure($conn, $email_number);
+        
+                // $attachments = array();
+        
+                // /* if any attachments found... */
+                // if(isset($structure->parts) && count($structure->parts)) 
+                // {
+                //     for($i = 0; $i < count($structure->parts); $i++) 
+                //     {
+                //         $attachments[$i] = array(
+                //             'is_attachment' => false,
+                //             'filename' => '',
+                //             'name' => '',
+                //             'attachment' => ''
+                //         );
+        
+                //         if($structure->parts[$i]->ifdparameters) 
+                //         {
+                //             foreach($structure->parts[$i]->dparameters as $object) 
+                //             {
+                //                 if(strtolower($object->attribute) == 'filename') 
+                //                 {
+                //                     $attachments[$i]['is_attachment'] = true;
+                //                     $attachments[$i]['filename'] = $object->value;
+                //                 }
+                //             }
+                //         }
+        
+                //         if($structure->parts[$i]->ifparameters) 
+                //         {
+                //             foreach($structure->parts[$i]->parameters as $object) 
+                //             {
+                //                 if(strtolower($object->attribute) == 'name') 
+                //                 {
+                //                     $attachments[$i]['is_attachment'] = true;
+                //                     $attachments[$i]['name'] = $object->value;
+                //                 }
+                //             }
+                //         }
+        
+                //         if($attachments[$i]['is_attachment']) 
+                //         {
+                //             $attachments[$i]['attachment'] = imap_fetchbody($conn, $email_number, $i+1);
+        
+                //             /* 3 = BASE64 encoding */
+                //             if($structure->parts[$i]->encoding == 3) 
+                //             { 
+                //                 $attachments[$i]['attachment'] = base64_decode($attachments[$i]['attachment']);
+                //             }
+                //             /* 4 = QUOTED-PRINTABLE encoding */
+                //             elseif($structure->parts[$i]->encoding == 4) 
+                //             { 
+                //                 $attachments[$i]['attachment'] = quoted_printable_decode($attachments[$i]['attachment']);
+                //             }
+                //         }
+                //     }
+                // }
+                // Log::info($attachments);
+        
+                // Log::info($headers);
+                $message = imap_fetchbody($conn, $email_number, '1');
+                $subMessage = substr($message, 0, 150);
+                $finalMessage = trim(quoted_printable_decode($subMessage));
+                // Log::info($finalMessage);die;
+                $details_of_email = [];
+                foreach($headers as $index => $header){
+                    $details_of_email[$index] =[
+                        'subject' => $header->subject,
+                        'from_name' => $header->from,
+                        'from_email' => $header->from,
+                        'message_id' => $header->message_id,
+                        'to_email' => $header->to,
+                        'message' => $finalMessage,
+                        'date' => $header->date,
+                        'u_date' => $header->udate,
+        
+                    ];
+                    
+                   $insert= Mailbox::create($details_of_email[$index]);
+                   
+                }
+                
+                // return;
+            }// End foreach
+            if($insert){
+                return "success";
+            }
+        
+        }//endif
+        
+  
+        imap_close($conn);
+        
+
         // $request_email = json_decode($request->header('currrent'))->email;
         // $centralUser = CentralUser::where('email', $request_email)->first();
         // $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
@@ -166,17 +288,17 @@ class UserController extends Controller
             
         // ];
 
-         $data = [
-            'mail_host' => "imap.gmail.com",
-            'mail_transport' => "imap",
-            'mail_encryption' => "ssl",
-            'mail_username' => " jakeraubin@gmail.com",
-            'mail_password' => "yfkfaxbeignwfebw",
-            'mail_port' => 993,
+        //  $data = [
+        //     'mail_host' => "imap.gmail.com",
+        //     'mail_transport' => "imap",
+        //     'mail_encryption' => "ssl",
+        //     'mail_username' => " jakeraubin@gmail.com",
+        //     'mail_password' => "yfkfaxbeignwfebw",
+        //     'mail_port' => 993,
             
-        ];
-        $job= TestQueueRecieveEmail::dispatchAfterResponse($data);
-        Log::info($job);
+        // ];
+        // $job= TestQueueRecieveEmail::dispatchAfterResponse($data);
+        // Log::info($job);
         // dispatch(new TestQueueRecieveEmail($data))->afterResponse();
             // Artisan::call('queue:listen');
         return response()->json($this->response);
