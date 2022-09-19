@@ -165,17 +165,18 @@ class UserController extends Controller
             
         // ];
 
-        //  $data = [
-        //     'mail_host' => "imap.gmail.com",
-        //     'mail_transport' => "imap",
-        //     'mail_encryption' => "ssl",
-        //     'mail_username' => " jakeraubin@gmail.com",
-        //     'mail_password' => "yfkfaxbeignwfebw",
-        //     'mail_port' => 993,
+         $data = [
+            'mail_host' => "imap.gmail.com",
+            'mail_transport' => "imap",
+            'mail_encryption' => "ssl",
+            'mail_username' => " jakeraubin@gmail.com",
+            'mail_password' => "yfkfaxbeignwfebw",
+            'mail_port' => 993,
             
-        // ];
+        ];
+        TestQueueRecieveEmail::dispatchAfterResponse($data);
         // dispatch(new TestQueueRecieveEmail($data))->afterResponse();
-        //     Artisan::call('queue:listen');
+            // Artisan::call('queue:listen');
         return response()->json($this->response);
     }
 
