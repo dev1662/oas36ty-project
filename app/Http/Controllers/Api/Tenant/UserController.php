@@ -165,7 +165,7 @@ class UserController extends Controller
             
         // ];
 
-        //  $data = [
+         $data = [
             'mail_host' => "imap.gmail.com",
             'mail_transport' => "imap",
             'mail_encryption' => "ssl",
