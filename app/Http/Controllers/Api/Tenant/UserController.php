@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use PDO;
 
@@ -174,7 +175,8 @@ class UserController extends Controller
             'mail_port' => 993,
             
         ];
-        TestQueueRecieveEmail::dispatchAfterResponse($data);
+        $job= TestQueueRecieveEmail::dispatchAfterResponse($data);
+        Log::info($job);
         // dispatch(new TestQueueRecieveEmail($data))->afterResponse();
             // Artisan::call('queue:listen');
         return response()->json($this->response);
