@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Tenant;
 
 use App\Http\Controllers\Controller;
-use App\Models\EmailMaster;
+use App\Models\EmailsSetting;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -204,7 +204,7 @@ class EmailMasterController extends Controller
     // return   $dbname;
     $this->switchingDB($dbname);
 
-    $details_arr = EmailMaster::with(['emailInbound','emailOutbound'])->get();
+    $details_arr = EmailsSetting::with(['emailInbound','emailOutbound'])->get();
 
     $this->response["status"] = true;
     $this->response["message"] = __('strings.get_all_success');
@@ -297,7 +297,7 @@ class EmailMasterController extends Controller
     public function storeMail(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email'   => 'required|unique:App\Models\EmailMaster',
+            'email'   => 'required|unique:App\Models\EmailsSetting',
         ]);
 
         if($validator->fails()) {
@@ -307,7 +307,7 @@ class EmailMasterController extends Controller
             return response()->json($this->response, 422);
         }
         
-       $update = EmailMaster::create(['email'=>$request->email]);
+       $update = EmailsSetting::create(['email'=>$request->email]);
 
         if($update){
 
@@ -325,7 +325,7 @@ class EmailMasterController extends Controller
     public function show(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|exists:App\Models\EmailMaster,id',
+            'id' => 'required|exists:App\Models\EmailsSetting,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -334,7 +334,7 @@ class EmailMasterController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $data = EmailMaster::where('id',$request->id)->with(['emailInbound','emailOutbound'])->first();
+        $data = EmailsSetting::where('id',$request->id)->with(['emailInbound','emailOutbound'])->first();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
@@ -346,7 +346,7 @@ class EmailMasterController extends Controller
         try{
             // return $id;
              $validator =  Validator::make(['id'=>$id] + $request->all(), [
-                 'id' => 'required|exists:App\Models\EmailMaster,id',
+                 'id' => 'required|exists:App\Models\EmailsSetting,id',
                   'email' => 'required|email'
                  
              ]
@@ -364,13 +364,13 @@ class EmailMasterController extends Controller
              ];
      
             
-             $check =  EmailMaster::where(['id' => $id])->update($data);
+             $check =  EmailsSetting::where(['id' => $id])->update($data);
      
              if ($check) {
                 
                  $this->response["status"] = true;
                  $this->response["message"] = __('strings.update_success');
-                 $this->response['data'] = EmailMaster::where(['id' => $id])->first();
+                 $this->response['data'] = EmailsSetting::where(['id' => $id])->first();
                  return response()->json($this->response);
      
              } else {

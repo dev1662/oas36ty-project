@@ -89,7 +89,7 @@ Route::middleware([
             Route::post('email-outbound-status', [EmailOutboundController::class, 'update_active_inactive_status']);
             Route::post('email-inbound-status', [EmailInboundController::class, 'update_active_inactive_status']);
            
-
+            
 
          
             Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);

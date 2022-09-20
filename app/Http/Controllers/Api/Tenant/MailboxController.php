@@ -3,83 +3,59 @@
 namespace App\Http\Controllers\Api\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Models\EmailInbound;
+use App\Models\EmailsSetting;
 use App\Models\Mailbox;
+use App\Models\UserEmail;
 use Illuminate\Http\Request;
 
 class MailboxController extends Controller
 {
     //
+    // public function __construct(Request $req)
+    // {
+    //     $this->user_id = json_decode($req->header('currrent'))->id;
+    // }
     
-    public function fetchEmails()
+    public function fetchEmails(Request $req)
     {
-        $result= Mailbox::all();
-    //      $result = [
-    //     'emails' => [
-    //         [
-                
-    //             'id' => 1,
+        // $emails = json_decode($req->header('currrent'))->email;
+        $user_id = json_decode($_GET['currrent'])->id;
+        // return $user_id;
+        $check_assigned_emails = UserEmail::where('user_id', $user_id)->whereNotNull('emails_setting_id')->with('EmailsSetting')->get();
+        $inbound_array = [];
+        // foreach loop to get inbound details
+        foreach($check_assigned_emails as $index => $emails){
+            $email_setting_id = $emails->emails_setting_id;
+            $email_inbound = EmailInbound::where('id', $email_setting_id)->first();
+            $inbound_array[$index] = $email_inbound;
+           
 
-    //             // 'from' => [
-
-    //             // ],
-    //             'avatar' => "https://ui-avatars.com/api/?name=dev+sindhwani",
-    //             'from_name' => 'Dev Sindhwani',
-    //             "from_email" => "dev16sindh@gmail.com",
-    //             "to_email" => ['devoas36ty@gmail.com'],
-    //             'subject' => 'User-friendly value-added application 😊',
-    //             'message' => '<p>Hey John,</p>
-
-    //             <p>wellish laminable ineunt popshop catalyte prismatize campimetrical lentisk excluding portlet coccinellid impestation Bangash Lollardist perameloid procerebrum presume cashmerette washbasin nainsook Odontolcae Alea holcodont welted</p>
-                
-    //             <p>cibarious terrifical uploop naphthaleneacetic containable nonsailor Zwinglian blighty benchful guar porch fallectomy building coinvolve eidolism warmth unclericalize seismographic recongeal ethanethial clog regicidal regainment legific</p>',
-    //             'attachments' => 7,
-               
-    //                 'label' => 'personal',
-            
-    //             'isStarred' => false,
-    //         ],
-    //         [
-    //             'id' => 2,
-
-    //             // 'from' => [
-
-    //             // ],
-    //             'avatar' => "https://ui-avatars.com/api/?name=abhishek+sindhwani",
-    //             'from_name' => 'Abhishek Sindhwani',
-    //             'subject' => 'User-friendly value-added application 😊',
-    //             "from_email" => 'abhi99sindh@gmail.com',
-
-    //             "to_email" =>['devoas36ty@gmail.com'],
-
-    //             'message' => '<p>Hey John,</p>
-
-    //             <p>wellish laminable ineunt popshop catalyte prismatize campimetrical lentisk excluding portlet coccinellid impestation Bangash Lollardist perameloid procerebrum presume cashmerette washbasin nainsook Odontolcae Alea holcodont welted</p>
-                
-    //             <p>cibarious terrifical uploop naphthaleneacetic containable nonsailor Zwinglian blighty benchful guar porch fallectomy building coinvolve eidolism warmth unclericalize seismographic recongeal ethanethial clog regicidal regainment legific</p>',
-    //             'attachments' => 4,
-                
-    //                 'label' => 'company',
-
-    //             'isStarred'=> false
-    //         ],
-
-
-    //     ],
-
-
-
-    // ];
-
+        }
+        // foreach loop to check inbound username
+        $result = [];
+        // return $inbound_array;
+        foreach($inbound_array as $index => $username)
+        {
+            // return $username->mail_username;
+            $result[$index]= Mailbox::where('to_email', $username->mail_username)->get();
+        }
+        // return count($result);
+        // $check_user_emails_exists = 
+    
+        if($result){
+            $result = $result[0];
+        }
         $meta = [
             'emailsMeta' => count($result)
         ];
-             $this->response['status'] = true;
+            $this->response['status'] = true;
             $this->response['message'] = 'data fetched';
             $this->response['data'] = $result;
             $this->response['meta'] = $meta;
             return response()->json($this->response);
         
-    }
+        }
     public function updateEmails()
     {
         return;
