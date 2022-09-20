@@ -104,6 +104,7 @@ class SwitchOrganizationController extends Controller
         $result = array(
             'token' => $newUserToken,
             'name' => $newUser->name,
+            'id' => $newUser->id,
             'email' => $newUser->email,
             'current_tenant' => new TenantResource($newTenant),
             'all_tenants' => TenantResource::collection($centralUser->tenants()->with('organization')->get()),
