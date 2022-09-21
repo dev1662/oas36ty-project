@@ -146,7 +146,6 @@ class BranchController extends Controller
 
     public function store(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\Branch,name',
         ]);
@@ -157,6 +156,7 @@ class BranchController extends Controller
             return response()->json($this->response, 422);
         }
 
+        
         $branch = new Branch($request->all());
         
         $branch->save();

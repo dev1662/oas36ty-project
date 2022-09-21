@@ -16,7 +16,8 @@ use App\Models\User;
 
 use App\Mail\JoiningInvitation as JoiningInvitationMail;
 use App\Models\Branch;
-use App\Models\EmailMaster;
+use App\Models\EmailsSetting;
+use App\Models\Mailbox;
 use App\Models\UserEmail;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
@@ -25,22 +26,158 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use PDO;
 
 class UserController extends Controller
 {
-    public function __construct(Request $request)
-    {
-    
-        // $request_email = json_decode($request->header('currrent'))->email;
-        // $centralUser = CentralUser::where('email', $request_email)->first();
-        // $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
-        // tenancy()->initialize($tenant);
-        // return $request_email;die;
+    // public function emails_recieved(Request $request)
+    // { 
+    //     $centralUser =  CentralUser::where('email',json_decode($request->header('currrent'))->email)->first();
+
+    //     $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
+    //     tenancy()->initialize($tenant);
+    //     // $users_emails = UserEmail::with(['users', 'EmailsSetting'])->get();
+    //     // return [
+    //     //     // "tenant" => $request->header('X-Tenant'),
+    //     //     "user_emails" => $users_emails,
+    //     //     "user" => $centralUser
+    //     //     // "email_settings" => EmailsSetting::with(['emailInbound','emailOutbound'])->get(),
+            
+    //     // ];
+    //     // $tenant = $request->header('X-Tenant');
+    //     // $this->switchingDB('oas36ty_org_'.$tenant);
+    //     $data = [
+    //         'mail_host' => "imap.gmail.com",
+    //         'mail_transport' => "imap",
+    //         'mail_encryption' => "ssl",
+    //         'mail_username' => "jakeraubin@gmail.com",
+    //         'mail_password' => "yfkfaxbeignwfebw",
+    //         'mail_port' => 993,
+            
+    //     ];
+        
+    //     $host = '{'.$data['mail_host'].':'.$data['mail_port'].'/'.$data['mail_transport'].'/'.$data['mail_encryption'].'}';
+    //     // return $host;
+    //     // / Your gmail credentials /
+    //     $user = $data['mail_username'];
+    //     $password = $data['mail_password'];
+        
+    //     // / Establish a IMAP connection /
+    //     $conn = imap_open($host, $user, $password)
+        
+    //     or die('unable to connect Gmail: ' . imap_last_error());
+    //     $mails = imap_search($conn, 'ALL');
+    //     // / loop through each email id mails are available. /
+    //     if ($mails) {
+    //         rsort($mails);
+    //         // / For each email /
+    //         foreach ($mails as $email_number) {
+    //             $headers = imap_fetch_overview($conn, $email_number, 0);
+        
+    //             // $structure = imap_fetchstructure($conn, $email_number);
+        
+    //             // $attachments = array();
+        
+    //             // /* if any attachments found... */
+    //             // if(isset($structure->parts) && count($structure->parts)) 
+    //             // {
+    //             //     for($i = 0; $i < count($structure->parts); $i++) 
+    //             //     {
+    //             //         $attachments[$i] = array(
+    //             //             'is_attachment' => false,
+    //             //             'filename' => '',
+    //             //             'name' => '',
+    //             //             'attachment' => ''
+    //             //         );
+        
+    //             //         if($structure->parts[$i]->ifdparameters) 
+    //             //         {
+    //             //             foreach($structure->parts[$i]->dparameters as $object) 
+    //             //             {
+    //             //                 if(strtolower($object->attribute) == 'filename') 
+    //             //                 {
+    //             //                     $attachments[$i]['is_attachment'] = true;
+    //             //                     $attachments[$i]['filename'] = $object->value;
+    //             //                 }
+    //             //             }
+    //             //         }
+        
+    //             //         if($structure->parts[$i]->ifparameters) 
+    //             //         {
+    //             //             foreach($structure->parts[$i]->parameters as $object) 
+    //             //             {
+    //             //                 if(strtolower($object->attribute) == 'name') 
+    //             //                 {
+    //             //                     $attachments[$i]['is_attachment'] = true;
+    //             //                     $attachments[$i]['name'] = $object->value;
+    //             //                 }
+    //             //             }
+    //             //         }
+        
+    //             //         if($attachments[$i]['is_attachment']) 
+    //             //         {
+    //             //             $attachments[$i]['attachment'] = imap_fetchbody($conn, $email_number, $i+1);
+        
+    //             //             /* 3 = BASE64 encoding */
+    //             //             if($structure->parts[$i]->encoding == 3) 
+    //             //             { 
+    //             //                 $attachments[$i]['attachment'] = base64_decode($attachments[$i]['attachment']);
+    //             //             }
+    //             //             /* 4 = QUOTED-PRINTABLE encoding */
+    //             //             elseif($structure->parts[$i]->encoding == 4) 
+    //             //             { 
+    //             //                 $attachments[$i]['attachment'] = quoted_printable_decode($attachments[$i]['attachment']);
+    //             //             }
+    //             //         }
+    //             //     }
+    //             // }
+    //             // Log::info($attachments);
+        
+    //             // Log::info($headers);
+    //             $message = imap_fetchbody($conn, $email_number, '1');
+    //             $subMessage = substr($message, 0, 150);
+    //             $finalMessage = trim(quoted_printable_decode($subMessage));
+    //             // Log::info($finalMessage);die;
+    //             $details_of_email = [];
+    //             foreach($headers as $index => $header){
+    //                 $details_of_email[$index] =[
+    //                     'subject' => $header->subject,
+    //                     'from_name' => $header->from,
+    //                     'from_email' => $header->from,
+    //                     'message_id' => $header->message_id,
+    //                     'to_email' => $header->to,
+    //                     'message' => $finalMessage,
+    //                     'date' => $header->date,
+    //                     'u_date' => $header->udate,
+        
+    //                 ];
+                    
+    //                $insert= Mailbox::create($details_of_email[$index]);
+                   
+    //             }
+                
+    //             // return;
+    //         }// End foreach
+    //         if($insert){
+    //             return "success";
+    //         }
+        
+    //     }//endif
+        
+  
+    //     imap_close($conn);
+        
+
+    //     // $request_email = json_decode($request->header('currrent'))->email;
+    //     // $centralUser = CentralUser::where('email', $request_email)->first();
+    //     // $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
+    //     // tenancy()->initialize($tenant);
+    //     // return $request_email;die;
        
-            // Artisan::call('queue:listen');
-    }
+    //         // Artisan::call('queue:listen');
+    // }
     public function get_emails_to_assign(Request $request)
     {
 
@@ -49,7 +186,7 @@ class UserController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
 
-        $details_arr = EmailMaster::with(['emailInbound', 'emailOutbound'])->get();
+        $details_arr = EmailsSetting::with(['emailInbound', 'emailOutbound'])->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -139,7 +276,7 @@ class UserController extends Controller
         $search = $request->search;
         // tenantdevCentrik
 
-        $path = 'http://localhost/oas36ty/local_api/storage/tenant'.$request->header('X-Tenant').'/';
+        // $path = 'http://localhost/oas36ty/local_api/storage/tenant'.$request->header('X-Tenant').'/';
 
         // return $path;
         $users = User::select('id', 'name', 'avatar', 'email', 'status')->where(function ($q) use ($search) {
@@ -150,11 +287,11 @@ class UserController extends Controller
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] =
          ["users" => $users,
-         "path" => $path
+        //  "path" => $path
         ];
         // $request_email = json_decode($request->header('currrent'))->email;
 
-        // $email_master = EmailMaster::where('email', $request_email)->with(['emailInbound', 'emailOutbound'])->first();
+        // $email_master = EmailsSetting::where('email', $request_email)->with(['emailInbound', 'emailOutbound'])->first();
         // $data = [
         //     'mail_host' => $email_master->emailInbound->mail_host,
         //     'mail_transport' => $email_master->emailInbound->mail_transport,
@@ -164,6 +301,18 @@ class UserController extends Controller
         //     'mail_port' => $email_master->emailInbound->mail_port,
             
         // ];
+
+        //  $data = [
+        //     'mail_host' => "imap.gmail.com",
+        //     'mail_transport' => "imap",
+        //     'mail_encryption' => "ssl",
+        //     'mail_username' => " jakeraubin@gmail.com",
+        //     'mail_password' => "yfkfaxbeignwfebw",
+        //     'mail_port' => 993,
+            
+        // ];
+        // $job= TestQueueRecieveEmail::dispatchAfterResponse($data);
+        // Log::info($job);
         // dispatch(new TestQueueRecieveEmail($data))->afterResponse();
             // Artisan::call('queue:listen');
         return response()->json($this->response);
@@ -617,15 +766,15 @@ class UserController extends Controller
         $oldCentralUserTenantsCount = tenancy()->central(function ($tenant) use ($oldCentralUser) {
             return $oldCentralUser->tenants()->count();
         });
-        $base64_image = $request->input('image'); // your base64 encoded     
-        @list($type, $file_data) = explode(';', $base64_image);
-        @list(, $file_data) = explode(',', $file_data);
-        $imageName = Str::random(10) . '.' . 'png';
+        // $base64_image = $request->input('image'); // your base64 encoded     
+        // @list($type, $file_data) = explode(';', $base64_image);
+        // @list(, $file_data) = explode(',', $file_data);
+        // $imageName = Str::random(10) . '.' . 'png';
 
-        Storage::put($imageName, base64_decode($file_data));
+        // Storage::put($imageName, base64_decode($file_data));
         if ($oldCentralUserTenantsCount == 1) {
             $member->name = $request->name;
-            $member->avatar = $imageName;
+            // $member->avatar = $imageName;
             $member->update();
 
         }
@@ -636,11 +785,11 @@ class UserController extends Controller
                 foreach($request->emails as $all_email){
                    $exists_user_emails =  UserEmail::where(['user_id' => $id, 'emails_setting_id' => $all_email['id']])->get();
 
-                    if(count($exists_user_emails) > 1){
+                    if(count($exists_user_emails) >= 1){
                         $this->response["message"] = 'Emails are already assigned choose another email';
                         return response()->json($this->response,500);
                     }else{
-
+                        // $email_of_user = User::where('id', $id)->first()
                         UserEmail::create([
                            'user_id' => $id,
                            'emails_setting_id' => $all_email['id']

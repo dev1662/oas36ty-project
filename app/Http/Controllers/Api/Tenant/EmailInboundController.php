@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Tenant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\EmailInbound;
-use App\Models\EmailMaster;
+use App\Models\EmailsSetting;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -285,7 +285,7 @@ class EmailInboundController extends Controller
         
         try{
             $validator =  Validator::make(request()->all(), [
-                'id'=>'required|exists:App\Models\EmailMaster,id|unique:App\Models\EmailInbound,id',
+                'id'=>'required|exists:App\Models\EmailsSetting,id|unique:App\Models\EmailInbound,id',
                 'mail_transport.option'  => 'required|in:pop,imap',
                 'mail_host'       => 'required',
                 'mail_port'       => 'required|in:110,995,993,143',
@@ -318,7 +318,7 @@ class EmailInboundController extends Controller
             // return $data;
            
             $check =  EmailInbound::create($data);
-            EmailMaster::where(['id' => $request->input('id')])->update([
+            EmailsSetting::where(['id' => $request->input('id')])->update([
                 'inbound_status' => 'tick'
             ]);
             if ($check) {

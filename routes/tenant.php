@@ -75,7 +75,7 @@ Route::middleware([
             Route::apiResource('contact-people.emails', ContactPersonEmailController::class);
             Route::apiResource('contact-people.phones', ContactPersonPhoneController::class);
             Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
-
+            // Route::get('recieve-emails', [UserController::class, 'emails_recieved']);
             //------------------------EmailConfig -----------------------------
             Route::post('/store-email',[EmailMasterController::class,'storeMail']);
             Route::post('/get-emails',[EmailMasterController::class,'getEmailCredential']);
@@ -89,7 +89,7 @@ Route::middleware([
             Route::post('email-outbound-status', [EmailOutboundController::class, 'update_active_inactive_status']);
             Route::post('email-inbound-status', [EmailInboundController::class, 'update_active_inactive_status']);
            
-
+            
 
          
             Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);
@@ -101,6 +101,8 @@ Route::middleware([
 });
 
 Route::prefix('v1')->group(function(){
+    Route::get('recieve-emails', [UserController::class, 'emails_recieved']);
+
     //new user
     Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
     // existing user accept

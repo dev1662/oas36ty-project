@@ -15,8 +15,8 @@ class CreateMailboxEmailSettingsTable extends Migration
     {
         Schema::create('mailbox_email_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('mailbox_id');
-            $table->string('emails_settings_id');
+            $table->string('mailbox_id')->nullable();
+            $table->string('emails_settings_id')->nullable();
             $table->timestamps();
         });
     }
