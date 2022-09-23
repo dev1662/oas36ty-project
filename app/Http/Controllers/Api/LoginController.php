@@ -89,33 +89,49 @@ class LoginController extends Controller
 
         // $credentials = $request->only('email', 'password');
         // $credentials = array_merge($credentials, ['status' => 'active']);
-        try{
+        // try{
             
-            $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
-        }catch(Exception $ex){
-            $this->response['message']= "User Not found";
-            return response()->json($this->response, 401);
-        }
-        try{
+           
+        // }catch(Exception $ex){
+        //     $this->response['message']= "User Not found";
+        //     return response()->json($this->response, 401);
+        // }
+        // try{
 
-            $tenant = $centralUser->tenants()->with('organization')->first();
-        }catch(Exception $ex){
+            
+        // }catch(Exception $ex){
+       
+        //     $this->response['message']= "Tenant Not found";
+        //     return response()->json($this->response, 401);
+        // }
+        // try{
+
+        // }catch(Exception $ex){
+        //     $this->response['message']= "User Not found";
+        //     return response()->json($this->response, 401);
+        // }
+        $centralUser = CentralUser::where(["email" =>  $request->email, 'status' => 'active'])->first();
+        // return $centralUser;
+        if(!$centralUser){
+            $this->response['message']= "Central User Not found";
+                return response()->json($this->response, 401);
+        }
+        // $tenant = $centralUser->tenants()->with('organization')->first();
+        $tenant = $centralUser->tenants()->with('organization')->first();
+        if(!$tenant){
             $this->response['message']= "Tenant Not found";
             return response()->json($this->response, 401);
         }
-        
         
 
             tenancy()->initialize($tenant);
         
       
-        try{
-
             $user = User::where(["email" => $request->email])->first();
-        }catch(Exception $ex){
-            $this->response['message']= "User Not found";
-            return response()->json($this->response, 401);
-        }
+            if(!$user){
+                $this->response['message']= "Tenant User Not found";
+                return response()->json($this->response, 401);
+            }
         // return $user;
         
         

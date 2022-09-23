@@ -17,6 +17,7 @@ class CreateUserEmailsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('emails_setting_id');
+            $table->bigInteger('inbound_msg_count');
 
             $table->timestamps();
             $table->softDeletes();
