@@ -6169,9 +6169,21 @@
                                                         "type": "integer",
                                                         "example": "1"
                                                     },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
                                                     "comment": {
                                                         "type": "string",
                                                         "example": "Task Comment"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "true"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
                                                     }
                                                 },
                                                 "type": "object"
