@@ -56,7 +56,7 @@ class MailboxController extends Controller
             
             // return $username->mail_username;
             // $result[$index]= Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->paginate(20);
-            $result[$index] = Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'desc')->orderBy('date', 'desc')->offset($offset)->limit(20)->get();
+            $result[$index] = Mailbox::where('to_email', $username->mail_username)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
             // $total_count[$index] =  Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->get();
             
             $total_count[$index] =  ['count'=>UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first()];
