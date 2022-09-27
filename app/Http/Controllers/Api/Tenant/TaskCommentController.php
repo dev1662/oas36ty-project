@@ -207,7 +207,7 @@ class TaskCommentController extends Controller
                 $q->select('id', 'name', 'email');
             },
             'audits',
-        ])->select('id', 'user_id', 'comment', 'status','created_at')->latest()->get();
+        ])->select('id', 'user_id', 'comment','created_at')->latest()->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
