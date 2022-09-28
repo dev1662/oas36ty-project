@@ -365,12 +365,16 @@ class SignUpController extends Controller
         }
         // return $centralOnboarding;
         $tenant = Tenant::create(['id' => $centralOnboarding->subdomain]);
+        // $tenant = new Tenant();
+        // $tenant->id = 'jack';
+        // $tenant->save();
+      
         Artisan::call('tenants:migrate', [
             '--tenants' => [$tenant->id]
         ]);
         // $tenant->domains()->create(['domain' => 'foo.localhost']);
         // $tenant = $centralOrganization->tenant()->create(['id' => $centralOrganization->subdomain]);
-
+       
         if($tenant){
             // if($user === null){
                 // return $request->all();

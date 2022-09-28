@@ -26,7 +26,7 @@ class CreateMailboxTable extends Migration
             $table->string('label')->nullable();
             $table->tinyText('isStarred',['true','false'])->default(false);
             $table->tinyText('type',['primary','promotions','social'])->default("primary");
-            $table->dateTime('date')->nullable();
+            $table->string('date')->nullable();
             $table->string('u_date')->nullable();
             $table->timestamps();
         });

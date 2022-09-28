@@ -6169,9 +6169,115 @@
                                                         "type": "integer",
                                                         "example": "1"
                                                     },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
                                                     "comment": {
                                                         "type": "string",
                                                         "example": "Task Comment"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    },
+                                                    "user": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "John Doe"
+                                                            },
+                                                            "email": {
+                                                                "type": "string",
+                                                                "example": "example@gmail.com"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "audits": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "user_type": {
+                                                                    "type": "string",
+                                                                    "example": "App\\\\Models\\\\User"
+                                                                },
+                                                                "user_id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "event": {
+                                                                    "type": "string",
+                                                                    "example": "created"
+                                                                },
+                                                                "auditable_type": {
+                                                                    "type": "string",
+                                                                    "example": "App\\\\Models\\\\TaskComment"
+                                                                },
+                                                                "auditable_id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "old_values": {
+                                                                    "type": "string",
+                                                                    "example": "[]"
+                                                                },
+                                                                "new_values": {
+                                                                    "properties": {
+                                                                        "comment": {
+                                                                            "type": "string",
+                                                                            "example": "this is new comment"
+                                                                        },
+                                                                        "user_id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "task_id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        },
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": "1"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "url": {
+                                                                    "type": "string",
+                                                                    "example": "http://127.0.0.1:8000/v1/tasks/2/comments"
+                                                                },
+                                                                "ip_address": {
+                                                                    "type": "string",
+                                                                    "example": "127.0.0.1"
+                                                                },
+                                                                "user_agent": {
+                                                                    "type": "string",
+                                                                    "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+                                                                },
+                                                                "tags": {
+                                                                    "type": "string",
+                                                                    "example": "null"
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "timestamp",
+                                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                                },
+                                                                "updated_at": {
+                                                                    "type": "timestamp",
+                                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
                                                     }
                                                 },
                                                 "type": "object"

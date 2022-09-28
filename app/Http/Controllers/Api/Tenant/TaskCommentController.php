@@ -34,8 +34,13 @@ class TaskCommentController extends Controller
      *                  property="data",
      *                  type="array",
      *                  @OA\Items(
-     *                      @OA\Property(
+     *                  @OA\Property(
      *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="user_id",
      *                         type="integer",
      *                         example="1"
      *                      ),
@@ -44,6 +49,125 @@ class TaskCommentController extends Controller
      *                         type="string",
      *                         example="Task Comment"
      *                      ),
+     *                        
+     *                  @OA\Property(
+     *                         property="created_at",
+     *                         type="timestamp",
+     *                         example="2022-09-02T06:01:37.000000Z"
+     *                      ), 
+     *                 
+     *              @OA\Property(
+     *               property="user",
+     *                  @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="name",
+     *                         type="string",
+     *                         example="John Doe"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ),
+     *                     ),
+     *              @OA\Property(
+     *               property="audits",
+     *                  type="array",
+     *                @OA\Items(
+     *                  @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="user_type",
+     *                         type="string",
+     *                         example="App\\Models\\User"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="user_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="event",
+     *                         type="string",
+     *                         example="created"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="auditable_type",
+     *                         type="string",
+     *                         example="App\\Models\\TaskComment"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="auditable_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="old_values",
+     *                         type="string",
+     *                         example="[]"
+     *                      ),
+     *                  @OA\Property(
+     *               property="new_values",
+     *                  @OA\Property(
+     *                         property="comment",
+     *                         type="string",
+     *                         example="this is new comment"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="user_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="task_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                     ),
+     *                     @OA\Property(
+     *                         property="url",
+     *                         type="string",
+     *                         example="http://127.0.0.1:8000/v1/tasks/2/comments"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="ip_address",
+     *                         type="string",
+     *                         example="127.0.0.1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="user_agent",
+     *                         type="string",
+     *                         example="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="tags",
+     *                         type="string",
+     *                         example="null"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="created_at",
+     *                         type="timestamp",
+     *                         example="2022-09-02T06:01:37.000000Z"
+     *                      ), 
+     *                      @OA\Property(
+     *                         property="updated_at",
+     *                         type="timestamp",
+     *                         example="2022-09-02T06:01:37.000000Z"
+     *                      ), 
+     *                     ),
+     *                    ),
      *                  ),
      *              ),
      *          )
@@ -83,7 +207,7 @@ class TaskCommentController extends Controller
                 $q->select('id', 'name', 'email');
             },
             'audits',
-        ])->select('id', 'user_id', 'comment')->latest()->get();
+        ])->select('id', 'user_id', 'comment','created_at')->latest()->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
