@@ -359,6 +359,7 @@ class SignUpController extends Controller
         }
 
         $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNotNull('email_verified_at')->whereNotNull('subdomain')->first();
+        
         if(!$centralOnboarding){
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);

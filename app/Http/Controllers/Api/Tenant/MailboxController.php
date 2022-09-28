@@ -59,16 +59,24 @@ class MailboxController extends Controller
             $result[$index] = Mailbox::where('to_email', $username->mail_username)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
             // $total_count[$index] =  Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->get();
             
-            $total_count[$index] =  ['count'=>UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first()];
+            $total_count[$index] =  ['count'=>UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
         }
         // return $total_count;
         // return count($result);
         // $result = Mailbox::all();
         if($result){
             $result = $result[0];
-            $total_count = $total_count[0];
+            $total_count = $total_count[0] ?? [];
 
         }
+        if($total_count){
+
+            $count_of_msg= $total_count['count']->inbound_msg_count;
+        }else{
+            $count_of_msg = 0;
+        }
+    
+        // return $total_count;
         // $msg = [];
       
         // return $result;
@@ -79,7 +87,7 @@ class MailboxController extends Controller
         }
             $meta = [
                 'emailsMeta' =>  $count_email,
-                'email_count' => $total_count['count']->inbound_msg_count
+                'email_count' => $count_of_msg,
             ];
             $this->response['status'] = true;
             $this->response['message'] = 'data fetched';
