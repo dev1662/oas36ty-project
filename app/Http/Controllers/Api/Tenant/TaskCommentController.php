@@ -83,7 +83,7 @@ class TaskCommentController extends Controller
                 $q->select('id', 'name', 'email');
             },
             'audits',
-        ])->select('id', 'user_id', 'comment', 'status')->latest()->get();
+        ])->select('id', 'user_id', 'comment')->latest()->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -171,6 +171,7 @@ class TaskCommentController extends Controller
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
+        $this->response['data'] = $taskComment;
         return response()->json($this->response);
     }
 
