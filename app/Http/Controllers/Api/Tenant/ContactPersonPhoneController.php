@@ -424,7 +424,7 @@ class ContactPersonPhoneController extends Controller
      *     ),
      * )
      */
-    public function destroy($clientID, $contactPersonID, $contactPersonPhoneID)
+    public function destroy($CompanyID, $contactPersonID, $contactPersonPhoneID)
     {
         $validator = Validator::make(['contact_person_id' => $contactPersonID, 'contact_person_phone_id' => $contactPersonPhoneID], [
             'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',

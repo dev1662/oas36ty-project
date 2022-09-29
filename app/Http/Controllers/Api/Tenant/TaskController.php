@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Config;
 use App\Models\Task;
 use App\Models\Branch;
 use App\Models\Category;
-use App\Models\Client;
+use App\Models\Company;
 use App\Models\ContactPerson;
 use App\Models\TaskUser;
 use PDO;
@@ -91,14 +91,14 @@ class TaskController extends Controller
         $this->switchingDB($dbname);
     
 
-            $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'category' => function ($q) {
                     $q->select('id', 'name');
                 },
-                'client' => function ($q) {
+                'Company' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'contactPerson' => function ($q) {
@@ -127,14 +127,14 @@ class TaskController extends Controller
         if ($request->status) {
 
 
-            $tasks = Task::where(['status' => strtolower($request->status)])->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            $tasks = Task::where(['status' => strtolower($request->status)])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'category' => function ($q) {
                     $q->select('id', 'name');
                 },
-                'client' => function ($q) {
+                'Company' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'contactPerson' => function ($q) {
@@ -150,15 +150,15 @@ class TaskController extends Controller
 
             ])->latest()->get();
         }
-        if($request->client){
-            $tasks = Task::where('client_id', $request->client['id'])->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+        if($request->Company){
+            $tasks = Task::where('company_id', $request->Company['id'])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'category' => function ($q) {
                     $q->select('id', 'name');
                 },
-                'client' => function ($q) {
+                'Company' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'contactPerson' => function ($q) {
@@ -175,14 +175,14 @@ class TaskController extends Controller
             ])->latest()->get();
         }
         if($request->priority){
-            $tasks = Task::where('priority', $request->priority['id'])->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            $tasks = Task::where('priority', $request->priority['id'])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'category' => function ($q) {
                     $q->select('id', 'name');
                 },
-                'client' => function ($q) {
+                'Company' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'contactPerson' => function ($q) {
@@ -199,14 +199,14 @@ class TaskController extends Controller
             ])->latest()->get();
         }
         if($request->category){
-            $tasks = Task::where('category_id', $request->category['id'])->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            $tasks = Task::where('category_id', $request->category['id'])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'category' => function ($q) {
                     $q->select('id', 'name');
                 },
-                'client' => function ($q) {
+                'Company' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'contactPerson' => function ($q) {
@@ -223,14 +223,14 @@ class TaskController extends Controller
             ])->latest()->get();
         }
         if($request->contact){
-            $tasks = Task::where('contact_person_id', $request->contact['id'])->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            $tasks = Task::where('contact_person_id', $request->contact['id'])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'category' => function ($q) {
                     $q->select('id', 'name');
                 },
-                'client' => function ($q) {
+                'Company' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'contactPerson' => function ($q) {
@@ -247,14 +247,14 @@ class TaskController extends Controller
             ])->latest()->get();
         }
         if($request->search){
-            $tasks = Task::where('subject', 'like', '%'. $request->search . '%')->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            $tasks = Task::where('subject', 'like', '%'. $request->search . '%')->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'category' => function ($q) {
                     $q->select('id', 'name');
                 },
-                'client' => function ($q) {
+                'Company' => function ($q) {
                     $q->select('id', 'name');
                 },
                 'contactPerson' => function ($q) {
@@ -283,14 +283,14 @@ class TaskController extends Controller
     //     $dbname = config('tenancy.database.prefix').strtolower($dbname);
     //     // return   $dbname;
     //     $this->switchingDB($dbname);
-    //     $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status','created_at')->with([
+    //     $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status','created_at')->with([
     //         'branch' => function($q){
     //             $q->select('id', 'name');
     //         },
     //         'category' => function($q){
     //             $q->select('id','name');
     //         },
-    //         'client' => function($q){
+    //         'Company' => function($q){
     //             $q->select('id', 'name');
     //         },
     //         'contactPerson' => function($q){
@@ -328,7 +328,7 @@ class TaskController extends Controller
      *             type="object",
      *             @OA\Property(property="branch_id", type="string", example="1", description=""),
      *             @OA\Property(property="category_id", type="string", example="1", description=""),
-     *             @OA\Property(property="client_id", type="string", example="1", description=""),
+     *             @OA\Property(property="company_id", type="string", example="1", description=""),
      *             @OA\Property(property="contact_person_id", type="string", example="1", description=""),
      *             @OA\Property(property="type", type="string", example="lead", description=""),
      *             @OA\Property(property="subject", type="string", example="Task subject", description=""),
@@ -383,7 +383,7 @@ class TaskController extends Controller
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required',
             'category_id' => 'nullable',
-            'client_id' => 'nullable',
+            'company_id' => 'nullable',
             'contact_person_id' => 'nullable',
             'user_id' => 'nullable',
             'type' => 'required|in:lead,task',
@@ -409,7 +409,7 @@ class TaskController extends Controller
         $task->category_id = $request->category_id['id'];
 
 
-        $task->client_id = $request->client_id['id'];
+        $task->company_id = $request->company_id['id'];
 
 
         $task->contact_person_id = $request->contact_person_id['id'];
@@ -445,7 +445,7 @@ class TaskController extends Controller
         ];
         $branch = Branch::where(['id' => $request->branch_id])->update($data);
         $Category = Category::where(['id' => $request->category_id])->update($data);
-        $Client = Client::where(['id' => $request->client_id])->update($data);
+        $Company = Company::where(['id' => $request->company_id])->update($data);
         $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
 
 
@@ -529,14 +529,14 @@ class TaskController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $task = Task::select('id', 'branch_id', 'category_id', 'client_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status')->with([
+        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status')->with([
             'branch' => function ($q) {
                 $q->select('id', 'name');
             },
             'category' => function ($q) {
                 $q->select('id', 'name');
             },
-            'client' => function ($q) {
+            'Company' => function ($q) {
                 $q->select('id', 'name');
             },
             'contactPerson' => function ($q) {
@@ -567,7 +567,7 @@ class TaskController extends Controller
      *             type="object",
      *             @OA\Property(property="branch_id", type="string", example="1", description=""),
      *             @OA\Property(property="category_id", type="string", example="1", description=""),
-     *             @OA\Property(property="client_id", type="string", example="1", description=""),
+     *             @OA\Property(property="company_id", type="string", example="1", description=""),
      *             @OA\Property(property="contact_person_id", type="string", example="1", description=""),
      *             @OA\Property(property="type", type="string", example="lead", description=""),
      *             @OA\Property(property="subject", type="string", example="Task subject", description=""),
@@ -631,7 +631,7 @@ class TaskController extends Controller
             'task_id' => 'required|exists:App\Models\Task,id',
             'branch_id' => 'required',
             'category_id' => 'nullable',
-            'client_id' => 'nullable',
+            'company_id' => 'nullable',
             'contact_person_id' => 'nullable',
             'user_id' => 'nullable',
 
@@ -658,7 +658,7 @@ class TaskController extends Controller
             'subject' => $request->subject,
             'description' => $request->description,
             'branch_id' => $request->branch_id['id'],
-            'client_id' => $request->client_id['id'],
+            'company_id' => $request->company_id['id'],
             'category_id' => $request->category_id['id'],
             'contact_person_id' => $request->contact_person_id['id'],
             'type' => $request->type,
@@ -675,7 +675,7 @@ class TaskController extends Controller
 
         $branch = Branch::where(['id' => $request->branch_id['id']])->update(['type' => 'dont_delete']);
         $Category = Category::where(['id' => $request->category_id['id']])->update(['type' => 'dont_delete']);
-        $Client = Client::where(['id' => $request->client_id['id']])->update(['type' => 'dont_delete']);
+        $Company = Company::where(['id' => $request->company_id['id']])->update(['type' => 'dont_delete']);
         $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id['id']])->update(['type' => 'dont_delete']);
 
 
@@ -727,7 +727,7 @@ class TaskController extends Controller
         //     return response()->json($this->response, 422);
         // }
 
-        // $task->fill($request->only(['task_id', 'branch_id', 'category_id', 'client_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status']));
+        // $task->fill($request->only(['task_id', 'branch_id', 'category_id', 'company_id', 'contact_person_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status']));
         // $task->update();
 
         $this->response["status"] = true;

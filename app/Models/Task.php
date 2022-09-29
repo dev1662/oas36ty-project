@@ -28,7 +28,7 @@ class Task extends Model implements Auditable
      * @var array
      */
     protected $fillable = [
-        'client_id', 'contact_person_id', 'branch_id', 'category_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status',
+        'company_id', 'contact_person_id', 'branch_id', 'category_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status',
     ];
     // public function users()
     // {
@@ -61,9 +61,9 @@ class Task extends Model implements Auditable
         return $this->belongsTo(Category::class);
     }
 
-    public function client()
+    public function Company()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function contactPerson()

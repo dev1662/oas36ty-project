@@ -7,22 +7,22 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\Client;
+use App\Models\Company;
 use Illuminate\Support\Facades\Config;
 use PDO;
 
-class ClientController extends Controller
+class CompanyController extends Controller
 {
   
     /**
      *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clients"},
-     *     path="/clients",
-     *     operationId="getClients",
-     *     summary="Clients",
-     *     description="Clients",
+     *     tags={"Companys"},
+     *     path="/Companys",
+     *     operationId="getCompanys",
+     *     summary="Companys",
+     *     description="Companys",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Response(
      *          response=200,
@@ -42,7 +42,7 @@ class ClientController extends Controller
      *                      @OA\Property(
      *                         property="name",
      *                         type="string",
-     *                         example="Client Name"
+     *                         example="Company Name"
      *                      ),
      *                  ),
      *              ),
@@ -72,11 +72,11 @@ class ClientController extends Controller
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        $clients = Client::select('id', 'name','type')->with('audits')->get();
+        $Companys = Company::select('id', 'name','type')->with('audits')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
-        $this->response["data"] = $clients;
+        $this->response["data"] = $Companys;
         return response()->json($this->response);
     }
 
@@ -84,17 +84,17 @@ class ClientController extends Controller
      *
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clients"},
-     *     path="/clients",
-     *     operationId="postClient",
-     *     summary="Create Client",
-     *     description="Create Client",
+     *     tags={"Companys"},
+     *     path="/Companys",
+     *     operationId="postCompany",
+     *     summary="Create Company",
+     *     description="Create Company",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="name", type="string", example="Client Name", description=""),
+     *             @OA\Property(property="name", type="string", example="Company Name", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -141,7 +141,7 @@ class ClientController extends Controller
         $user = $request->user();
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:64|unique:App\Models\Client,name',
+            'name' => 'required|max:64|unique:App\Models\Company,name',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -150,9 +150,9 @@ class ClientController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $client = new Client($request->all());
-        $client->user_id = $user->id;
-        $client->save();
+        $Company = new Company($request->all());
+        $Company->user_id = $user->id;
+        $Company->save();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
@@ -164,13 +164,13 @@ class ClientController extends Controller
      *
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clients"},
-     *     path="/clients/{clientID}",
-     *     operationId="showClient",
-     *     summary="Show Client",
-     *     description="Show Client",
+     *     tags={"Companys"},
+     *     path="/Companys/{CompanyID}",
+     *     operationId="showCompany",
+     *     summary="Show Company",
+     *     description="Show Company",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
+     *     @OA\Parameter(name="CompanyID", in="path", required=true, description="Company ID"),
      *     @OA\Response(
      *          response=200,
      *          description="Successful Response",
@@ -189,7 +189,7 @@ class ClientController extends Controller
      *                      @OA\Property(
      *                         property="name",
      *                         type="string",
-     *                         example="Client Name"
+     *                         example="Company Name"
      *                      ),
      *                  ),
      *              ),
@@ -214,8 +214,8 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        $validator = Validator::make(['client_id' => $id], [
-            'client_id' => 'required|exists:App\Models\Client,id',
+        $validator = Validator::make(['company_id' => $id], [
+            'company_id' => 'required|exists:App\Models\Company,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -224,11 +224,11 @@ class ClientController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $client = Client::select('id', 'name')->find($id);
+        $Company = Company::select('id', 'name')->find($id);
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
-        $this->response["data"] = $client;
+        $this->response["data"] = $Company;
         return response()->json($this->response);
     }
 
@@ -236,18 +236,18 @@ class ClientController extends Controller
      *
      * @OA\Put(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clients"},
-     *     path="/clients/{clientID}",
-     *     operationId="putClient",
-     *     summary="Update Client",
-     *     description="Update Client",
+     *     tags={"Companys"},
+     *     path="/Companys/{CompanyID}",
+     *     operationId="putCompany",
+     *     summary="Update Company",
+     *     description="Update Company",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
+     *     @OA\Parameter(name="CompanyID", in="path", required=true, description="Company ID"),
      *     @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="name", type="string", example="Client name", description=""),
+     *             @OA\Property(property="name", type="string", example="Company name", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -283,11 +283,11 @@ class ClientController extends Controller
      *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="client_id",
+     *                  property="company_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
-     *                         example="The selected client_id is invalid."
+     *                         example="The selected company_id is invalid."
      *                  ),
      *              ),
      *                  ),
@@ -298,8 +298,8 @@ class ClientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validator = Validator::make(['client_id' => $id] + $request->all(), [
-            'client_id' => 'required|exists:App\Models\Client,id',
+        $validator = Validator::make(['company_id' => $id] + $request->all(), [
+            'company_id' => 'required|exists:App\Models\Company,id',
             'name' => 'required|max:64',
         ]);
         if ($validator->fails()) {
@@ -309,14 +309,14 @@ class ClientController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $client = Client::find($id);
-        if(!$client){
+        $Company = Company::find($id);
+        if(!$Company){
             $this->response["message"] = __('strings.update_failed');
             return response()->json($this->response, 422);
         }
 
-        $client->fill($request->only(['name']));
-        $client->update();
+        $Company->fill($request->only(['name']));
+        $Company->update();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
@@ -327,13 +327,13 @@ class ClientController extends Controller
      *
      * @OA\Delete(
      *     security={{"bearerAuth":{}}},
-     *     tags={"clients"},
-     *     path="/clients/{clientID}",
-     *     operationId="deleteClient",
-     *     summary="Delete Client",
-     *     description="Delete Client",
+     *     tags={"Companys"},
+     *     path="/Companys/{CompanyID}",
+     *     operationId="deleteCompany",
+     *     summary="Delete Company",
+     *     description="Delete Company",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="clientID", in="path", required=true, description="Client ID"),
+     *     @OA\Parameter(name="CompanyID", in="path", required=true, description="Company ID"),
      *     @OA\Response(
      *          response=200,
      *          description="Successful Response",
@@ -367,11 +367,11 @@ class ClientController extends Controller
      *                  property="errors",
      *                  type="object",
      *                      @OA\Property(
-     *                  property="client_id",
+     *                  property="company_id",
      *                  type="array",
      *                  @OA\Items(
      *                         type="string",
-     *                         example="The selected client_id is invalid."
+     *                         example="The selected company_id is invalid."
      *                  ),
      *              ),
      *                  ),
@@ -382,8 +382,8 @@ class ClientController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $validator = Validator::make(['client_id' => $id] + $request->all(), [
-            'client_id' => 'required|exists:App\Models\Client,id',
+        $validator = Validator::make(['company_id' => $id] + $request->all(), [
+            'company_id' => 'required|exists:App\Models\Company,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -392,13 +392,13 @@ class ClientController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $client = Client::find($id);
-        if(!$client){
+        $Company = Company::find($id);
+        if(!$Company){
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }
 
-        if ($client->delete()) {
+        if ($Company->delete()) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');
             return response()->json($this->response);

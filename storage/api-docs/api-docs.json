@@ -2388,11 +2388,11 @@
                                         },
                                         "errors": {
                                             "properties": {
-                                                "client_id": {
+                                                "company_id": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string",
-                                                        "example": "The selected client_id is invalid."
+                                                        "example": "The selected company_id is invalid."
                                                     }
                                                 }
                                             },
@@ -2502,11 +2502,11 @@
                                         },
                                         "errors": {
                                             "properties": {
-                                                "client_id": {
+                                                "company_id": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string",
-                                                        "example": "The selected client_id is invalid."
+                                                        "example": "The selected company_id is invalid."
                                                     }
                                                 }
                                             },
@@ -6836,7 +6836,7 @@
                                         "type": "string",
                                         "example": "1"
                                     },
-                                    "client_id": {
+                                    "company_id": {
                                         "description": "",
                                         "type": "string",
                                         "example": "1"
@@ -7099,7 +7099,7 @@
                                         "type": "string",
                                         "example": "1"
                                     },
-                                    "client_id": {
+                                    "company_id": {
                                         "description": "",
                                         "type": "string",
                                         "example": "1"
