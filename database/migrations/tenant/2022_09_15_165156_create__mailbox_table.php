@@ -22,11 +22,12 @@ class CreateMailboxTable extends Migration
             $table->string('to_email')->nullable();
             $table->string('subject')->nullable();
             $table->longText('message')->nullable();
-            $table->bigInteger('attachments')->nullable();
-            $table->enum('label',['personal', 'company', 'private', 'important'])->default('personal');
-            $table->enum('isStarred',['true','false'])->default('false');
-            $table->enum('type',['primary','promotions','social'])->default("primary");
+            $table->string('attachments')->nullable();
+            $table->string('label')->nullable();
+            $table->tinyText('isStarred',['true','false'])->default(false);
+            $table->tinyText('type',['primary','promotions','social'])->default("primary");
             $table->string('date')->nullable();
+            $table->string('u_date')->nullable();
             $table->timestamps();
         });
     }

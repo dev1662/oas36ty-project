@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMailboxCcsTable extends Migration
+class CreateMailboxEmailSettingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateMailboxCcsTable extends Migration
      */
     public function up()
     {
-        Schema::create('mailbox_ccs', function (Blueprint $table) {
+        Schema::create('mailbox_email_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('mailbox_id')->nullable();
-            $table->string('cc_email')->nullable();
+            $table->string('mailbox_id');
+            $table->string('emails_settings_id');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateMailboxCcsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mailbox_ccs');
+        Schema::dropIfExists('mailbox_email_settings');
     }
 }
