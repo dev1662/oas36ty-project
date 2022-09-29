@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable;
-class Client extends Model implements Auditable
+class Company extends Model implements Auditable
 {
     use HasFactory, SoftDeletes;
     use \OwenIt\Auditing\Auditable;
+    public $table = "companies";
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
      const TYPE_DELETE = 'delete';
