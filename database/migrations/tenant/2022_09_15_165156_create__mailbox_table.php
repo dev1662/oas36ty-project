@@ -28,6 +28,8 @@ class CreateMailboxTable extends Migration
             $table->tinyText('type',['primary','promotions','social'])->default("primary");
             $table->string('date')->nullable();
             $table->string('u_date')->nullable();
+            $table->string('folder')->nullable();
+            
             $table->timestamps();
         });
     }
