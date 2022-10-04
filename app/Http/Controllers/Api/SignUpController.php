@@ -263,14 +263,28 @@ class SignUpController extends Controller
 
             $centralOnboarding->organization_name = $request->input('organization_name');
             $centralOnboarding->subdomain = $request->input('organization_url');
-            $user= CentralOnboarding::where(['email'=> $request->email])->whereNotNull('organization_name') ;
-                if($user->count() > 0){
-                    $this->response['passwordNotRequired'] = true;
-                    // return response()->json($this->response['passwordNotRequired']);
-                }
+            $check_global_id = CentralUser::where('email', $request->email)->first();
+            // $check_global_id = CentralUser::first();
+            $user = [];
+            if($check_global_id){
+                // return $check_global_id;
+                $global_id = $check_global_id->global_id;
+                $user= DB::table('tenant_users')->where('global_user_id', '=', $global_id)->get();
+
+            }
+            // return $user;
+
+            if($user){
+
+                $this->response['passwordNotRequired'] = true;
+            }
+            // return 0;
+            // $user= CentralOnboarding::where(['email'=> $request->email])->whereNotNull('organization_name') ;
+                // if($user->count() > 0){
+                //     $this->response['passwordNotRequired'] = true;
+                //     // return response()->json($this->response['passwordNotRequired']);
+                // }
             if($centralOnboarding->update()){
-
-
                 $this->response["status"] = true;
                 $this->response["message"] = __('strings.register_organization_success');
                 $this->response["data"] = [

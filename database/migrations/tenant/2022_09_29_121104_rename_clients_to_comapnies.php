@@ -13,10 +13,10 @@ class RenameClientsToComapnies extends Migration
      */
     public function up()
     {
-        Schema::rename('clients', 'companies');
-        Schema::table('tasks', function (Blueprint $table) {
-            $table->renameColumn('client_id', 'company_id');
-        });
+        // Schema::rename('clients', 'companies');
+        // Schema::table('tasks', function (Blueprint $table) {
+        //     $table->renameColumn('client_id', 'company_id');
+        // });
 
     }
 
