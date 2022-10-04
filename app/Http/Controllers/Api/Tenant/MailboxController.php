@@ -55,14 +55,14 @@ class MailboxController extends Controller
             // $result[$index]= Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->paginate(20);
             if($req->folder == 'sent'){
 
-                $result[$index] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Sent Mail'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $result[$index] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Sent Mail'])->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
             }
             if(!$req->folder){
 
-                $result[$index] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $result[$index] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
             }
             if($req->folder == 'starred'){
-                $result[$index] = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $result[$index] = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
 
             }
             // if($req->folder == 'starred'){
