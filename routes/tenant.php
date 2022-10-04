@@ -59,7 +59,10 @@ Route::middleware([
                 return response()->json("h");
 
             });
-            Route::apiResource('tasks', TaskController::class);
+            Route::apiResource('tasks', TaskController::class)->parameters([
+                'tasks' => 'id'
+            ]);
+           
             Route::get('all-users', [ApiUserController::class, 'fetch']);
 
             Route::post('users/{id}/deactivate', [UserController::class, 'deactivate']);

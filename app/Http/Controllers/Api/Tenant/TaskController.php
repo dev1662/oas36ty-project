@@ -83,15 +83,20 @@ class TaskController extends Controller
 
     public function index(Request $request)
     {
-        // return "hh";
+        $route= $_GET['route'];
+        if($route == 'leads'){
+            $route = 'lead';
+        }elseif($route == 'tasks'){
+            $route= 'task';
+        }
 
+        
         $dbname = $request->header('X-Tenant');
-        $dbname = config('tenancy.database.prefix') . strtolower($dbname);
+        $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
     
-
-            $tasks = Task::where('type', 'lead')->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
