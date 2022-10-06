@@ -57,14 +57,15 @@ Route::middleware([
 
             Route::get('dev', function(){
                 return response()->json("h");
-
+                
             });
             Route::apiResource('tasks', TaskController::class)->parameters([
                 'tasks' => 'id'
             ]);
-           
+            Route::post('/sendEmail-outBound', [MailboxController::class, 'sendEmail']);
+            
             Route::get('all-users', [ApiUserController::class, 'fetch']);
-
+            
             Route::post('users/{id}/deactivate', [UserController::class, 'deactivate']);
             Route::get('/users/get-emails-to-assign', [UserController::class, 'get_emails_to_assign']);
             Route::apiResource('users', UserController::class);
@@ -86,7 +87,6 @@ Route::middleware([
             Route::match(['put', 'patch'],'update-email/{id}', [EmailMasterController::class, 'update']);
             Route::post('/apps/email/emails', [MailboxController::class, 'fetchEmails']);
             // Route::post('/apps/email/sent', [MailboxController::class, 'fetch_sent_emails']);
-
             
             Route::post('/apps/email/update-emails', [MailboxController::class, 'updateEmails']);
 

@@ -8,7 +8,7 @@ use App\Models\EmailInbound;
 use App\Models\EmailsSetting;
 use Exception;
 use Illuminate\Support\Facades\Validator;
-
+use Webklex\PHPIMAP\ClientManager;
 
 class EmailInboundController extends Controller
 {
@@ -318,9 +318,22 @@ class EmailInboundController extends Controller
             // return $data;
            
             $check =  EmailInbound::create($data);
+            $cm = new ClientManager();
+
+            $client = $cm->make($data);
+              $client->connect();
+              if(!($client->isConnected())){
+                EmailsSetting::where(['id' => $request->input('id')])->update([
+                    'inbound_status' => 'alert'
+                  ]);
+                  $this->response['status'] = true;
+                  $this->response['status_code'] = 201;
+                  $this->response['message'] = 'Please give valid Credentials';
+                  return response()->json($this->response);
+                }
             EmailsSetting::where(['id' => $request->input('id')])->update([
                 'inbound_status' => 'tick'
-            ]);
+              ]);
             if ($check) {
                 $this->response["status"] = true;
                 $this->response["message"] = __('strings.store_success');
