@@ -13,12 +13,15 @@ class CreateMailboxEmailSettingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('mailbox_email_settings', function (Blueprint $table) {
-            $table->id();
-            $table->string('mailbox_id');
-            $table->string('emails_settings_id');
-            $table->timestamps();
-        });
+        if(!(Schema::hasTable('mailbox_email_settings'))){
+
+            Schema::create('mailbox_email_settings', function (Blueprint $table) {
+                $table->id();
+                $table->string('mailbox_id');
+                $table->string('emails_settings_id');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
