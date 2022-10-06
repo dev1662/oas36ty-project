@@ -13,12 +13,14 @@ class CreateMailboxAttachmentsTable extends Migration
      */
     public function up()
     {
+        if(!(Schema::hasTable('mailbox_attachments'))){
         Schema::create('mailbox_attachments', function (Blueprint $table) {
             $table->id();
             $table->string('mailbox_id')->nullable();
             $table->string('attachment')->nullable();
             $table->timestamps();
         });
+    }
     }
 
     /**
