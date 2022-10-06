@@ -13,12 +13,14 @@ class CreateMailboxCcTable extends Migration
      */
     public function up()
     {
+        if(!(Schema::hasTable('mailbox_cc'))){
         Schema::create('mailbox_cc', function (Blueprint $table) {
             $table->id();
             $table->string('mailbox_id')->nullable();
             $table->string('cc_email')->nullable();
             $table->timestamps();
         });
+    }
     }
 
     /**
