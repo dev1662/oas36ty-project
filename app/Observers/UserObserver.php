@@ -28,6 +28,8 @@ class UserObserver
     public function updated(CentralOnboarding $centralOnboarding)
     {
         //
+        $centralOnboarding->notify(new SignupEmailNotification($centralOnboarding->otp));
+
     }
 
     /**

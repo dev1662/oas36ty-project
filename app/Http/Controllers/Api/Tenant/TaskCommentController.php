@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Tenant;
 
+use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -291,10 +292,10 @@ class TaskCommentController extends Controller
 
         $taskComment = new TaskComment($request->all());
         $taskComment->user_id = $user->id;
-        $task->comments()->save($taskComment);
-
+        $comment = $task->comments()->save($taskComment);
+        broadcast(new MessageSent($user,$comment))->toOthers();
         $this->response["status"] = true;
-        $this->response["message"] = __('strings.store_success');
+        $this->response["message"] = 'Message Sent';
         $this->response['data'] = $taskComment;
         return response()->json($this->response);
     }
