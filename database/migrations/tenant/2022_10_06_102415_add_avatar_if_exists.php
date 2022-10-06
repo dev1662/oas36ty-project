@@ -14,7 +14,7 @@ class AddAvatarIfExists extends Migration
     public function up()
     {
         if(!(Schema::hasColumn('users', 'avatar'))){
-            
+        
             Schema::table('users', function (Blueprint $table) {
                 $table->string('avatar');
             });
