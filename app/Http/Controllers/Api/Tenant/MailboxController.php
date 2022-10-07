@@ -139,20 +139,24 @@ class MailboxController extends Controller
     }
     public function sendEmail(Request $request)
     {
+        $outbound_id= $request->data['from']['id'];
         $centralUser =  CentralUser::where('email', json_decode($request->header('currrent'))->email)->first();
 
         $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
         tenancy()->initialize($tenant);
-      $user_setting  = UserEmail::where('user_id', json_decode($request->header('currrent'))->id)->get();
-      $details_outbound = [];
-      foreach ($user_setting as $index => $user_emails) {
-        $details_outbound = EmailsSetting::where(['id'=> $user_emails->emails_setting_id, 'outBound_status' => 'tick'])->first();
-        if($details_outbound){
-            break;
-        }else{
-            continue;
-        }
-      }
+      $user_setting  = UserEmail::where(['user_id'=> json_decode($request->header('currrent'))->id, 'emails_setting_id' => $outbound_id])->get();
+    //   $details_outbound = [];
+    //   foreach ($user_setting as $index => $user_emails) {
+        if($user_setting){
+
+            $details_outbound = EmailsSetting::where(['id'=> $outbound_id, 'outBound_status' => 'tick'])->first();
+        
+        // if($details_outbound){
+        //     break;
+        // }else{
+        //     continue;
+        // }
+    //   }
       if($details_outbound){
 
           $mailsetting = EmailOutbound::where(['id'=>$details_outbound->id])->first();
@@ -179,6 +183,7 @@ class MailboxController extends Controller
             // return config('mail');
         }
     }
+}
         // return Config::get('mail');
         $message =  $request->data['message'];
         $subject = $request->data['subject'];

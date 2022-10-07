@@ -66,6 +66,27 @@ class ToDoController extends Controller
 
     public function index(Request $request)
     {
+        $todo = [
+            
+                ["id"=> 1,
+                "title" => 'Entire change break our wife wide it daughter mention member.',
+                "dueDate"=> '2020-11-25',
+                "description"=>
+                  '<p>Chocolate cake topping bonbon jujubes donut sweet wafer. Marzipan gingerbread powder brownie bear claw. Chocolate bonbon sesame snaps jelly caramels oat cake.</p>',
+                "assignee"=> [
+                  "fullName" => 'Jacob Ramirez',
+                  "avatar"=> null,
+                ],
+                "tags"=> ['update'],
+                "isCompleted"=> false,
+                "isDeleted"=> false,
+                "isImportant"=> false,],
+              
+            ];
+            $this->response['status'] = true;
+            $this->response['message'] =  __('strings.get_all_success');
+            $this->response['data'] = $todo;
+            return response()->json($this->response);
         $user = $request->user();
 
         $toDos = $user->toDos()->select('id', 'task_id', 'to_do', 'status')->with([

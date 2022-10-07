@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\EmailsSetting;
 use Illuminate\Http\Request;
 use App\Models\EmailOutbound;
+use App\Models\User;
+use App\Models\UserEmail;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -127,6 +129,32 @@ class EmailOutboundController extends Controller
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] = $mail ?? [];
+        return response()->json($this->response);
+    }
+
+    public function fetchEmails_outbound( Request $request)
+    {
+        $dbname = $request->header('X-Tenant'); //json_decode($request->header('currrent'))->tenant->organization->name;
+        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+        // return   $dbname;
+        $this->switchingDB($dbname);
+        $user = $request->user();
+        $user_emails= UserEmail::where('user_id', $user->id)->get();
+        $outbound_mail = [];
+        // $count = 0;
+        foreach($user_emails as $index=> $user_email){
+           $emailSetting =  EmailsSetting::where(['id'=> $user_email->emails_setting_id, 'outBound_status' => 'tick'])->first();
+           if($emailSetting){
+            $outarr = EmailOutbound::where('id', $user_email->emails_setting_id)->select('id','mail_username')->first();
+            $user_avatar = User::where('id', $user->id)->select('avatar', 'name')->first();
+           $outbound_mail[] = ['email' => $outarr->mail_username, 'id' => $outarr->id];
+
+           }
+        //    $count++;
+        }
+        $this->response['status'] = true;
+        $this->response['message'] = 'out bound emails fetched';
+        $this->response['data'] = $outbound_mail;
         return response()->json($this->response);
     }
 
