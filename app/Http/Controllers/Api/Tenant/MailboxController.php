@@ -139,6 +139,9 @@ class MailboxController extends Controller
     }
     public function sendEmail(Request $request)
     {
+        $bcc=  $request->data['bcc'] ?? '';
+        $cc=  $request->data['cc'] ?? '';
+
         $outbound_id= $request->data['from']['id'];
         $centralUser =  CentralUser::where('email', json_decode($request->header('currrent'))->email)->first();
 
@@ -193,8 +196,9 @@ class MailboxController extends Controller
         $status = [];
         foreach($request->data['to'] as $email){
             $data_arr= [
-              'message' => $message, 'subject' => $subject, 'email' => $email['email']
+              'message' => $message, 'subject' => $subject, 'email' => $email['email'], 'email_bcc' => $bcc, 'email_cc' => $cc
             ];
+            // return $data_arr;
             $status = $this->SendEmailDriven($data_arr);
         //   $status =  Mail::to('devoas36ty@gmail.com')->send(new MailBoxSendMail($message, $subject));
         //      config(['mail.mailers.smtp.username' => 'robin@gmail.com']);
@@ -226,16 +230,32 @@ class MailboxController extends Controller
                     $data['email_bcc'] = array_key_exists('email_bcc', $email_data)  ? $email_data['email_bcc'] : '';
                     $data['email_replyTo'] = array_key_exists('email_replyTo', $email_data)  ? $email_data['email_replyTo'] : '';
                     $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
+                    // return $data;
 
                     //return $data;
+
                     Mail::send($email_template, $data, function ($message) use ($data) {
                         $message->from($data['email_from'], $data['email_from_name']);
                         $message->to($data['email']);
                         $message->subject($data['email_subject']);
-                        $message->cc($data['email_cc']) ?? '';
-                        $message->bcc($data['email_bcc']) ?? '';
-                        $message ->replyTo($data['email_replyTo']) ?? '';
-                        $message->attach($data['email_attach']) ?? '';
+                        if($data['email_cc']){
+
+                            $message->cc($data['email_cc']);
+                        }
+                        if($data['email_bcc']){
+
+                            $message->bcc($data['email_bcc']);
+                        }
+                        if($data['email_replyTo']){
+
+                            $message->replyTo($data['email_replyTo']);
+                        }
+                        if($data['email_attach']){
+
+                            $message->attach($data['email_attach']);
+                        }
+                        // $message ->replyTo($data['email_replyTo']) ?? '';
+                        // $message->attach($data['email_attach']) ?? '';
                     });
                     return true;
                 }
@@ -252,19 +272,26 @@ class MailboxController extends Controller
 
         $email_data = [];
         ## sending email
+        $email_data['email_cc'] = $data_arr['email_cc'];
+        $email_data['email_bcc'] = $data_arr['email_bcc'];
+
         $email_data['email'] = $data_arr['email'];
         $email_data['email_subject'] = $data_arr['subject'];
         $email_data['email_template'] = "emails.auth.hello";
         $email_data['template_data'] = ['body' => $data_arr['message']];
+        // return $email_data;
          $check = $this->send_email_sms($email_data, []);
         if ($check) {
             $this->response['status'] = true;
             $this->response['status_code'] = 200;
+            $this->response['data']= $check;
             $this->response['message'] = "Email sent successfully" ;
             return response()->json($this->response);
         } else {
             $this->response['status'] = true;
             $this->response['status_code'] = 201;
+            $this->response['data']= $check;
+
             $this->response['message'] = "Something went wrong" ;
             return response()->json($this->response);
         }
