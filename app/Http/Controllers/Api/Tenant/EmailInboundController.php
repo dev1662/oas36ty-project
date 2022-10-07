@@ -328,16 +328,7 @@ class EmailInboundController extends Controller
                 'password'   => $request->input('mail_password'),
                 'encryption' => $request->input('mail_encryption')['option'],
             ]);
-            //   $client->connect();
-              if(!($client->connect())){
-                EmailsSetting::where(['id' => $check->id])->update([
-                    'inbound_status' => 'alert'
-                  ]);
-                  $this->response['status'] = true;
-                  $this->response['status_code'] = 201;
-                  $this->response['message'] = 'Please give valid Credentials';
-                  return response()->json($this->response);
-                }
+            $client->connect();
             EmailsSetting::where(['id' => $request->input('id')])->update([
                 'inbound_status' => 'tick'
               ]);
@@ -697,23 +688,10 @@ class EmailInboundController extends Controller
                 'password'   => $request->input('mail_password'),
                 'encryption' => $request->input('mail_encryption')['option'],
             ]);
-           
-
-            //   $client->connect();
-            //   return $client->getFolders();
-              if(!($client->connect())){
-                EmailsSetting::where(['id' => $id])->update([
-                    'inbound_status' => 'alert'
-                  ]);
-                  $this->response['status'] = true;
-                  $this->response['status_code'] = 201;
-                  $this->response['message'] = 'Please give valid Credentials';
-                  return response()->json($this->response);
-                }else if($client->connect()){
-                    EmailsSetting::where(['id' => $id])->update([
-                        'inbound_status' => 'tick'
-                      ]);
-                }
+            // $client->connect();
+             $client->connect();
+              
+             
             if ($check) {
                
                 $this->response["status"] = true;
