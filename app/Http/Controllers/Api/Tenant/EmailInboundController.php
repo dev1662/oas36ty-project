@@ -323,7 +323,7 @@ class EmailInboundController extends Controller
             $client = $cm->make($data);
               $client->connect();
               if(!($client->isConnected())){
-                EmailsSetting::where(['id' => $request->input('id')])->update([
+                EmailsSetting::where(['id' => $check->id])->update([
                     'inbound_status' => 'alert'
                   ]);
                   $this->response['status'] = true;
@@ -680,7 +680,23 @@ class EmailInboundController extends Controller
             
            
             $check =  EmailInbound::where(['id' => $id])->update($data);
-    
+            $cm = new ClientManager();
+
+            $client = $cm->make($data);
+              $client->connect();
+              if(!($client->isConnected())){
+                EmailsSetting::where(['id' => $id])->update([
+                    'inbound_status' => 'alert'
+                  ]);
+                  $this->response['status'] = true;
+                  $this->response['status_code'] = 201;
+                  $this->response['message'] = 'Please give valid Credentials';
+                  return response()->json($this->response);
+                }else if($client->isConnected()){
+                    EmailsSetting::where(['id' => $id])->update([
+                        'inbound_status' => 'tick'
+                      ]);
+                }
             if ($check) {
                
                 $this->response["status"] = true;
