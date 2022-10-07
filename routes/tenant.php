@@ -100,7 +100,7 @@ Route::middleware([
          
             Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);
 
-            
+            Route::get('assignedEmails-outBound', [EmailOutboundController::class, 'fetchEmails_outbound']);
         });
         
     });

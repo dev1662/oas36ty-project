@@ -12,7 +12,7 @@ class UserController extends Controller
     //
     public function fetch()
     {
-        $user = User::select('id','name')->get();
+        $user = User::select('id','name', 'email', 'avatar')->get();
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] = $user;
