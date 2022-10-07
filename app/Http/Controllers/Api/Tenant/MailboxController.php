@@ -217,13 +217,20 @@ class MailboxController extends Controller
                     $data['email_from'] = array_key_exists('email_from', $email_data) ? $email_data['email_from'] : 'robinoas36ty@gmail.com';
 
                     $data['email_from_name'] = array_key_exists('email_from_name', $email_data) ? $email_data['email_from_name'] : 'Oas36ty';
-
+                    $data['email_cc'] = array_key_exists('email_cc', $email_data)  ? $email_data['email_cc'] : '';
+                    $data['email_bcc'] = array_key_exists('email_bcc', $email_data)  ? $email_data['email_bcc'] : '';
+                    $data['email_replyTo'] = array_key_exists('email_replyTo', $email_data)  ? $email_data['email_replyTo'] : '';
+                    $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
 
                     //return $data;
                     Mail::send($email_template, $data, function ($message) use ($data) {
                         $message->from($data['email_from'], $data['email_from_name']);
                         $message->to($data['email']);
                         $message->subject($data['email_subject']);
+                        $message->cc($data['email_cc']) ?? '';
+                        $message->bcc($data['email_bcc']) ?? '';
+                        $message ->replyTo($data['email_replyTo']) ?? '';
+                        $message->attach($data['email_attach']) ?? '';
                     });
                     return true;
                 }
