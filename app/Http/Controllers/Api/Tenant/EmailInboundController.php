@@ -320,17 +320,15 @@ class EmailInboundController extends Controller
             $check =  EmailInbound::create($data);
             $cm = new ClientManager();
 
-            $client = $cm->make($data);
-              $client->connect();
-              if(!($client->isConnected())){
-                EmailsSetting::where(['id' => $request->input('id')])->update([
-                    'inbound_status' => 'alert'
-                  ]);
-                  $this->response['status'] = true;
-                  $this->response['status_code'] = 201;
-                  $this->response['message'] = 'Please give valid Credentials';
-                  return response()->json($this->response);
-                }
+            $client = $cm->make([
+                'protocol'  => $request->input('mail_transport')['option'],
+                'host'       => $request->input('mail_host'),
+                'port'       => $request->input('mail_port'),
+                'username'   => $request->input('mail_username'),
+                'password'   => $request->input('mail_password'),
+                'encryption' => $request->input('mail_encryption')['option'],
+            ]);
+            $client->connect();
             EmailsSetting::where(['id' => $request->input('id')])->update([
                 'inbound_status' => 'tick'
               ]);
@@ -668,7 +666,7 @@ class EmailInboundController extends Controller
                 return response()->json($this->response, 422);
             }
             $data = [
-               // 'id'=> $request->input('id'),
+             
                 'mail_transport'  => $request->input('mail_transport')['option'],
                 'mail_host'       => $request->input('mail_host'),
                 'mail_port'       => $request->input('mail_port'),
@@ -680,7 +678,20 @@ class EmailInboundController extends Controller
             
            
             $check =  EmailInbound::where(['id' => $id])->update($data);
-    
+            $cm = new ClientManager();
+
+            $client = $cm->make([
+                'protocol'  => $request->input('mail_transport')['option'],
+                'host'       => $request->input('mail_host'),
+                'port'       => $request->input('mail_port'),
+                'username'   => $request->input('mail_username'),
+                'password'   => $request->input('mail_password'),
+                'encryption' => $request->input('mail_encryption')['option'],
+            ]);
+            // $client->connect();
+             $client->connect();
+              
+             
             if ($check) {
                
                 $this->response["status"] = true;

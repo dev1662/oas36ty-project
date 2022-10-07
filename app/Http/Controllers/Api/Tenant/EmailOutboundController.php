@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Models\UserEmail;
 use Exception;
 use Illuminate\Support\Facades\Validator;
-
+use Webklex\PHPIMAP\ClientManager;
 
 class EmailOutboundController extends Controller
 {
@@ -342,6 +342,7 @@ class EmailOutboundController extends Controller
           
         
             $check =  EmailOutbound::create($data);
+            
             EmailsSetting::where(['id' => $request->input('id')])->update([
                 'outbound_status' => 'tick'
             ]);
@@ -691,7 +692,21 @@ class EmailOutboundController extends Controller
             
            
             $check =  EmailOutbound::where(['id' => $id])->update($data);
-    
+            $cm = new ClientManager();
+
+            // $client = $cm->make([
+            //     'protocol'  => $request->input('mail_transport'),
+            //     'host'       => $request->input('mail_host'),
+            //     'port'       => (int)$request->input('mail_port'),
+            //     'validate_cert' => true,
+
+            //     'username'   => $request->input('mail_username'),
+            //     'password'   => $request->input('mail_password'),
+            //     'encryption' => $request->input('mail_encryption')['option'],
+            // ]);
+           
+            // return $cm;
+              
             if ($check) {
                
                 $this->response["status"] = true;
