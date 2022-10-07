@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Models\UserEmail;
 use Exception;
 use Illuminate\Support\Facades\Validator;
-
+use Webklex\PHPIMAP\ClientManager;
 
 class EmailOutboundController extends Controller
 {
@@ -342,6 +342,26 @@ class EmailOutboundController extends Controller
           
         
             $check =  EmailOutbound::create($data);
+            $cm = new ClientManager();
+
+            $client = $cm->make([
+                'mail_transport'  => $request->input('mail_transport')['option'],
+                'mail_host'       => $request->input('mail_host'),
+                'mail_port'       => $request->input('mail_port'),
+                'mail_username'   => $request->input('mail_username'),
+                'mail_password'   => $request->input('mail_password'),
+                'mail_encryption' => $request->input('mail_encryption')['option'],
+            ]);
+            //   $client->connect();
+              if(!($client->connect())){
+                EmailsSetting::where(['id' => $check->id])->update([
+                    'outbound_status' => 'alert'
+                  ]);
+                  $this->response['status'] = true;
+                  $this->response['status_code'] = 201;
+                  $this->response['message'] = 'Please give valid Credentials';
+                  return response()->json($this->response);
+                }
             EmailsSetting::where(['id' => $request->input('id')])->update([
                 'outbound_status' => 'tick'
             ]);
@@ -691,7 +711,21 @@ class EmailOutboundController extends Controller
             
            
             $check =  EmailOutbound::where(['id' => $id])->update($data);
-    
+            $cm = new ClientManager();
+
+            // $client = $cm->make([
+            //     'protocol'  => $request->input('mail_transport'),
+            //     'host'       => $request->input('mail_host'),
+            //     'port'       => (int)$request->input('mail_port'),
+            //     'validate_cert' => true,
+
+            //     'username'   => $request->input('mail_username'),
+            //     'password'   => $request->input('mail_password'),
+            //     'encryption' => $request->input('mail_encryption')['option'],
+            // ]);
+           
+            // return $cm;
+              
             if ($check) {
                
                 $this->response["status"] = true;
