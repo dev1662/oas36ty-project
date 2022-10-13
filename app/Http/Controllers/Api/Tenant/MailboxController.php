@@ -52,26 +52,27 @@ class MailboxController extends Controller
         foreach ($check_assigned_emails as $index => $emails) {
             $email_setting_id = $emails->emails_setting_id;
             $email_inbound = EmailInbound::where('id', $email_setting_id)->first();
-            $inbound_array[$index] = $email_inbound;
+            $inbound_array[] = $email_inbound;
         }
         // foreach loop to check inbound username
         $result = [];
-        // return $inbound_array;
+        //  return $inbound_array;
         $total_count = [];
         foreach ($inbound_array as $index => $username) {
-
+            // return $username;
+            if($username != null){
             // return $username->mail_username;
             // $result[$index]= Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->paginate(20);
             if($req->folder == 'sent'){
 
-                $result[$index] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Sent Mail'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
             }
             if(!$req->folder){
 
-                $result[$index] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
             }
             if($req->folder == 'starred'){
-                $result[$index] = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
+                $result[] = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
 
             }
             // if($req->folder == 'starred'){
@@ -80,10 +81,11 @@ class MailboxController extends Controller
             // }
             // $total_count[$index] =  Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->get();
 
-            $total_count[$index] =  ['count' => UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
+            $total_count[] =  ['count' => UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
         }
-        // return $total_count;
-        // return count($result);
+    }
+        //  return $total_count;
+        //  return $result;
         // $result = Mailbox::all();
         if ($result) {
             $result = $result[0];
@@ -103,7 +105,7 @@ class MailboxController extends Controller
         if ($page > 1) {
             $count_email = ($page - 1) * 20 + count($result);
         } else {
-            $count_email =  count($result);
+            $count_email =count($result);
         }
         $meta = [
             'emailsMeta' =>  $count_email,
