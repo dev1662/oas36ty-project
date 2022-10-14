@@ -94,7 +94,7 @@ class ContactPersonController extends Controller
         // $result = array();
                   foreach($id as $key => $val){
 
-            $email = ContactPersonEmail::where(['contact_person_id' => $val->id])->select('email')->get();
+            $email = ContactPersonEmail::where(['contact_person_id' => $val->id])->select('id','email')->get();
             $phone = ContactPersonPhone::where(['contact_person_id' => $val->id])->select('phone')->get();
 
 
