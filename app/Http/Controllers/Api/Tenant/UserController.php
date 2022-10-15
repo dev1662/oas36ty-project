@@ -432,7 +432,7 @@ class UserController extends Controller
                     'tenant_id' => $organization->tenant_id,
                     'email' => $centralUser->email,
                 ];
-                $url = env('APP_URL').'/accept-invitation?token=' . Crypt::encryptString(json_encode($token));
+                $url = env('BASE_URL').'/accept-invitation?token=' . Crypt::encryptString(json_encode($token));
 
 
                 Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
@@ -474,7 +474,7 @@ class UserController extends Controller
                     'email' => $centralUser->email,
                 ];
 
-                $url = env('APP_URL').'/invitation?token=' . Crypt::encryptString(json_encode($token));
+                $url = env('BASE_URL').'/invitation?token=' . Crypt::encryptString(json_encode($token));
 
                 Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
             });
