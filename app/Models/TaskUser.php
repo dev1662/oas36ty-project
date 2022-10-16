@@ -20,4 +20,8 @@ class TaskUser extends Model implements Auditable
     protected $fillable = [
         'task_id', 'user_id'
     ];
+    public function tasks()
+    {
+        return $this->belongsToMany(Task::class);
+    }
 }
