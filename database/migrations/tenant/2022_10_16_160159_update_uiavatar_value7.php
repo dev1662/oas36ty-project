@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateAvatarDefault2 extends Migration
+class UpdateUiavatarValue7 extends Migration
 {
     /**
      * Run the migrations.
@@ -14,11 +14,13 @@ class UpdateAvatarDefault2 extends Migration
      */
     public function up()
     {
-        DB::statement('ALTER TABLE `users` CHANGE COLUMN `avatar` `avatar` VARCHAR(255)  NULL DEFAULT NULL ;');
-
-        // Schema::table('users', function (Blueprint $table) {
-        //     $table->string('avatar')->default(null)->change();
-        // });
+        $users_with_null = DB::table('users')->where('avatar', null)->select('id', 'name')->get();
+        foreach($users_with_null as $user){
+            DB::table('users')->where(['id' => $user->id, 'avatar' => null])->update([
+                'avatar' =>  'https://ui-avatars.com/api/?name='.$user->name
+            ]);
+          
+        }
     }
 
     /**

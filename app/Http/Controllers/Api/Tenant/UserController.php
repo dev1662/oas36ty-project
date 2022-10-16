@@ -384,6 +384,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        // return 'h';
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64',
@@ -422,7 +423,7 @@ class UserController extends Controller
             // return $centralUser;
             $user = User::where('email', $centralUser->email)->first();
             if ($request->name != $user->name)  $user->display_name = $request->name;
-            // $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
+            $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
             // return $user;
@@ -462,7 +463,7 @@ class UserController extends Controller
 
             $user = User::where('email', $centralUser->email)->first();
             if ($request->name != $user->name)  $user->display_name = $request->name;
-            // $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
+            $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
 
@@ -510,7 +511,7 @@ class UserController extends Controller
             $this->response["message"] = __('strings.something_wrong');
             return response()->json($this->response, 401);
         }
-
+        // return $tokenData;
         $centralUser = CentralUser::where('email', $tokenData->email)->first();
         if ($centralUser) {
 
@@ -891,23 +892,30 @@ class UserController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
+        
         $member = User::find($id);
-        if ($member->status != User::STATUS_PENDING && $member->status != User::STATUS_DECLINED) {
-            $this->response["message"] = __('strings.destroy_failed');
-            return response()->json($this->response, Response::HTTP_FORBIDDEN);
-        }
+        // return  $member->global_id;
+       $delete_tenant_user =  DB::connection('mysql')->table('tenant_users')->where('global_user_id', $member->global_id);
+        $delete_user = DB::connection('mysql')->table('users')->where('global_id', $member->global_id);
+       if($delete_tenant_user->delete() && $delete_user->delete()){
 
-        if ($member->forceDelete()) {
-            $this->response["status"] = true;
-            $this->response["message"] = __('strings.destroy_success');
-            return response()->json($this->response);
-        }
-
-        $this->response["message"] = __('strings.destroy_failed');
-        return response()->json($this->response);
+           // if ($member->status != User::STATUS_PENDING && $member->status != User::STATUS_DECLINED ) {
+               //     $this->response["message"] = __('strings.destroy_failed');
+               //     return response()->json($this->response, Response::HTTP_FORBIDDEN);
+               // }
+               if ($member->forceDelete()) {
+                   $this->response["status"] = true;
+                   $this->response["message"] = __('strings.destroy_success');
+                   return response()->json($this->response);
+                }
+                
+                $this->response["message"] = __('strings.destroy_failed');
+                return response()->json($this->response);
+            }
+            $this->response["message"] = 'Tenant user deletion failed';
+                return response()->json($this->response);
     }
-
+            
 
     /**
      *

@@ -13,6 +13,8 @@ use Hash;
 
 use App\Models\CentralUser;
 use App\Models\User;
+use Exception;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash as FacadesHash;
@@ -162,13 +164,13 @@ class ResetPasswordController extends Controller
     }
     public function setPassword(Request $request)
     {
-
+        // return "h";
         $validator = Validator::make($request->all(), [
             'token' => 'required',
-            'email' => 'required|email',
+            // 'email' => 'required|email',
             'password' => 'required|string|min:6|max:15',
         ]);
-        // return "hh";
+        
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();
@@ -176,14 +178,20 @@ class ResetPasswordController extends Controller
             return response()->json($this->response, 422);
         }
         // return "hh";
-        
+        try{
+            
+          $tokenData =  json_decode(Crypt::decryptString($request->token));
+        }catch(DecryptException $ex){
+            return $ex->getMessage();
+        }
+  
         $hash_password = FacadesHash::make($request->password);
         // return FacadesHash::make($request->password);
-        if(CentralUser::where('email', $request->email) && User::where('email', $request->email)){
+        if(CentralUser::where('email', $tokenData->email) && User::where('email', $tokenData->email)){
 
             // $token = Crypt::decryptString($request->token);
             // $centralUser = tenancy()->central(function ($tenant) use($request) {
-            $centralUser = CentralUser::where('email', $request->email)->update(
+            $centralUser = CentralUser::where('email', $tokenData->email)->update(
                 [
                     'password' => $hash_password,
                     'status' => 'active'
@@ -195,7 +203,7 @@ class ResetPasswordController extends Controller
             // return $centralUser;
         // });
         // return $centralUser;
-        $tokenData = json_decode(Crypt::decryptString($request->token));
+        // $tokenData = json_decode(Crypt::decryptString($request->token));
         $mainUser = CentralUser::where('email', $tokenData->email)->first();
         $tenant = $mainUser->tenants()->find($tokenData->tenant_id);
         $user = $tenant->run(function ($tenant) use ($mainUser) {
