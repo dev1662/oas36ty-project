@@ -284,30 +284,30 @@ class TaskController extends Controller
 
             ])->latest()->get();
         }
-        if($search == null){
-            $tasks = Task::where([ 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
-                'branch' => function ($q) {
-                    $q->select('id', 'name');
-                },
-                'category' => function ($q) {
-                    $q->select('id', 'name');
-                },
-                'Company' => function ($q) {
-                    $q->select('id', 'name');
-                },
-                'contactPerson' => function ($q) {
-                    $q->select('id', 'name');
-                },
-                'users' => function ($q) {
-                    $q->select('users.id', 'name');
-                },
-                'audits',
-                // 'priorities' => function($q){
-                //     $q->select('id', 'icons');
-                // },
+        // if($search == null){
+        //     $tasks = Task::where([ 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+        //         'branch' => function ($q) {
+        //             $q->select('id', 'name');
+        //         },
+        //         'category' => function ($q) {
+        //             $q->select('id', 'name');
+        //         },
+        //         'Company' => function ($q) {
+        //             $q->select('id', 'name');
+        //         },
+        //         'contactPerson' => function ($q) {
+        //             $q->select('id', 'name');
+        //         },
+        //         'users' => function ($q) {
+        //             $q->select('users.id', 'name');
+        //         },
+        //         'audits',
+        //         // 'priorities' => function($q){
+        //         //     $q->select('id', 'icons');
+        //         // },
 
-            ])->latest()->get();
-        }
+        //     ])->latest()->get();
+        // }
         if($request->branch){
             $tasks = Task::where(['branch_id' => $request->branch['id'], 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
