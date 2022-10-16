@@ -186,7 +186,8 @@ class TaskController extends Controller
             ])->latest()->get();
         }
         if($request->priority){
-            $tasks = Task::where(['priority', $request->priority['id'], 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            // return $request->priority['id'];
+            $tasks = Task::where(['priority' =>  $request->priority['id'], 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
@@ -210,7 +211,7 @@ class TaskController extends Controller
             ])->latest()->get();
         }
         if($request->category){
-            $tasks = Task::where(['category_id', $request->category['id'], 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            $tasks = Task::where(['category_id' =>  $request->category['id'], 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
@@ -257,8 +258,34 @@ class TaskController extends Controller
 
             ])->latest()->get();
         }
-        if($request->search){
-            $tasks = Task::where(['subject'=>'like', '%'. $request->search . '%', 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+        $search = $request->search ?? null;
+        if($search){
+            
+            $tasks = Task::where(['subject'=>$search, 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                'branch' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'category' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'Company' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'contactPerson' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'users' => function ($q) {
+                    $q->select('users.id', 'name');
+                },
+                'audits',
+                // 'priorities' => function($q){
+                //     $q->select('id', 'icons');
+                // },
+
+            ])->latest()->get();
+        }
+        if($search == null){
+            $tasks = Task::where([ 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
