@@ -158,7 +158,7 @@ class BranchController extends Controller
 
         
         $branch = new Branch($request->all());
-        
+     
         $branch->save();
 
         $this->response["status"] = true;
@@ -407,7 +407,7 @@ class BranchController extends Controller
             return response()->json($this->response, 422);
         }
 
-        if ($branch->delete()) {
+        if ($branch->forceDelete()) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');
             return response()->json($this->response);

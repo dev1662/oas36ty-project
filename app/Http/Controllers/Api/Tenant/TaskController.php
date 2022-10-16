@@ -407,9 +407,16 @@ class TaskController extends Controller
         // return $request->branch_id['id'];
 
         $task = new Task();
+        $branch_id_new_one = $request->branch_id['b_id'] ?? null;
+        if($branch_id_new_one){
 
-        $task->branch_id = $request->branch_id['id'];
+            $task->branch_id = (int)$request->branch_id['b_id'];
+        }
+        else{
+            $task->branch_id = $request->branch_id['id'];
 
+        }
+        // return $task;
 
         $task->category_id = $request->category_id['id'];
 

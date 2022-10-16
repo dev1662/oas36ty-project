@@ -599,7 +599,7 @@ class ContactPersonController extends Controller
             return response()->json($this->response, 422);
         }
 
-        if ($contactPerson->delete()) {
+        if ($contactPerson->forceDelete()) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');
             return response()->json($this->response);

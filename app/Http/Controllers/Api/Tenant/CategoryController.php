@@ -398,7 +398,7 @@ class CategoryController extends Controller
             return response()->json($this->response, 422);
         }
 
-        if ($category->delete()) {
+        if ($category->forceDelete()) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');
             return response()->json($this->response);

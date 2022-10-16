@@ -398,7 +398,7 @@ class CompanyController extends Controller
             return response()->json($this->response, 422);
         }
 
-        if ($Company->delete()) {
+        if ($Company->forceDelete()) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');
             return response()->json($this->response);
