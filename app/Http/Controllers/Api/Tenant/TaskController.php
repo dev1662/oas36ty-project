@@ -155,8 +155,8 @@ class TaskController extends Controller
 
             ])->latest()->get();
         }
-        if($request->Company){
-            $tasks = Task::where('company_id', $request->Company['id'])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+        if($request->company){
+            $tasks = Task::where('company_id', $request->company['id'])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
@@ -278,7 +278,7 @@ class TaskController extends Controller
        
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
-        $this->response["data"] = $tasks;
+        $this->response["data"] = $tasks ?? [];
         return response()->json($this->response);
     }
     // public function leads(Request $request)
