@@ -274,10 +274,82 @@ class MailboxController extends Controller
         return response()->json($this->response);
     }
 
+     /**
+     *
+     * @OA\post(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Mail Box"},
+     *     path="/apps/email/update-emails",
+     *     operationId="isStarredMailboxEmails",
+     *     summary="Update isStarred",
+     *     description="Fetch Emails",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="search", in="query", required=false, description="Search"),
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *              @OA\Property(
+     *                         property="dataToUpdate",
+     *                         type="object",
+     *                         @OA\Property(
+     *                         property="isStarred",
+     *                         type="boolean",
+     *                         example="true"
+     *                      ),
+     *           
+     *                      ),
+     *                  @OA\Property(
+     *                         property="emailIds",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *            )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Record updated successfully"),
+     *           
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="email",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected email is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
   
     public function updateEmails(Request $req)
     {
-        // return $req->all();
+        //  return $req->dataToUpdate['isStarred'];
         if($req->dataToUpdate['isStarred'] == true){
 
             $email_id = $req->emailIds;
