@@ -17,7 +17,7 @@ class MailBoxSendMail extends Mailable implements ShouldQueue
      * @return void
      */
     protected $message;
-    protected $subject;
+    public $subject;
     public function __construct($message, $subject)
     {
         $this->message = $message;
@@ -31,7 +31,7 @@ class MailBoxSendMail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->subject('$this->subject')->markdown('emails.auth.hello', [
+        return $this->subject($this->subject)->markdown('emails.auth.hello', [
            'message' => 'hhh'
         ]);
     }

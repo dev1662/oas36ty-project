@@ -1978,14 +1978,14 @@
                 ]
             }
         },
-        "/clients": {
+        "/Companys": {
             "get": {
                 "tags": [
-                    "clients"
+                    "Companys"
                 ],
-                "summary": "Clients",
-                "description": "Clients",
-                "operationId": "getClients",
+                "summary": "Companys",
+                "description": "Companys",
+                "operationId": "getCompanys",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
@@ -2016,7 +2016,7 @@
                                                     },
                                                     "name": {
                                                         "type": "string",
-                                                        "example": "Client Name"
+                                                        "example": "Company Name"
                                                     }
                                                 },
                                                 "type": "object"
@@ -2073,11 +2073,11 @@
             },
             "post": {
                 "tags": [
-                    "clients"
+                    "Companys"
                 ],
-                "summary": "Create Client",
-                "description": "Create Client",
-                "operationId": "postClient",
+                "summary": "Create Company",
+                "description": "Create Company",
+                "operationId": "postCompany",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
@@ -2092,7 +2092,7 @@
                                     "name": {
                                         "description": "",
                                         "type": "string",
-                                        "example": "Client Name"
+                                        "example": "Company Name"
                                     }
                                 },
                                 "type": "object"
@@ -2181,22 +2181,22 @@
                 ]
             }
         },
-        "/clients/{clientID}": {
+        "/Companys/{CompanyID}": {
             "get": {
                 "tags": [
-                    "clients"
+                    "Companys"
                 ],
-                "summary": "Show Client",
-                "description": "Show Client",
-                "operationId": "showClient",
+                "summary": "Show Company",
+                "description": "Show Company",
+                "operationId": "showCompany",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "CompanyID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Company ID",
                         "required": true
                     }
                 ],
@@ -2225,7 +2225,7 @@
                                                     },
                                                     "name": {
                                                         "type": "string",
-                                                        "example": "Client Name"
+                                                        "example": "Company Name"
                                                     }
                                                 },
                                                 "type": "object"
@@ -2282,19 +2282,19 @@
             },
             "put": {
                 "tags": [
-                    "clients"
+                    "Companys"
                 ],
-                "summary": "Update Client",
-                "description": "Update Client",
-                "operationId": "putClient",
+                "summary": "Update Company",
+                "description": "Update Company",
+                "operationId": "putCompany",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "CompanyID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Company ID",
                         "required": true
                     }
                 ],
@@ -2307,7 +2307,7 @@
                                     "name": {
                                         "description": "",
                                         "type": "string",
-                                        "example": "Client name"
+                                        "example": "Company name"
                                     }
                                 },
                                 "type": "object"
@@ -2413,19 +2413,19 @@
             },
             "delete": {
                 "tags": [
-                    "clients"
+                    "Companys"
                 ],
-                "summary": "Delete Client",
-                "description": "Delete Client",
-                "operationId": "deleteClient",
+                "summary": "Delete Company",
+                "description": "Delete Company",
+                "operationId": "deleteCompany",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "CompanyID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Company ID",
                         "required": true
                     }
                 ],
@@ -6018,6 +6018,199 @@
                                                 }
                                             },
                                             "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/apps/email/emails": {
+            "post": {
+                "tags": [
+                    "Mail Box"
+                ],
+                "summary": "Fetch Emails",
+                "description": "Fetch Emails",
+                "operationId": "getMailboxEmails",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search",
+                        "required": false
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "currrent": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": "1"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "example": "example@gmail.com"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "page": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "folder": {
+                                        "type": "string",
+                                        "example": "INBOX"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all records successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "attachments": {
+                                                        "type": "string",
+                                                        "example": "0"
+                                                    },
+                                                    "avatar": {
+                                                        "type": "string",
+                                                        "example": "avatar.jpeg"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    },
+                                                    "date": {
+                                                        "type": "string",
+                                                        "example": "2022-10-17 10:53:57"
+                                                    },
+                                                    "folder": {
+                                                        "type": "string",
+                                                        "example": "INBOX"
+                                                    },
+                                                    "from_email": {
+                                                        "type": "string",
+                                                        "example": "example@gmail.com"
+                                                    },
+                                                    "from_name": {
+                                                        "type": "string",
+                                                        "example": "Oas36ty <example@gmail.com>"
+                                                    },
+                                                    "isStarred": {
+                                                        "type": "integer",
+                                                        "example": "0"
+                                                    },
+                                                    "label": {
+                                                        "type": "string",
+                                                        "example": "NULL"
+                                                    },
+                                                    "message": {
+                                                        "type": "string",
+                                                        "example": "<html>This is testing message</html>"
+                                                    },
+                                                    "message_id": {
+                                                        "type": "string",
+                                                        "example": "2565747e7ab44e8a7a0717003e02074c@gitlab.protracked.in"
+                                                    },
+                                                    "subject": {
+                                                        "type": "string",
+                                                        "example": "Oas36ty WebApp | Leads Search (#30)"
+                                                    },
+                                                    "to_email": {
+                                                        "type": "string",
+                                                        "example": "example@gmail.com"
+                                                    },
+                                                    "type": {
+                                                        "type": "string",
+                                                        "example": "primary"
+                                                    },
+                                                    "u_date": {
+                                                        "type": "string",
+                                                        "example": "1665921153"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"

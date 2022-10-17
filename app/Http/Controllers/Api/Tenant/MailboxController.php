@@ -20,21 +20,177 @@ use Illuminate\Support\Facades\Mail;
 
 class MailboxController extends Controller
 {
-    //
-    // public function __construct(Request $req)
-    // {
-    //     $this->user_id = json_decode($req->header('currrent'))->id;
-    // }
+   
+
+     /**
+     *
+     * @OA\post(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Mail Box"},
+     *     path="/apps/email/emails",
+     *     operationId="getMailboxEmails",
+     *     summary="Fetch Emails",
+     *     description="Fetch Emails",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="search", in="query", required=false, description="Search"),
+     * *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *               @OA\Property(
+     *                         property="currrent",
+     *                         type="object",
+     *                         @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ),
+     *                      ),
+     *              
+     *                      @OA\Property(
+     *                         property="page",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="folder",
+     *                         type="string",
+     *                         example="INBOX"
+     *                      ),
+     *                      
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Fetched all records successfully"),
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="attachments",
+     *                         type="string",
+     *                         example="0"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="avatar",
+     *                         type="string",
+     *                         example="avatar.jpeg"
+     *                      ),
+     *              
+     *                       @OA\Property(
+     *                         property="created_at",
+     *                         type="timestamp",
+     *                         example="2022-09-02T06:01:37.000000Z"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="date",
+     *                        type="string",
+     *                         example="2022-10-17 10:53:57"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="folder",
+     *                         type="string",
+     *                         example="INBOX"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="from_email",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="from_name",
+     *                         type="string",
+     *                         example="Oas36ty <example@gmail.com>"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="isStarred",
+     *                         type="integer",
+     *                         example="0"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="label",
+     *                         type="string",
+     *                         example="NULL"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="message",
+     *                         type="string",
+     *                         example="<html>This is testing message</html>"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="message_id",
+     *                         type="string",
+     *                         example="2565747e7ab44e8a7a0717003e02074c@gitlab.protracked.in"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="subject",
+     *                         type="string",
+     *                         example="Oas36ty WebApp | Leads Search (#30)"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="to_email",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="type",
+     *                         type="string",
+     *                         example="primary"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="u_date",
+     *                         type="string",
+     *                         example="1665921153"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="updated_at",
+     *                         type="timestamp",
+     *                         example="2022-09-02T06:01:37.000000Z"
+     *                      ),
+     *      
+     *                ),
+     *          ),
+     *      )
+     * ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!")
+     *          )
+     *     ),
+     * 
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     * )
+     */
 
     public function fetchEmails(Request $req)
     {
-
-
-
-
-        $user_id = json_decode($req['currrent'])->id;
-        $emails = json_decode($req['currrent'])->email;
-
+       
+            $user_id =  $req->currrent['id'];
+            $emails = $req->currrent['email'];
+      
         // return $req->page;
 
         $page = $req->page;
@@ -81,7 +237,7 @@ class MailboxController extends Controller
             // }
             // $total_count[$index] =  Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->get();
 
-            $total_count[] =  ['count' => UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
+            $total_count =  ['count' => UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
         }
     }
         //  return $total_count;
@@ -89,10 +245,10 @@ class MailboxController extends Controller
         // $result = Mailbox::all();
         if ($result) {
             $result = $result[0];
-            $total_count = $total_count[0] ?? [];
+           $total_count = $total_count[0] ?? [];
         }
         if ($total_count) {
-
+           
             $count_of_msg = $total_count['count']->inbound_msg_count;
         } else {
             $count_of_msg = 0;
