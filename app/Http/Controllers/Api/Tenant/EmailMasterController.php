@@ -409,12 +409,17 @@ class EmailMasterController extends Controller
             $this->response["message"] = 'Email Not found';
             return response()->json($this->response, 422);
         }
-
-        if ($email_master->forceDelete() && $inbound->forceDelete() && $outbound->forceDelete()) {
-            $this->response["status"] = true;
-            $this->response["message"] = __('strings.destroy_success');
-            return response()->json($this->response);
+        if($inbound){
+            $inbound->forceDelete();
         }
+        if($outbound){
+            $outbound->forceDelete();
+        }
+            if ($email_master->forceDelete()) {
+                $this->response["status"] = true;
+                $this->response["message"] = __('strings.destroy_success');
+                return response()->json($this->response);
+            }
 
         $this->response["message"] = __('strings.destroy_failed');
         return response()->json($this->response, 422);
