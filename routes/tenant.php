@@ -82,6 +82,7 @@ Route::middleware([
             // Route::get('recieve-emails', [UserController::class, 'emails_recieved']);
             //------------------------EmailConfig -----------------------------
             Route::post('/store-email',[EmailMasterController::class,'storeMail']);
+            Route::delete('/delete/{email_master}', [EmailMasterController::class, 'destroy']);
             Route::post('/get-emails',[EmailMasterController::class,'getEmailCredential']);
             Route::post('/find-emails',[EmailMasterController::class,'show']);
             Route::match(['put', 'patch'],'update-email/{id}', [EmailMasterController::class, 'update']);

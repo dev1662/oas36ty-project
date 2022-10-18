@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\ContactPerson;
 use App\Models\ContactPersonEmail;
 use App\Models\ContactPersonPhone;
+use Doctrine\DBAL\Schema\Schema;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema as FacadesSchema;
 use PDO;
 
 class ContactPersonController extends Controller
@@ -92,6 +95,7 @@ class ContactPersonController extends Controller
         // $result = ContactPerson::select('id','name','type')->get();
         $id = ContactPerson::select('id','name','type')->with('audits')->get();
         // $result = array();
+        $result = [];
                   foreach($id as $key => $val){
 
             $email = ContactPersonEmail::where(['contact_person_id' => $val->id])->select('id','email')->get();
@@ -591,21 +595,36 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+        // FacadesSchema::table('contact_people')->disableForeignKeyConstraints();
+        // FacadesSchema::table('contact_person_emails')->disableForeignKeyConstraints();
+        // FacadesSchema::disableForeignKeyConstraints();
 
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
+        $contact_emails = ContactPersonEmail::where('contact_person_id', $contactPersonID)->get();
 
+        $contact_phones = ContactPersonPhone::where('contact_person_id', $contactPersonID)->get();
         if(!$contactPerson){
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }
-
-        if ($contactPerson->forceDelete()) {
-            $this->response["status"] = true;
-            $this->response["message"] = __('strings.destroy_success');
-            return response()->json($this->response);
+        // return [
+        //     $contact_emails, $contactPerson, $contact_phone
+        // ];
+        foreach($contact_emails as $contact_email){
+            foreach ($contact_phones as $contact_phone) {
+                # code...
+                if ( $contact_email->forceDelete() && $contact_phone->forceDelete() && $contactPerson->forceDelete() ) {
+                    $this->response["status"] = true;
+                    $this->response["message"] = __('strings.destroy_success');
+                    DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                    
+                    return response()->json($this->response);
+                }
+                
+                $this->response["message"] = __('strings.destroy_failed');
+                return response()->json($this->response, 422);
+            }
+            }
         }
-
-        $this->response["message"] = __('strings.destroy_failed');
-        return response()->json($this->response, 422);
     }
-}

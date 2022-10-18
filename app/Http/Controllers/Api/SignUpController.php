@@ -432,6 +432,7 @@ class SignUpController extends Controller
                             [
                                 'name' => $request->input('name'),
                                 'password' => Hash::make($request->input('password')),
+                                'avatar' => 'https://ui-avatars.com/api/?name='.$request->input('name'),
                                 'status' => CentralUser::STATUS_ACTIVE,
                                 ]
                             );
@@ -460,6 +461,8 @@ class SignUpController extends Controller
                                 [
                                     'name' => $request->input('name'),
                                     // 'password' => Hash::make($request->input('password')),
+                                'avatar' => 'https://ui-avatars.com/api/?name='.$request->input('name'),
+
                                     'status' => CentralUser::STATUS_ACTIVE,
                                     ]
                                 );
