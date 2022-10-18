@@ -367,18 +367,145 @@ class MailboxController extends Controller
         
         
     }
+
+   
+     /**
+     *
+     * @OA\post(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Mail Box"},
+     *     path="/sendEmail-outBound",
+     *     operationId="composeEmail",
+     *     summary="Compose",
+     *     description="Send email",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *              @OA\Property(
+     *                       property="data",
+     *                         type="object",
+     *                       @OA\Property(
+     *                         property="bcc",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="cc",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ),
+     *                  @OA\Property(
+     *                         property="from",
+     *                         type="object",
+     *                       @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ),   
+     *                    ),
+     *                   @OA\Property(
+     *                         property="to",
+     *                         type="object",
+     *                          @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ), 
+     *                    ),
+     *                   @OA\Property(
+     *                         property="message",
+     *                         type="string",
+     *                         example="Message Description .........."
+     *                      ), 
+     *                   @OA\Property(
+     *                         property="subject",
+     *                         type="string",
+     *                         example="subject Notes"
+     *                      ),   
+     *                ),
+     *                   @OA\Property(
+     *                   property="currrent",
+     *                         type="object",
+     *                         @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ),
+     *                      ),
+     *            )
+     *                 
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Email sent successfully"),
+     *           
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="email",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected email is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
+   
     public function sendEmail(Request $request)
     {
-        // return $request->data;
+        $arr_emails =  $request->data['to']['email'];
+        // return $arr_emails;
+        // foreach($arr_emails as $email2){
+        //     return $email2;
+        // }
         $bcc=  $request->data['bcc'] ?? '';
         $cc=  $request->data['cc'] ?? '';
+        $user_id =  $request->currrent['id'];
+        $emails = $request->currrent['email'];
 
         $outbound_id= $request->data['from']['id'];
-        $centralUser =  CentralUser::where('email', json_decode($request->header('currrent'))->email)->first();
+        $centralUser =  CentralUser::where('email',  $emails)->first();
 
         $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
         tenancy()->initialize($tenant);
-      $user_setting  = UserEmail::where(['user_id'=> json_decode($request->header('currrent'))->id, 'emails_setting_id' => $outbound_id])->get();
+      $user_setting  = UserEmail::where(['user_id'=> $user_id, 'emails_setting_id' => $outbound_id])->get();
     //   $details_outbound = [];
     //   foreach ($user_setting as $index => $user_emails) {
         if($user_setting){
@@ -425,9 +552,9 @@ class MailboxController extends Controller
         // $message $
 
         $status = [];
-        foreach($request->data['to'] as $email){
+        foreach($arr_emails as $email){
             $data_arr= [
-              'message' => $message, 'subject' => $subject, 'email' => $email['email'] ?? $email['name'], 'email_bcc' => $bcc, 'email_cc' => $cc
+              'message' => $message, 'subject' => $subject, 'email' => $email ?? $email, 'email_bcc' => $bcc, 'email_cc' => $cc
             ];
             // return $data_arr;
             $status = $this->SendEmailDriven($data_arr);

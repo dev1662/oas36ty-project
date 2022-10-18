@@ -6351,6 +6351,168 @@
                 ]
             }
         },
+        "/sendEmail-outBound": {
+            "post": {
+                "tags": [
+                    "Mail Box"
+                ],
+                "summary": "Compose",
+                "description": "Send email",
+                "operationId": "composeEmail",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "data": {
+                                        "properties": {
+                                            "bcc": {
+                                                "type": "string",
+                                                "example": "example@gmail.com"
+                                            },
+                                            "cc": {
+                                                "type": "string",
+                                                "example": "example@gmail.com"
+                                            },
+                                            "from": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "example@gmail.com"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "to": {
+                                                "properties": {
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "example@gmail.com"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "message": {
+                                                "type": "string",
+                                                "example": "Message Description .........."
+                                            },
+                                            "subject": {
+                                                "type": "string",
+                                                "example": "subject Notes"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "currrent": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": "1"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "example": "example@gmail.com"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Record updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected email is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/switch": {
             "post": {
                 "tags": [
