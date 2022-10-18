@@ -8,6 +8,10 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use PDO;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
+
+use function PHPUnit\Framework\returnSelf;
+
 /**
  * @OA\Server(
  *  url="https://api-office36ty.protracked.in/v1",
@@ -88,5 +92,24 @@ class Controller extends BaseController
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ]);
+    }
+
+    public function uploadFile($request, $fileName, $path) {
+        $return = false;
+       // return $request;
+        if ($request) :
+           
+            $file = $request->file();
+            $fullName = $file->getClientOriginalName();
+            $stringName = $this->my_random_string(explode('.', $fullName)[0]);
+            $fileName = $stringName . time() . '.' . $file->getClientOriginalExtension();
+            $filepath = $path . $fileName;
+            Storage::disk('s3')->put($filepath, file_get_contents($file));
+             // $destinationPath = public_path($path);
+            //$check = $file->move($destinationPath, $fileName);
+            $url = Storage::disk('s3')->url($filepath);
+           // $return = $destinationPath ? $fileName : false;
+        endif;
+        return $url;
     }
 }
