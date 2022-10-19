@@ -73,7 +73,7 @@ Route::middleware([
             Route::apiResource('tasks.users', TaskUserController::class);
             Route::apiResource('tasks.comments', TaskCommentController::class);
             Route::apiResource('to-dos', ToDoController::class);
-            Route::apiResource('clients', CompanyController::class);
+            Route::apiResource('Companys', CompanyController::class);
             Route::get('contact-people/leads',[ContactPersonController::class,'getDataForLeads']);
             Route::apiResource('contact-people', ContactPersonController::class);
             Route::apiResource('contact-people.emails', ContactPersonEmailController::class);
