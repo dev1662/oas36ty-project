@@ -19,6 +19,7 @@ use App\Models\Branch;
 use App\Models\EmailsSetting;
 use App\Models\Mailbox;
 use App\Models\UserEmail;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
@@ -29,6 +30,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use PDO;
+use Symfony\Component\HttpFoundation\File\File as FileFile;
 
 class UserController extends Controller
 {
@@ -767,12 +769,27 @@ class UserController extends Controller
         $oldCentralUserTenantsCount = tenancy()->central(function ($tenant) use ($oldCentralUser) {
             return $oldCentralUser->tenants()->count();
         });
-        // $base64_image = $request->input('image'); // your base64 encoded     
-        // @list($type, $file_data) = explode(';', $base64_image);
-        // @list(, $file_data) = explode(',', $file_data);
-        // $imageName = Str::random(10) . '.' . 'png';
-
-        // Storage::put($imageName, base64_decode($file_data));
+        $base64File = $request->input('image');
+        // $this->uploadFile();
+        return $base64File;
+        // decode the base64 file
+        // $fileData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64File));
+        // // return $fileData;
+        // // save it to temporary dir first.
+        // return file_get_contents($fileData);
+        // $tmpFilePath = sys_get_temp_dir() . '/' . Str::uuid()->toString();
+        // // file_put_contents($tmpFilePath, $fileData);
+        // // this just to help us get file info.
+        // $tmpFile = new FileFile($tmpFilePath);
+        
+        // $file = new UploadedFile(
+        //     // $tmpFile->getPathname(),
+        //     $tmpFile->getFilename(),
+        //     $tmpFile->getMimeType(),
+        //     0,
+        //     true // Mark it as test, since the file isn't from real HTTP POST.
+        // );
+        // return $file;
         if ($oldCentralUserTenantsCount == 1) {
             $member->name = $request->name;
             // $member->avatar = $imageName;

@@ -313,12 +313,12 @@ class EmailOutboundController extends Controller
         try{
             $validator =  Validator::make(request()->all(), [
                 'id'=>'required|exists:App\Models\EmailsSetting,id|unique:App\Models\EmailOutbound,id',
-                'mail_transport'  => 'required| ',
+                'mail_transport'  => 'required|',
                 'mail_host'       => 'required',
                 'mail_port'       => 'required|in:25,465,587,2525',
                 'mail_username'   => 'required|unique:App\Models\EmailOutbound',
                 'mail_password'   => 'required',
-                'mail_encryption.option' => 'required|in:tls,ssl,starttls',
+                'mail_encryption.option' => 'required|in:TLS,SSL,STARTLS',
                 
             ]
         );
@@ -336,7 +336,7 @@ class EmailOutboundController extends Controller
                 'mail_port'       => $request->input('mail_port'),
                 'mail_username'   => $request->input('mail_username'),
                 'mail_password'   => $request->input('mail_password'),
-                'mail_encryption' => $request->input('mail_encryption')['option'],
+                'mail_encryption' => strtolower($request->input('mail_encryption')['option']),
                
             ];
           
