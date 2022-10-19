@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use PDO;
 use Illuminate\Support\Facades\Config;
@@ -95,21 +96,23 @@ class Controller extends BaseController
     }
 
     public function uploadFile($request, $fileName, $path) {
-        $return = false;
-       // return $request;
-        if ($request) :
-           
-            $file = $request->file();
-            $fullName = $file->getClientOriginalName();
-            $stringName = $this->my_random_string(explode('.', $fullName)[0]);
-            $fileName = $stringName . time() . '.' . $file->getClientOriginalExtension();
-            $filepath = $path . $fileName;
-            Storage::disk('s3')->put($filepath, file_get_contents($file));
-             // $destinationPath = public_path($path);
-            //$check = $file->move($destinationPath, $fileName);
-            $url = Storage::disk('s3')->url($filepath);
-           // $return = $destinationPath ? $fileName : false;
-        endif;
-        return $url;
+        $return = false;      
+       if ($request->hasFile($fileName)) :
+        $file = $request->file($fileName);
+        $fullName = $file->getClientOriginalName();
+        $stringName = $this->my_random_string(explode('.', $fullName)[0]);
+        $fileName = $stringName . time() . '.' . $file->getClientOriginalExtension();
+         $filepath = $path . $fileName;
+        $urls = Storage::disk('s3')->put($filepath, file_get_contents($file));
+         // $destinationPath = public_path($path);
+        //$check = $file->move($destinationPath, $fileName);
+        $url = Storage::disk('s3')->url($filepath);
+       // $return = $destinationPath ? $fileName : false;
+    endif;
+    return $url;
+    }
+
+    protected function my_random_string($char) {
+        return uniqid('Oas36ty');
     }
 }

@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\SignUpController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\ForgotPasswordController;
@@ -36,3 +36,5 @@ Route::post('forgot-organization', [ForgotOrganizationController::class, 'index'
 Route::post('invitation/check', [InvitationController::class, 'check']);
 Route::post('invitation/accept', [InvitationController::class, 'accept']);
 Route::post('invitation/decline', [InvitationController::class, 'decline']);
+
+Route::post('upload-file',[Controller::class,'uploadFile']);
