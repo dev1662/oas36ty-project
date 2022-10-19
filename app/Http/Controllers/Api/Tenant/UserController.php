@@ -731,6 +731,15 @@ class UserController extends Controller
      *     ),
      * )
      */
+    private function getFileName($image, $namePrefix)
+{
+    list($type, $file) = explode(';', $image);
+    list(, $extension) = explode('/', $type);
+    list(, $file) = explode(',', $file);
+    $result['name'] = $namePrefix . '.' . $extension;
+    $result['file'] = $file;
+    return $result;
+}
     public function update(Request $request, $id)
     {
         $user = $request->user();
@@ -769,9 +778,33 @@ class UserController extends Controller
         $oldCentralUserTenantsCount = tenancy()->central(function ($tenant) use ($oldCentralUser) {
             return $oldCentralUser->tenants()->count();
         });
-        $base64File = $request->input('image');
+        $base64String = $request->input('image');
+        // $base64String= "base64 string";
+      
+        // $image = $request->image; // the base64 image you want to upload
+        $slug = time().$user->id; //name prefix
+        $avatar = $this->getFileName($base64String, $slug);
+         Storage::disk('s3')->put('user-images/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
+         $url = Storage::disk('s3')->url('user-images/' . $avatar['name']);
+
+// $p = Storage::disk('s3')->put('' . $imageName, $image, 'public'); 
+
+// $image_url = Storage::disk()->url($imageName);
+        
+        // $imgdata = base64_decode($base64File);
+        // $mime = getImageP
+
+        // $image_parts = explode(";base64,", $base64File);
+        // $image_type_aux = explode("image/", $image_parts[0]);
+        // $image_type = $image_type_aux[1];
+        // $image_base64 = base64_decode($image_parts[1]);
+        
         // $this->uploadFile();
-        return $base64File;
+        // $path = "user-images/";
+        //  $request->request->add(['image' => $base64File]);
+        // return $request->all();
+        // $check = $this->uploadFile('', 'image', $path);
+        // return $check;
         // decode the base64 file
         // $fileData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64File));
         // // return $fileData;
@@ -792,6 +825,7 @@ class UserController extends Controller
         // return $file;
         if ($oldCentralUserTenantsCount == 1) {
             $member->name = $request->name;
+            $member->avatar = $url;
             // $member->avatar = $imageName;
             $member->update();
 

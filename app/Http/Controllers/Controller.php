@@ -97,6 +97,8 @@ class Controller extends BaseController
 
     public function uploadFile($request, $fileName, $path) {
         $return = false;      
+        // $fileName = 'image';
+        return [$request, $fileName, $path];
        if ($request->hasFile($fileName)) :
         $file = $request->file($fileName);
         $fullName = $file->getClientOriginalName();
