@@ -412,12 +412,15 @@ class MailboxController extends Controller
      *                    ),
      *                   @OA\Property(
      *                         property="to",
-     *                         type="object",
+     *                         type="array",
+     *                          @OA\Items(
+     *                         type ="object",
      *                          @OA\Property(
-     *                         property="email",
+     *                         property="name",
      *                         type="string",
-     *                         example="example@gmail.com"
+     *                         example="example1@gmail.com"
      *                      ), 
+     *                      ),
      *                    ),
      *                   @OA\Property(
      *                         property="message",
@@ -490,22 +493,26 @@ class MailboxController extends Controller
    
     public function sendEmail(Request $request)
     {
-        $arr_emails =  $request->data['to']['email'];
-        // return $arr_emails;
-        // foreach($arr_emails as $email2){
-        //     return $email2;
+        // $emails =  $request->data['to'];
+        // foreach($emails as $in => $emailt){
+        //     $tt[$in]= $emailt;
         // }
+        // return $tt;
         $bcc=  $request->data['bcc'] ?? '';
         $cc=  $request->data['cc'] ?? '';
-        $user_id =  $request->currrent['id'];
-        $emails = $request->currrent['email'];
+        $user_id = $request->currrent['id'];   //json_decode($request->header('currrent'))->id;
+        $user_email = $request->currrent['email'];//json_decode($request->header('currrent'))->email;
+        // $user_id = json_decode($request->header('currrent'))->id;
+        // $user_email = json_decode($request->header('currrent'))->email;
+
 
         $outbound_id= $request->data['from']['id'];
-        $centralUser =  CentralUser::where('email',  $emails)->first();
+
+        $centralUser =  CentralUser::where('email', $user_email )->first();
 
         $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
         tenancy()->initialize($tenant);
-      $user_setting  = UserEmail::where(['user_id'=> $user_id, 'emails_setting_id' => $outbound_id])->get();
+      $user_setting  = UserEmail::where(['user_id'=> $user_id , 'emails_setting_id' => $outbound_id])->get();
     //   $details_outbound = [];
     //   foreach ($user_setting as $index => $user_emails) {
         if($user_setting){
@@ -552,10 +559,11 @@ class MailboxController extends Controller
         // $message $
 
         $status = [];
-        foreach($arr_emails as $email){
+        foreach($request->data['to'] as $email){
             $data_arr= [
-              'message' => $message, 'subject' => $subject, 'email' => $email ?? $email, 'email_bcc' => $bcc, 'email_cc' => $cc
+              'message' => $message, 'subject' => $subject, 'email' => $email['name'], 'email_bcc' => $bcc, 'email_cc' => $cc
             ];
+            //return $data_arr;
             // return $data_arr;
             $status = $this->SendEmailDriven($data_arr);
         //   $status =  Mail::to('devoas36ty@gmail.com')->send(new MailBoxSendMail($message, $subject));

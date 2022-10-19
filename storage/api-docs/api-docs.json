@@ -6394,13 +6394,16 @@
                                                 "type": "object"
                                             },
                                             "to": {
-                                                "properties": {
-                                                    "email": {
-                                                        "type": "string",
-                                                        "example": "example@gmail.com"
-                                                    }
-                                                },
-                                                "type": "object"
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "example1@gmail.com"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
                                             },
                                             "message": {
                                                 "type": "string",
@@ -6445,7 +6448,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Record updated successfully"
+                                            "example": "Email sent successfully"
                                         }
                                     },
                                     "type": "object"
