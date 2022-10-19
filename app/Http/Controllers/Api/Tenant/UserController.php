@@ -838,8 +838,9 @@ class UserController extends Controller
                    $exists_user_emails =  UserEmail::where(['user_id' => $id, 'emails_setting_id' => $all_email['id']])->get();
 
                     if(count($exists_user_emails) >= 1){
+                        $this->response['status'] = true;
                         $this->response["message"] = 'Emails are already assigned choose another email';
-                        return response()->json($this->response,500);
+                        return response()->json($this->response,200);
                     }else{
                         // $email_of_user = User::where('id', $id)->first()
                         UserEmail::create([
