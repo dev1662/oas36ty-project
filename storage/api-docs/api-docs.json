@@ -2565,6 +2565,98 @@
                                                     "name": {
                                                         "type": "string",
                                                         "example": "Contact Person Name"
+                                                    },
+                                                    "Type": {
+                                                        "type": "string",
+                                                        "example": "dont_delete"
+                                                    },
+                                                    "audits": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "user_type": {
+                                                                    "type": "string",
+                                                                    "example": "App\\\\Models\\\\User"
+                                                                },
+                                                                "user_id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "event": {
+                                                                    "type": "string",
+                                                                    "example": "Created"
+                                                                },
+                                                                "auditable_type": {
+                                                                    "type": "string",
+                                                                    "example": "App\\\\Models\\\\ContactPerson"
+                                                                },
+                                                                "auditable_id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "url": {
+                                                                    "type": "string",
+                                                                    "example": "http://127.0.0.1:8000/v1/tasks/2/comments"
+                                                                },
+                                                                "ip_address": {
+                                                                    "type": "string",
+                                                                    "example": "127.0.0.1"
+                                                                },
+                                                                "user_agent": {
+                                                                    "type": "string",
+                                                                    "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+                                                                },
+                                                                "tags": {
+                                                                    "type": "string",
+                                                                    "example": "null"
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "timestamp",
+                                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                                },
+                                                                "updated_at": {
+                                                                    "type": "timestamp",
+                                                                    "example": "2022-09-02T06:01:37.000000Z"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "emails": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "email": {
+                                                                    "type": "string",
+                                                                    "example": "example@gmail.com"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "phone": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "phone": {
+                                                                    "type": "string",
+                                                                    "example": "655 649 9874"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
                                                     }
                                                 },
                                                 "type": "object"
@@ -2641,6 +2733,20 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "Contact Person"
+                                    },
+                                    "phone": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "655 987 4562"
+                                        }
+                                    },
+                                    "email": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "example@gmail.com"
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -2774,6 +2880,42 @@
                                                     "name": {
                                                         "type": "string",
                                                         "example": "Contact Person Name"
+                                                    },
+                                                    "Type": {
+                                                        "type": "string",
+                                                        "example": "dont_delete"
+                                                    },
+                                                    "emails": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "email": {
+                                                                    "type": "string",
+                                                                    "example": "example@gmail.com"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "phone": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "phone": {
+                                                                    "type": "string",
+                                                                    "example": "655 649 9874"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
                                                     }
                                                 },
                                                 "type": "object"
@@ -2855,7 +2997,21 @@
                                     "name": {
                                         "description": "",
                                         "type": "string",
-                                        "example": "Contact Person name"
+                                        "example": "Contact Person"
+                                    },
+                                    "phone": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "655 987 4562"
+                                        }
+                                    },
+                                    "email": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "example@gmail.com"
+                                        }
                                     }
                                 },
                                 "type": "object"
