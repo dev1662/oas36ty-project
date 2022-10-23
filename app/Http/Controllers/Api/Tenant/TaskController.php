@@ -84,9 +84,9 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $route= $_GET['route'];
-        if($route == 'leads'){
+        if($route == 'leads' || $route == 'leads-inner'){
             $route = 'lead';
-        }elseif($route == 'tasks'){
+        }elseif($route == 'tasks' || $route == 'tasks-inner'){
             $route= 'task';
         }
 
@@ -135,6 +135,74 @@ class TaskController extends Controller
         }elseif($route == 'tasks'){
             $route= 'task';
         }
+        
+        $filters = [
+            'branch' => $request->input('branch')['id'] ?? '',
+            'category' => $request->input('category')['id'] ?? '',
+            'company' => $request->input('company')['id'] ?? '',
+            'contact' => $request->input('contact')['id'] ?? '',
+            'priority' => $request->input('priority')['id'] ?? '',
+            'search' => $request->input('search') ?? '',
+            'status' => strtolower($request->input('status')) ?? '',
+            'route' => $route,
+            'user' => $request->input('user')['id'] ?? ''
+        ];
+        // return $filters;
+        // $tasks = Task::when($filters, function($query) use ($filters){
+        //     return $query->where(function ($query) use ($filters) { // group these 'Where' and 'orWhere'
+        //         $query->where('status', strtolower($filters['status']))
+        //               ->orWhere('priority', $filters['priority'])
+        //               ->orWhere('type', $filters['route']);
+        //             });
+        // })
+        $tasks = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            'branch' => function ($q) {
+                $q->select('id', 'name');
+            },
+            'category' => function ($q) {
+                $q->select('id', 'name');
+            },
+            'Company' => function ($q) {
+                $q->select('id', 'name');
+            },
+            'contactPerson' => function ($q) {
+                $q->select('id', 'name');
+            },
+            'users' => function ($q) {
+                $q->select('users.id', 'name');
+            },
+            'audits',
+            // 'priorities' => function($q){
+            //     $q->select('id', 'icons');
+            // },
+
+        ])
+                   ->where('type', $route)
+                //    ->where('business_type','!=',3)
+                //    ->where('parent_id','=',null)
+                   ->where(function($query) use ($filters){
+                           $query//->users->where('user_id', 'LIKE', '%'.$filters['user']. '%')
+                           ->where('status','LIKE','%'.$filters['status'].'%')
+                           ->where('priority', 'LIKE', '%'.$filters['priority'].'%')
+                           ->where('branch_id', 'LIKE', '%'.$filters['branch'].'%')
+                           ->where('category_id', 'LIKE', '%'.$filters['category'].'%')
+                           ->where('company_id', 'LIKE', '%'.$filters['company'].'%')
+                           ->where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')
+                           ->where('subject', 'LIKE', '%'.$filters['search'].'%')
+                           ->where('description', 'LIKE', '%'.$filters['search'].'%');
+
+                           
+                        //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
+                        //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
+                        //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
+                       })->latest()
+                    //    ->orderBy('created_at', 'desc')
+                       ->get();
+        // return $tasks;
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.get_all_success');
+        $this->response["data"] = $tasks ?? [];
+        return response()->json($this->response);
         if ($request->status) {
 
 
@@ -627,6 +695,7 @@ class TaskController extends Controller
      */
     public function show($id)
     {
+        // return $id;
         $validator = Validator::make(['task_id' => $id], [
             'task_id' => 'required|exists:App\Models\Task,id',
         ]);
@@ -637,7 +706,7 @@ class TaskController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status')->with([
+        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
             'branch' => function ($q) {
                 $q->select('id', 'name');
             },
@@ -649,7 +718,11 @@ class TaskController extends Controller
             },
             'contactPerson' => function ($q) {
                 $q->select('id', 'name');
-            }
+            },
+            'users' => function ($q) {
+                $q->select('users.id', 'name');
+            },
+            'audits'
         ])->find($id);
 
         $this->response["status"] = true;
@@ -775,6 +848,7 @@ class TaskController extends Controller
             'status' => $request->status['status'],
         ]);
 
+        $real_task = Task::find($id);
 
 
 
@@ -840,6 +914,7 @@ class TaskController extends Controller
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
+        $this->response['data'] = $real_task ?? [];
         return response()->json($this->response);
     }
 

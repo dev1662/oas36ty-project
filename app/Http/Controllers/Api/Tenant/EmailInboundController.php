@@ -649,12 +649,12 @@ class EmailInboundController extends Controller
            // return $id;
             $validator =  Validator::make(['emailInbound_id'=>$id] + $request->all(), [
                 'emailInbound_id' => 'required|exists:App\Models\EmailInbound,id',
-                'mail_transport.option'  => 'required|in:pop,imap',
+                'mail_transport.option'  => 'required|in:POP,IMAP',
                 'mail_host'       => 'required',
                 'mail_port'       => 'required|in:110,995,993,143',
                 'mail_username'   => 'sometimes|required|unique:App\Models\EmailInbound'.',id,'.$request->id,
                 'mail_password'   => 'required',
-                'mail_encryption.option' => 'required|in:tls,ssl,starttls',
+                'mail_encryption.option' => 'required|in:TLS,SSL,STARTLS',
                 
             ]
         );
@@ -667,12 +667,12 @@ class EmailInboundController extends Controller
             }
             $data = [
              
-                'mail_transport'  => $request->input('mail_transport')['option'],
+                'mail_transport'  => strtolower($request->input('mail_transport')['option']),
                 'mail_host'       => $request->input('mail_host'),
                 'mail_port'       => $request->input('mail_port'),
                 'mail_username'   => $request->input('mail_username'),
                 'mail_password'   => $request->input('mail_password'),
-                'mail_encryption' => $request->input('mail_encryption')['option'],
+                'mail_encryption' => strtolower($request->input('mail_encryption')['option']),
                
             ];
             
@@ -681,12 +681,12 @@ class EmailInboundController extends Controller
             $cm = new ClientManager();
 
             $client = $cm->make([
-                'protocol'  => $request->input('mail_transport')['option'],
+                'protocol'  => strtolower($request->input('mail_transport')['option']),
                 'host'       => $request->input('mail_host'),
                 'port'       => $request->input('mail_port'),
                 'username'   => $request->input('mail_username'),
                 'password'   => $request->input('mail_password'),
-                'encryption' => $request->input('mail_encryption')['option'],
+                'encryption' => strtolower($request->input('mail_encryption')['option']),
             ]);
             // $client->connect();
              $client->connect();

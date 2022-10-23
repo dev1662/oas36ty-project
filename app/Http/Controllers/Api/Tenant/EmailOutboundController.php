@@ -668,7 +668,7 @@ class EmailOutboundController extends Controller
                 'mail_port'       => 'required|in:25,465,587,2525',
                 'mail_username'   => 'sometimes|required|unique:App\Models\EmailOutbound'.',id,'.$request->id,
                 'mail_password'   => 'required',
-                'mail_encryption.option' => 'required|in:tls,ssl,starttls',
+                'mail_encryption.option' => 'required|in:TLS,SSL,STARTLS',
                
             ]
         );
@@ -681,12 +681,12 @@ class EmailOutboundController extends Controller
             }
             $data = [
                // 'id'=> $request->input('id'),
-                'mail_transport'  => $request->input('mail_transport'),
+                'mail_transport'  => strtolower($request->input('mail_transport')),
                 'mail_host'       => $request->input('mail_host'),
                 'mail_port'       => $request->input('mail_port'),
                 'mail_username'   => $request->input('mail_username'),
                 'mail_password'   => $request->input('mail_password'),
-                'mail_encryption' => $request->input('mail_encryption')['option'],
+                'mail_encryption' => strtolower($request->input('mail_encryption')['option']),
                
             ];
             

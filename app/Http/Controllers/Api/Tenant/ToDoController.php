@@ -73,14 +73,15 @@ class ToDoController extends Controller
                 "dueDate"=> '2020-11-25',
                 "description"=>
                   '<p>Chocolate cake topping bonbon jujubes donut sweet wafer. Marzipan gingerbread powder brownie bear claw. Chocolate bonbon sesame snaps jelly caramels oat cake.</p>',
-                "assignee"=> [
-                  "fullName" => 'Jacob Ramirez',
-                  "avatar"=> null,
+                // "assignee"=> [
+                //   "fullName" => 'Jacob Ramirez',
+                //   "avatar"=> null,
+                // ],
+                // "tags"=> ['update'],
+                // "isCompleted"=> false,
+                // "isDeleted"=> false,
+                // "isImportant"=> false,
                 ],
-                "tags"=> ['update'],
-                "isCompleted"=> false,
-                "isDeleted"=> false,
-                "isImportant"=> false,],
               
             ];
             $this->response['status'] = true;

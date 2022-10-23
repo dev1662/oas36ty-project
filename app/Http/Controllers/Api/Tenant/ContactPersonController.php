@@ -397,7 +397,7 @@ class ContactPersonController extends Controller
             $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();
             $this->response["errors"] = $validator->errors();
-            return response()->json($this->response, 422);
+            return response()->json($this->response, 200);
         }
         // if(count($request->emails) > )
         $emails = ContactPersonEmail::where('contact_person_id', $request->contact_person_id)->get();
