@@ -24,11 +24,12 @@ class TaskController extends Controller
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"tasks"},
-     *     path="/tasks",
+     *     path="/tasks?route={route}",
      *     operationId="getTasks",
      *     summary="Tasks",
      *     description="Tasks",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *    @OA\Parameter(name="route", in="path", required=true, description="tasks/leads"),
      *     @OA\Response(
      *          response=200,
      *          description="Successful Response",
@@ -637,7 +638,7 @@ class TaskController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'importance', 'status')->with([
+        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status')->with([
             'branch' => function ($q) {
                 $q->select('id', 'name');
             },
