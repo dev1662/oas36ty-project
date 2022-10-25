@@ -6735,7 +6735,7 @@
                 ]
             }
         },
-        "/tasks": {
+        "/tasks?route={route}": {
             "get": {
                 "tags": [
                     "tasks"
@@ -6746,6 +6746,12 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "route",
+                        "in": "path",
+                        "description": "tasks/leads",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -6835,7 +6841,9 @@
                         "bearerAuth": []
                     }
                 ]
-            },
+            }
+        },
+        "/tasks": {
             "post": {
                 "tags": [
                     "tasks"
@@ -6894,7 +6902,7 @@
                                         "type": "string",
                                         "example": "2022-06-01"
                                     },
-                                    "importance": {
+                                    "priority": {
                                         "description": "",
                                         "type": "string",
                                         "example": "3"
@@ -7157,7 +7165,7 @@
                                         "type": "string",
                                         "example": "2022-06-01"
                                     },
-                                    "importance": {
+                                    "priority": {
                                         "description": "",
                                         "type": "string",
                                         "example": "3"
@@ -7166,6 +7174,18 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "closed"
+                                    },
+                                    "users": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     }
                                 },
                                 "type": "object"

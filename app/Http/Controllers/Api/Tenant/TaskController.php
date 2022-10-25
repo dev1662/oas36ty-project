@@ -436,7 +436,7 @@ class TaskController extends Controller
      *             @OA\Property(property="subject", type="string", example="Task subject", description=""),
      *             @OA\Property(property="description", type="string", example="Task description", description=""),
      *             @OA\Property(property="due_date", type="string", example="2022-06-01", description=""),
-     *             @OA\Property(property="importance", type="string", example="3", description=""),
+     *             @OA\Property(property="priority", type="string", example="3", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -682,9 +682,21 @@ class TaskController extends Controller
      *             @OA\Property(property="subject", type="string", example="Task subject", description=""),
      *             @OA\Property(property="description", type="string", example="Task description", description=""),
      *             @OA\Property(property="due_date", type="string", example="2022-06-01", description=""),
-     *             @OA\Property(property="importance", type="string", example="3", description=""),
+     *             @OA\Property(property="priority", type="string", example="3", description=""),
      *             @OA\Property(property="status", type="string", example="closed", description=""),
-     *         )
+     *                @OA\Property(
+     *                  property="users",
+     *                   type="array",
+     *                  @OA\Items(
+     *                         @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                  ),
+     * 
+     *                  ),
+     *         ),
      *     ),
      *     @OA\Response(
      *          response=200,
@@ -735,7 +747,7 @@ class TaskController extends Controller
 
     public function update(Request $request, $id)
     {
-        // return $request->all();
+        //  return $request->all();
         $validator = Validator::make(['task_id' => $id] + $request->all(), [
             'task_id' => 'required|exists:App\Models\Task,id',
             'branch_id' => 'required',
@@ -760,33 +772,33 @@ class TaskController extends Controller
 
         // UPDATE TASK TABLE
 
-        // return $request->all();
+           
         
         $updateTask = Task::find($id);
-        $updateTask->update([
+        $check = $updateTask->update([
             'subject' => $request->subject,
             'description' => $request->description,
-            'branch_id' => $request->branch_id['id'],
-            'company_id' => $request->company_id['id'],
-            'category_id' => $request->category_id['id'],
-            'contact_person_id' => $request->contact_person_id['id'],
+            'branch_id' => $request->branch_id ?? $request->branch_id['id'],
+            'company_id' => $request->company_id ?? $request->company_id['id'],
+            'category_id' => $request->category_id ?? $request->category_id['id'],
+            'contact_person_id' => $request->contact_person_id ?? $request->contact_person_id['id'],
             'type' => $request->type,
             'due_date' => $request->due_date,
-            'priority' => $request->priority['id'],
-            'status' => $request->status['status'],
+            'priority' => $request->priority ?? $request->priority['id'],
+            'status' => $request->status ?? $request->status['status'],
         ]);
 
 
-
+           
 
         // UPDATE FOREIGN KEY TABLES
 
 
-        $branch = Branch::where(['id' => $request->branch_id['id']])->update(['type' => 'dont_delete']);
-        $Category = Category::where(['id' => $request->category_id['id']])->update(['type' => 'dont_delete']);
-        $Company = Company::where(['id' => $request->company_id['id']])->update(['type' => 'dont_delete']);
-        $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id['id']])->update(['type' => 'dont_delete']);
-
+        $branch = Branch::where(['id' => $request->branch_id['id'] ?? $request->branch_id])->update(['type' => 'dont_delete']);
+        $Category = Category::where(['id' => $request->category_id['id'] ?? $request->category_id])->update(['type' => 'dont_delete']);
+        $Company = Company::where(['id' => $request->company_id['id'] ?? $request->company_id])->update(['type' => 'dont_delete']);
+        $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id['id'] ?? $request->contact_person_id])->update(['type' => 'dont_delete']);
+        // return $branch; 
 
         // $checkNewUser = array();
         // for ($i=0; $i < count($request->users); $i++) {
@@ -800,7 +812,7 @@ class TaskController extends Controller
         // insert newly added data
         // return "insert";
         foreach ($request->users as $input_users) {
-            // return "forloop";
+            //  return "forloop";
             if (!in_array($input_users['id'], $user_values)) {
                 $new_taskUser = new TaskUser();
                 $new_taskUser->task_id = $id;
