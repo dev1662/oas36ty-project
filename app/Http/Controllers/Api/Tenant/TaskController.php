@@ -147,7 +147,8 @@ class TaskController extends Controller
             'route' => $route,
             'user' => $request->input('user')['id'] ?? ''
         ];
-        // return $filters;
+
+        // return $filters['user'];
         // $tasks = Task::when($filters, function($query) use ($filters){
         //     return $query->where(function ($query) use ($filters) { // group these 'Where' and 'orWhere'
         //         $query->where('status', strtolower($filters['status']))
@@ -155,29 +156,8 @@ class TaskController extends Controller
         //               ->orWhere('type', $filters['route']);
         //             });
         // })
-        $tasks = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
-            'branch' => function ($q) {
-                $q->select('id', 'name');
-            },
-            'category' => function ($q) {
-                $q->select('id', 'name');
-            },
-            'Company' => function ($q) {
-                $q->select('id', 'name');
-            },
-            'contactPerson' => function ($q) {
-                $q->select('id', 'name');
-            },
-            'users' => function ($q) {
-                $q->select('users.id', 'name');
-            },
-            'audits',
-            // 'priorities' => function($q){
-            //     $q->select('id', 'icons');
-            // },
-
-        ])
-                   ->where('type', $route)
+        $tasks = Task::
+                   where('type', $route)
                 //    ->where('business_type','!=',3)
                 //    ->where('parent_id','=',null)
                    ->where(function($query) use ($filters){
@@ -195,7 +175,29 @@ class TaskController extends Controller
                         //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
-                       })->latest()
+                       })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                        'branch' => function ($q) {
+                            $q->select('id', 'name');
+                        },
+                        'category' => function ($q) {
+                            $q->select('id', 'name');
+                        },
+                        'Company' => function ($q) {
+                            $q->select('id', 'name');
+                        },
+                        'contactPerson' => function ($q) {
+                            $q->select('id', 'name');
+                        },
+                        'users' => function ($q) use($filters) {
+                            
+                            $q->where('users.id', 'LIKE', '%'. $filters['user']. '%')->select('users.id', 'name');
+                        },
+                        'audits',
+                        // 'priorities' => function($q){
+                        //     $q->select('id', 'icons');
+                        // },
+            
+                    ])
                     //    ->orderBy('created_at', 'desc')
                        ->get();
         // return $tasks;
