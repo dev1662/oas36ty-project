@@ -137,18 +137,24 @@ class TaskController extends Controller
         }
         
         $filters = [
-            'branch' => $request->input('branch')['id'] ?? '',
-            'category' => $request->input('category')['id'] ?? '',
-            'company' => $request->input('company')['id'] ?? '',
-            'contact' => $request->input('contact')['id'] ?? '',
+            'branch' => $request->input('branch') ?? '',
+            'category' => $request->input('category') ?? '',
+            'company' => $request->input('company') ?? '',
+            'contact' => $request->input('contact') ?? '',
             'priority' => $request->input('priority')['id'] ?? '',
             'search' => $request->input('search') ?? '',
             'status' => strtolower($request->input('status')) ?? '',
             'route' => $route,
             'user' => $request->input('user')['id'] ?? ''
         ];
+       
+            $filters['branch'] =  Branch::where('name','LIKE','%'.$filters['branch'].'%')->first()['id'];
+            $filters['category'] =  Category::where('name','LIKE','%'.$filters['category'].'%')->first()['id'];
+            $filters['company'] =  Company::where('name','LIKE','%'.$filters['company'].'%')->first()['id'];
+            $filters['contact'] =  ContactPerson::where('name','LIKE','%'.$filters['contact'].'%')->first()['id'];
 
-        // return $filters['user'];
+
+        // return $filters['contact'];
         // $tasks = Task::when($filters, function($query) use ($filters){
         //     return $query->where(function ($query) use ($filters) { // group these 'Where' and 'orWhere'
         //         $query->where('status', strtolower($filters['status']))
@@ -200,7 +206,7 @@ class TaskController extends Controller
                     ])
                     //    ->orderBy('created_at', 'desc')
                        ->get();
-        // return $tasks;
+        // return Task::where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')->first();
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] = $tasks ?? [];
