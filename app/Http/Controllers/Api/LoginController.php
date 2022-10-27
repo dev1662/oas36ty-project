@@ -142,6 +142,7 @@ class LoginController extends Controller
                 'token' => $user->createToken("Tenant: " . $user->name . " (" . $user->email . ")")->accessToken,
                 'name' => $user->name,
                 "id" => $user->id,
+                "avatar" => $user->avatar,
                 'email' => $user->email,
                 'current_tenant' => new TenantResource($tenant),
                 'all_tenants' => TenantResource::collection($centralUser->tenants()->with('organization')->get()),

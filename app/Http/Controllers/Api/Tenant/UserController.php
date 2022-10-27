@@ -678,10 +678,21 @@ class UserController extends Controller
      *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
      *     @OA\RequestBody(
      *          required=true,
+     *  @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     description="file to upload",
+     *                     property="file",
+     *                     type="file",
+     *                ),
+     *                 required={"file"}
+     *             )
+     *         ),
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="email", type="string", example="naveen.w3master@gmail.com", description=""),
-     *             @OA\Property(property="image", type="string", example="", description="", format="binary"),
+     *             @OA\Property(property="image", type="file", example="", description="", format="binary"),
      * 
      *         )
      *     ),
@@ -749,7 +760,7 @@ class UserController extends Controller
             'user_id' => 'required|exists:App\Models\User,id',
             'image' => 'required',
             'name' => 'required',
-            'emails' => 'required',
+            'emails' => 'nullable',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -834,6 +845,9 @@ class UserController extends Controller
         // return $id;
         $this->switchingDB($tenantName);
             // $user = $tenant->run(function ($tenant) use ($oldCentralUser, $request) {
+                if($request->emails){
+
+                
                 foreach($request->emails as $all_email){
                    $exists_user_emails =  UserEmail::where(['user_id' => $id, 'emails_setting_id' => $all_email['id']])->get();
 
@@ -852,6 +866,7 @@ class UserController extends Controller
                     }
                     
                 }
+            }
             // });
  //else {
       

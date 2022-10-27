@@ -202,17 +202,18 @@ class TaskCommentController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $task = Task::find($taskID);
+        $original_task_id = $_GET['task_id'];
+        $task = Task::find($original_task_id);
         $taskComments = $task->comments()->with([
             'user' => function($q){
-                $q->select('id', 'name', 'email');
+                $q->select('id', 'name', 'email', 'avatar');
             },
             'audits',
-        ])->select('id', 'user_id', 'comment','created_at')->latest()->get();
+        ])->select('id', 'user_id', 'comment','created_at')->orderBy('id', 'ASC')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
-        $this->response["data"] = $taskComments;
+        $this->response["data"] = $taskComments ?? [];
         return response()->json($this->response);
     }
 
@@ -277,10 +278,12 @@ class TaskCommentController extends Controller
     {
         $user = $request->user();
 
-        $validator = Validator::make(['task_id' => $taskID] + $request->all(), [
+        $validator = Validator::make(['task_id' => $_GET['task_id']] + $request->all(), [
             'task_id' => 'required|exists:App\Models\Task,id',
             'comment' => 'required',
         ]);
+        $taskID = $request->task_id;
+        // return $taskID;
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();

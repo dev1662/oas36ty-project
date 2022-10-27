@@ -14,6 +14,7 @@ use App\Models\Category;
 use App\Models\Company;
 use App\Models\ContactPerson;
 use App\Models\TaskUser;
+use App\Models\User;
 use PDO;
 
 class TaskController extends Controller
@@ -145,16 +146,32 @@ class TaskController extends Controller
             'search' => $request->input('search') ?? '',
             'status' => strtolower($request->input('status')) ?? '',
             'route' => $route,
-            'user' => $request->input('user')['id'] ?? ''
+            'user' => $request->input('user') ?? ''
         ];
        
-            $filters['branch'] =  Branch::where('name','LIKE','%'.$filters['branch'].'%')->first()['id'];
-            $filters['category'] =  Category::where('name','LIKE','%'.$filters['category'].'%')->first()['id'];
-            $filters['company'] =  Company::where('name','LIKE','%'.$filters['company'].'%')->first()['id'];
-            $filters['contact'] =  ContactPerson::where('name','LIKE','%'.$filters['contact'].'%')->first()['id'];
+            if($filters['branch']){
+
+                $filters['branch'] =  Branch::where('name','LIKE','%'.$filters['branch'].'%')->first()['id'];
+            }
+            if($filters['category']){
+
+                $filters['category'] =  Category::where('name','LIKE','%'.$filters['category'].'%')->first()['id'];
+            }
+            if($filters['company']){
+
+                $filters['company'] =  Company::where('name','LIKE','%'.$filters['company'].'%')->first()['id'];
+            }
+            if($filters['contact']){
+
+                $filters['contact'] =  ContactPerson::where('name','LIKE','%'.$filters['contact'].'%')->first()['id'];
+            }
+            if($filters['user']){
+
+                $filters['user'] =  User::where('name','LIKE','%'.$filters['user'].'%')->first()['id'];
+            }
 
 
-        // return $filters['contact'];
+        // return $filters;
         // $tasks = Task::when($filters, function($query) use ($filters){
         //     return $query->where(function ($query) use ($filters) { // group these 'Where' and 'orWhere'
         //         $query->where('status', strtolower($filters['status']))
@@ -167,15 +184,49 @@ class TaskController extends Controller
                 //    ->where('business_type','!=',3)
                 //    ->where('parent_id','=',null)
                    ->where(function($query) use ($filters){
-                           $query//->users->where('user_id', 'LIKE', '%'.$filters['user']. '%')
-                           ->where('status','LIKE','%'.$filters['status'].'%')
-                           ->where('priority', 'LIKE', '%'.$filters['priority'].'%')
-                           ->where('branch_id', 'LIKE', '%'.$filters['branch'].'%')
-                           ->where('category_id', 'LIKE', '%'.$filters['category'].'%')
-                           ->where('company_id', 'LIKE', '%'.$filters['company'].'%')
-                           ->where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')
-                           ->where('subject', 'LIKE', '%'.$filters['search'].'%')
-                           ->where('description', 'LIKE', '%'.$filters['search'].'%');
+                       if(!empty($filters['status'])){
+                        $query
+
+                        ->where('status','LIKE','%'.$filters['status'].'%');
+                    }
+
+                    if(!empty($filters['priority'])){
+                        $query
+
+                        ->where('priority','LIKE','%'.$filters['priority'].'%');
+                    }   if(!empty($filters['branch'])){
+                        $query
+
+                        ->where('branch_id',$filters['branch']);
+                    }   if(!empty($filters['category'])){
+                        $query
+
+                        ->where('category_id',$filters['category']);
+                    }
+
+                    if(!empty($filters['company'])){
+                        $query
+                        ->where('company_id',$filters['company']);
+                    }
+                    if(!empty($filters['contact'])){
+                        $query
+                        ->where('contact_person_id',$filters['contact']);
+                    }
+                    if(!empty($filters['search'])){
+                        $query
+                        ->where('subject','LIKE','%'.$filters['search'].'%');
+                    }
+                    if(!empty($filters['search'])){
+                        $query
+                        ->where('description','LIKE','%'.$filters['search'].'%');
+                    }
+                        //    ->where('priority', 'LIKE', '%'.$filters['priority'].'%')
+                        //    ->where('branch_id', $filters['branch'])
+                        //    ->where('category_id', $filters['category'])
+                        //    ->where('company_id', 'LIKE', '%'.$filters['company'].'%')
+                        //    ->where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')
+                        //    ->where('subject', 'LIKE', '%'.$filters['search'].'%')
+                        //    ->where('description', 'LIKE', '%'.$filters['search'].'%');
 
                            
                         //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
@@ -183,7 +234,8 @@ class TaskController extends Controller
                         //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
                        })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
                         'branch' => function ($q) {
-                            $q->select('id', 'name');
+                            $q->where('name', 'banglo')->select('id', 'name');
+
                         },
                         'category' => function ($q) {
                             $q->select('id', 'name');
@@ -206,6 +258,7 @@ class TaskController extends Controller
                     ])
                     //    ->orderBy('created_at', 'desc')
                        ->get();
+                    //    return $tasks;
         // return Task::where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')->first();
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');

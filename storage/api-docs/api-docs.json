@@ -1978,14 +1978,14 @@
                 ]
             }
         },
-        "/clients": {
+        "/Companys": {
             "get": {
                 "tags": [
-                    "clients"
+                    "Companys"
                 ],
-                "summary": "Clients",
-                "description": "Clients",
-                "operationId": "getClients",
+                "summary": "Companys",
+                "description": "Companys",
+                "operationId": "getCompanys",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
@@ -2016,7 +2016,7 @@
                                                     },
                                                     "name": {
                                                         "type": "string",
-                                                        "example": "Client Name"
+                                                        "example": "Company Name"
                                                     }
                                                 },
                                                 "type": "object"
@@ -2073,11 +2073,11 @@
             },
             "post": {
                 "tags": [
-                    "clients"
+                    "Companys"
                 ],
-                "summary": "Create Client",
-                "description": "Create Client",
-                "operationId": "postClient",
+                "summary": "Create Company",
+                "description": "Create Company",
+                "operationId": "postCompany",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
@@ -2092,7 +2092,7 @@
                                     "name": {
                                         "description": "",
                                         "type": "string",
-                                        "example": "Client Name"
+                                        "example": "Company Name"
                                     }
                                 },
                                 "type": "object"
@@ -2181,22 +2181,22 @@
                 ]
             }
         },
-        "/clients/{clientID}": {
+        "/Companys/{CompanyID}": {
             "get": {
                 "tags": [
-                    "clients"
+                    "Companys"
                 ],
-                "summary": "Show Client",
-                "description": "Show Client",
-                "operationId": "showClient",
+                "summary": "Show Company",
+                "description": "Show Company",
+                "operationId": "showCompany",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "CompanyID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Company ID",
                         "required": true
                     }
                 ],
@@ -2225,7 +2225,7 @@
                                                     },
                                                     "name": {
                                                         "type": "string",
-                                                        "example": "Client Name"
+                                                        "example": "Company Name"
                                                     }
                                                 },
                                                 "type": "object"
@@ -2282,19 +2282,19 @@
             },
             "put": {
                 "tags": [
-                    "clients"
+                    "Companys"
                 ],
-                "summary": "Update Client",
-                "description": "Update Client",
-                "operationId": "putClient",
+                "summary": "Update Company",
+                "description": "Update Company",
+                "operationId": "putCompany",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "CompanyID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Company ID",
                         "required": true
                     }
                 ],
@@ -2307,7 +2307,7 @@
                                     "name": {
                                         "description": "",
                                         "type": "string",
-                                        "example": "Client name"
+                                        "example": "Company name"
                                     }
                                 },
                                 "type": "object"
@@ -2413,19 +2413,19 @@
             },
             "delete": {
                 "tags": [
-                    "clients"
+                    "Companys"
                 ],
-                "summary": "Delete Client",
-                "description": "Delete Client",
-                "operationId": "deleteClient",
+                "summary": "Delete Company",
+                "description": "Delete Company",
+                "operationId": "deleteCompany",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "clientID",
+                        "name": "CompanyID",
                         "in": "path",
-                        "description": "Client ID",
+                        "description": "Company ID",
                         "required": true
                     }
                 ],
@@ -8346,6 +8346,20 @@
                 "requestBody": {
                     "required": true,
                     "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "description": "file to upload",
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
                         "application/json": {
                             "schema": {
                                 "properties": {
@@ -8356,7 +8370,7 @@
                                     },
                                     "image": {
                                         "description": "",
-                                        "type": "string",
+                                        "type": "file",
                                         "format": "binary",
                                         "example": ""
                                     }
