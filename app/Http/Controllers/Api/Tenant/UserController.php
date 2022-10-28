@@ -679,7 +679,8 @@ class UserController extends Controller
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="email", type="string", example="naveen.w3master@gmail.com", description=""),
-     *             @OA\Property(property="image", type="string", example="", description="", format="binary"),
+     *             @OA\Property(property="name", type="string", example="John Doe", description=""),
+     *             @OA\Property(property="image", type="file", example="", description="", format="binary"),
      * 
      *         )
      *     ),

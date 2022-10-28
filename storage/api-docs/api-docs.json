@@ -8402,9 +8402,14 @@
                                         "type": "string",
                                         "example": "naveen.w3master@gmail.com"
                                     },
-                                    "image": {
+                                    "name": {
                                         "description": "",
                                         "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "image": {
+                                        "description": "",
+                                        "type": "file",
                                         "format": "binary",
                                         "example": ""
                                     }
