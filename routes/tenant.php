@@ -72,6 +72,8 @@ Route::middleware([
 
             Route::apiResource('tasks.users', TaskUserController::class);
             Route::apiResource('tasks.comments', TaskCommentController::class);
+// Route::get('/tasks/1/comments/assigned_users',[TaskCommentController::class, 'usersAssigned']);
+
             Route::apiResource('to-dos', ToDoController::class);
             Route::apiResource('clients', CompanyController::class);
             Route::get('contact-people/leads',[ContactPersonController::class,'getDataForLeads']);
@@ -100,7 +102,7 @@ Route::middleware([
 
          
             Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);
-
+            Route::post('/tasks/inlineUpdate', [TaskController::class, 'inline_update']);
             Route::get('assignedEmails-outBound', [EmailOutboundController::class, 'fetchEmails_outbound']);
         });
         
@@ -108,8 +110,9 @@ Route::middleware([
 });
 
 Route::prefix('v1')->group(function(){
+   
     Route::get('recieve-emails', [UserController::class, 'emails_recieved']);
-
+    
     //new user
     Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
     // existing user accept

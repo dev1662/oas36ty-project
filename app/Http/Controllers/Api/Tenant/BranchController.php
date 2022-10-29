@@ -83,7 +83,8 @@ class BranchController extends Controller
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
-        $this->response["data"] = $branches;
+        $this->response["data"] = $branches ;
+        $this->response['count'] = count($branches);
         return response()->json($this->response);
     }
 

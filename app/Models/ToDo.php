@@ -21,7 +21,7 @@ class ToDo extends Model implements Auditable
      * @var array
      */
     protected $fillable = [
-        'user_id', 'task_id', 'to_do', 'status',
+        'user_id', 'task_id', 'title','to_do', 'status',
     ];
 
     public function user()

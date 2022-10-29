@@ -32,8 +32,8 @@ class MailboxController extends Controller
 
 
 
-        $user_id = json_decode($req['currrent'])->id;
-        $emails = json_decode($req['currrent'])->email;
+        $user_id = $req->currrent['id'];
+        $emails = $req->currrent['email'];
 
         // return $req->page;
 
@@ -141,7 +141,7 @@ class MailboxController extends Controller
     }
     public function sendEmail(Request $request)
     {
-        // return $request->data;
+        // return $request->all();
         $bcc=  $request->data['bcc'] ?? '';
         $cc=  $request->data['cc'] ?? '';
 
@@ -199,7 +199,7 @@ class MailboxController extends Controller
         $status = [];
         foreach($request->data['to'] as $email){
             $data_arr= [
-              'message' => $message, 'subject' => $subject, 'email' => $email['email'] ?? $email['name'], 'email_bcc' => $bcc, 'email_cc' => $cc
+              'message' => $message, 'subject' => $subject, 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc
             ];
             // return $data_arr;
             $status = $this->SendEmailDriven($data_arr);

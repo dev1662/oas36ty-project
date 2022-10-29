@@ -8,7 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\ToDo;
-
+use Illuminate\Support\Facades\Auth;
 
 class ToDoController extends Controller
 {
@@ -66,36 +66,37 @@ class ToDoController extends Controller
 
     public function index(Request $request)
     {
-        $todo = [
+        // $todo = [
             
-                ["id"=> 1,
-                "title" => 'Entire change break our wife wide it daughter mention member.',
-                "dueDate"=> '2020-11-25',
-                "description"=>
-                  '<p>Chocolate cake topping bonbon jujubes donut sweet wafer. Marzipan gingerbread powder brownie bear claw. Chocolate bonbon sesame snaps jelly caramels oat cake.</p>',
-                // "assignee"=> [
-                //   "fullName" => 'Jacob Ramirez',
-                //   "avatar"=> null,
-                // ],
-                // "tags"=> ['update'],
-                // "isCompleted"=> false,
-                // "isDeleted"=> false,
-                // "isImportant"=> false,
-                ],
+        //         ["id"=> 1,
+        //         "title" => 'Entire change break our wife wide it daughter mention member.',
+        //         // "dueDate"=> '2020-11-25',
+        //         "description"=>
+        //           '<p>Chocolate cake topping bonbon jujubes donut sweet wafer. Marzipan gingerbread powder brownie bear claw. Chocolate bonbon sesame snaps jelly caramels oat cake.</p>',
+
+        //         // "assignee"=> [
+        //         //   "fullName" => 'Jacob Ramirez',
+        //         //   "avatar"=> null,
+        //         // ],
+        //         // "tags"=> ['update'],
+        //         // "isCompleted"=> false,
+        //         // "isDeleted"=> false,
+        //         // "isImportant"=> false,
+        //         ],
               
-            ];
-            $this->response['status'] = true;
-            $this->response['message'] =  __('strings.get_all_success');
-            $this->response['data'] = $todo;
-            return response()->json($this->response);
+        //     ];
+            // $this->response['status'] = true;
+            // $this->response['message'] =  __('strings.get_all_success');
+            // $this->response['data'] = $todo;
+            // return response()->json($this->response);
         $user = $request->user();
 
-        $toDos = $user->toDos()->select('id', 'task_id', 'to_do', 'status')->with([
+        $toDos = $user->toDos()->select('id', 'task_id', 'title','to_do', 'status')->with([
             'task' => function($q){
                 $q->select('id', 'type', 'subject', 'description');
             },
             'mentionUsers' => function($q){
-                $q->select('users.id', 'name', 'email');
+                $q->select('users.id', 'name', 'email', 'avatar');
             },
         ])->latest()->get();
 
@@ -186,12 +187,21 @@ class ToDoController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-
-        $toDo = new ToDo($request->all());
+        $todo_array = [
+            // 'user_id' => Auth::user()->id,
+            'task_id' => $request->task_id,
+            'title' => $request->title,
+            'to_do' => $request->to_do,
+            // 'mention_users' => $request->mention_users
+        ];
+        // return $todo_array;
+        $toDo = new ToDo($todo_array);
         $toDo->status = ToDo::STATUS_NOT_DONE;
         $user->toDos()->save($toDo);
+        if(!empty($request->mention_users)){
 
-        $toDo->mentionUsers()->sync($request->user_ids);
+            $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+        }
         
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
@@ -286,7 +296,6 @@ class ToDoController extends Controller
     public function update(Request $request, $id)
     {
         $user = $request->user();
-
         $validator = Validator::make(['to_do_id' => $id] + $request->all(), [
             'to_do_id' => 'required|exists:App\Models\ToDo,id',
             'to_do' => 'required|max:255',
@@ -295,23 +304,27 @@ class ToDoController extends Controller
             'user_ids.*' => 'required|exists:App\Models\User,id',
             'status' => 'required|in:not-done,done',
         ]);
+        
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-
+        
         $toDo = $user->toDos()->find($id);
         if(!$toDo){
             $this->response["message"] = __('strings.update_failed');
             return response()->json($this->response, 422);
         }
+        // return [$request->all(), $id, $request->user_ids];
 
-        $toDo->fill($request->only(['to_do', 'task_id', 'status']));
+        $toDo->fill($request->only(['to_do', 'title','task_id', 'status']));
         $toDo->update();
+        if(!empty($request->mention_users)){
 
-        $toDo->mentionUsers()->sync($request->user_ids);
+            $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+        }
         
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
@@ -395,7 +408,7 @@ class ToDoController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $toDo->mentions()->delete();
+        $toDo->mentions()->forceDelete();
 
         if ($toDo->delete()) {
             $this->response["status"] = true;

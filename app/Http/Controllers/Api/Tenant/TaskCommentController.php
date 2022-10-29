@@ -10,6 +10,8 @@ use Illuminate\Http\Response;
 
 use App\Models\Task;
 use App\Models\TaskComment;
+use App\Models\TaskUser;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class TaskCommentController extends Controller
@@ -192,6 +194,7 @@ class TaskCommentController extends Controller
      */
     public function index(Request $request, $taskID)
     {
+        // $user = $request->user;
         $validator = Validator::make(['task_id' => $taskID], [
             'task_id' => 'required|exists:App\Models\Task,id',
         ]);
@@ -203,20 +206,55 @@ class TaskCommentController extends Controller
         }
 
         $original_task_id = $_GET['task_id'];
-        $task = Task::find($original_task_id);
-        $taskComments = $task->comments()->with([
-            'user' => function($q){
-                $q->select('id', 'name', 'email', 'avatar');
-            },
-            'audits',
-        ])->select('id', 'user_id', 'comment','created_at')->orderBy('id', 'ASC')->get();
 
+        
+
+
+            if($original_task_id != 'undefined'){
+
+                $task = Task::find($original_task_id);
+                $taskComments = $task->comments()->with([
+                    'user' => function ($q) {
+                        $q->select('id', 'name', 'email', 'avatar');
+                    },
+                    'audits',
+                    ])->select('id', 'user_id', 'comment', 'created_at')->orderBy('id', 'ASC')->get();
+                    // if($original_task_id != undefined)
+                    $assignedUsers = Task::where(['id' => $original_task_id])->with([
+                        'users' => function ($q) {
+                            $q->select('users.id', 'users.name', 'users.email', 'users.avatar');
+                        },
+                        // 'audits',
+                        ])->orderBy('id', 'ASC')->first();
+                        
+            }
+            if($original_task_id == 'undefined'){
+                if($_GET['route'] == 'leads'){
+                    $route = 'lead';
+                }
+                
+                // return $task = TaskComment::with(['user' => function ($q) {
+                //     $q->select('id', 'name', 'email', 'avatar');
+                // },
+                // 'audits',])->select('id', 'user_id', 'comment', 'created_at')->orderBy('id', 'ASC')->get();
+
+                 $assignedUsers = Task::where(['type' => $route])->with([
+                    'users' => function ($q) {
+                        $q->select('users.id', 'users.name', 'users.email', 'users.avatar');
+                    },
+                    // 'audits',
+                    ])->orderBy('id', 'ASC')->get();
+            }
+        $this->response['assigned_users'] = $assignedUsers ?? [];
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] = $taskComments ?? [];
         return response()->json($this->response);
     }
-
+    public function usersAssigned()
+    {
+        return Task::all()->comments();
+    }
     /**
      *
      * @OA\Post(
@@ -296,7 +334,10 @@ class TaskCommentController extends Controller
         $taskComment = new TaskComment($request->all());
         $taskComment->user_id = $user->id;
         $comment = $task->comments()->save($taskComment);
-        broadcast(new MessageSent($user,$comment))->toOthers();
+
+        broadcast(new MessageSent($user, $comment))->toOthers();
+
+
         $this->response["status"] = true;
         $this->response["message"] = 'Message Sent';
         $this->response['data'] = $taskComment;
@@ -396,7 +437,7 @@ class TaskCommentController extends Controller
         $task = Task::find($taskID);
 
         $taskComment = $task->comments()->find($taskCommentID);
-        if(!$taskComment){
+        if (!$taskComment) {
             $this->response["message"] = __('strings.update_failed');
             return response()->json($this->response, 422);
         }
@@ -483,7 +524,7 @@ class TaskCommentController extends Controller
         $task = Task::find($taskID);
 
         $taskComment = $task->comments()->find($taskCommentID);
-        if(!$taskComment){
+        if (!$taskComment) {
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }
