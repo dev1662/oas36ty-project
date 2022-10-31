@@ -509,6 +509,7 @@ class TaskController extends Controller
     }
     public function inline_update(Request $request)
     {
+        $valueOfassignedUser = 0;
         
         // return $original_date;
         if($request->route == 'leads'){
@@ -547,11 +548,18 @@ class TaskController extends Controller
         if($request->user_data){
             $task_id = $request->user_data['task_id'];
             $user_id = $request->user_data['user_id'];
-            TaskUser::create([
-                'user_id' => $user_id,
-                'task_id' => $task_id,
+            $check_exists = TaskUser::where('user_id', $user_id)->first() ?? null;
+            if($check_exists){
+                $valueOfassignedUser = 1;
+            }
+            if(!$check_exists){
 
-            ]);
+                TaskUser::create([
+                    'user_id' => $user_id,
+                    'task_id' => $task_id,
+                    
+                ]);
+            }
             // return $request->user_data;
         }
         $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
@@ -583,7 +591,14 @@ class TaskController extends Controller
         //    return $tasks;
 // return Task::where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')->first();
 $this->response["status"] = true;
-$this->response["message"] = 'Leads Updated!';
+if($valueOfassignedUser == 1){
+
+    $this->response["message"] = 'This user is already been assigned!';
+}
+if($valueOfassignedUser == 0){
+    $this->response["message"] = 'Leads Updated!';
+
+}
 $this->response["data"] = $get ?? [];
 return response()->json($this->response);
         // return [$route, $priority_id];

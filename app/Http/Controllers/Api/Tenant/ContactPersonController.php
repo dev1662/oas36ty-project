@@ -385,6 +385,7 @@ class ContactPersonController extends Controller
      */
     public function update(Request $request, $contactPersonID)
     {
+        return [$request->all(), $contactPersonID];
         $validator = Validator::make(['contact_person_id' => $contactPersonID] + $request->all(), [
             'name' => 'required|max:64',
             'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
