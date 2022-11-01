@@ -548,9 +548,11 @@ class TaskController extends Controller
         if($request->user_data){
             $task_id = $request->user_data['task_id'];
             $user_id = $request->user_data['user_id'];
-            $check_exists = TaskUser::where('user_id', $user_id)->first() ?? null;
+            $check_exists = TaskUser::where(['user_id' =>  $user_id, 'task_id' => $task_id])->first() ?? null;
             if($check_exists){
                 $valueOfassignedUser = 1;
+                TaskUser::where(['user_id' => $user_id, 'task_id' => $task_id])->forceDelete();
+
             }
             if(!$check_exists){
 
@@ -560,6 +562,7 @@ class TaskController extends Controller
                     
                 ]);
             }
+         
             // return $request->user_data;
         }
         $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
@@ -593,7 +596,7 @@ class TaskController extends Controller
 $this->response["status"] = true;
 if($valueOfassignedUser == 1){
 
-    $this->response["message"] = 'This user is already been assigned!';
+    $this->response["message"] = 'User Unassigned';
 }
 if($valueOfassignedUser == 0){
     $this->response["message"] = 'Leads Updated!';
@@ -732,29 +735,29 @@ return response()->json($this->response);
         $branch_id_new_one = $request->branch_id['b_id'] ?? null;
         if($branch_id_new_one){
 
-            $task->branch_id = (int)$request->branch_id['b_id'];
+            $task->branch_id = (int)$request->branch_id['b_id'] ?? null;
         }
         else{
-            $task->branch_id = $request->branch_id['id'];
+            $task->branch_id = $request->branch_id['id'] ?? null;
 
         }
         // return $task;
 
-        $task->category_id = $request->category_id['id'];
+        $task->category_id = $request->category_id['id'] ?? null;
 
 
-        $task->company_id = $request->company_id['id'];
+        $task->company_id = $request->company_id['id'] ?? null;
 
 
-        $task->contact_person_id = $request->contact_person_id['id'];
+        $task->contact_person_id = $request->contact_person_id['id'] ?? null;
 
         // $task->user_id = $request->users[$i]['id'];
-        $task->type = $request->type;
-        $task->subject = $request->subject;
-        $task->description = $request->description;
-        $task->due_date = $request->due_date;
+        $task->type = $request->type ?? null;
+        $task->subject = $request->subject ?? null;
+        $task->description = $request->description ?? null;
+        $task->due_date = $request->due_date ?? null;
 
-        $task->priority = $request->priority['id'];
+        $task->priority = $request->priority['id'] ?? null;
 
 
         // echo '<pre>';print_r($task);exit;
@@ -994,16 +997,16 @@ return response()->json($this->response);
         
         $updateTask = Task::find($id);
         $updateTask->update([
-            'subject' => $request->subject,
+            'subject' => $request->subject, 
             'description' => $request->description,
-            'branch_id' => $request->branch_id['id'],
-            'company_id' => $request->company_id['id'],
-            'category_id' => $request->category_id['id'],
-            'contact_person_id' => $request->contact_person_id['id'],
+            'branch_id' => $request->branch_id['id'] ?? null,
+            'company_id' => $request->company_id['id'] ?? null,
+            'category_id' => $request->category_id['id'] ?? null,
+            'contact_person_id' => $request->contact_person_id['id'] ?? null,
             'type' => $request->type,
-            'due_date' => $request->due_date,
-            'priority' => $request->priority['id'],
-            'status' => $request->status['status'],
+            'due_date' => $request->due_date ?? null,
+            'priority' => $request->priority['id'] ?? null,
+            'status' => $request->status['status'] ?? null,
         ]);
 
         $real_task = Task::find($id);
