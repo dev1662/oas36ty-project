@@ -26,7 +26,7 @@ class ContactPersonController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
         // $result = ContactPerson::select('id','name','type')->get();
-        $result = ContactPerson::select('id','name','type')->get();
+        $result = ContactPerson::select('id','name','type')->orderBy('id', 'DESC')->get();
         // $result = array();
 
             $this->response["status"] = true;
@@ -93,7 +93,7 @@ class ContactPersonController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
         // $result = ContactPerson::select('id','name','type')->get();
-        $id = ContactPerson::select('id','name','type')->with('audits')->get();
+        $id = ContactPerson::select('id','name','type')->with('audits')->orderBy('id', 'DESC')->get();
         // $result = array();
         $result = [];
                   foreach($id as $key => $val){
