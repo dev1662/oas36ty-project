@@ -14,9 +14,9 @@ class AddTitleTodos extends Migration
     public function up()
     {
 
-            Schema::table('to_dos', function (Blueprint $table) {
-                $table->string('title')->nullable();
-            });
+            // Schema::table('to_dos', function (Blueprint $table) {
+            //     $table->string('title')->nullable();
+            // });
         
     }
 
