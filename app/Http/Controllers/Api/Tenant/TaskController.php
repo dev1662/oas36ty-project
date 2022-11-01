@@ -1015,11 +1015,22 @@ return response()->json($this->response);
 
         // UPDATE FOREIGN KEY TABLES
 
+        if($request->branch_id){
 
-        $branch = Branch::where(['id' => $request->branch_id['id']])->update(['type' => 'dont_delete']);
-        $Category = Category::where(['id' => $request->category_id['id']])->update(['type' => 'dont_delete']);
-        $Company = Company::where(['id' => $request->company_id['id']])->update(['type' => 'dont_delete']);
-        $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id['id']])->update(['type' => 'dont_delete']);
+            $branch = Branch::where(['id' => $request->branch_id['id']])->update(['type' => 'dont_delete']);
+        }
+        if($request->category_id){
+
+            $Category = Category::where(['id' => $request->category_id['id']])->update(['type' => 'dont_delete']);
+        }
+        if($request->company_id){
+            
+            $Company = Company::where(['id' => $request->company_id['id']])->update(['type' => 'dont_delete']);
+        }
+        if($request->contact_person_id){
+            
+            $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id['id']])->update(['type' => 'dont_delete']);
+        }
 
 
         // $checkNewUser = array();
