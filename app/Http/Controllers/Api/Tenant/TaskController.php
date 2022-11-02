@@ -124,7 +124,14 @@ class TaskController extends Controller
         // $user_details = CentralUser::find($)
 
         $this->response["status"] = true;
-        $this->response["message"] = __('strings.get_all_success');
+        if($_GET['route'] == 'leads'){
+
+            $this->response["message"] = 'Leads Fetched';
+        }
+        if($_GET['route'] == 'tasks'){
+
+            $this->response["message"] = 'Tasks Fetched';
+        }
         $this->response["data"] = $tasks;
         return response()->json($this->response);
     }
