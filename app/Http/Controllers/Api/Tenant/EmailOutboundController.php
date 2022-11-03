@@ -9,7 +9,11 @@ use App\Models\EmailOutbound;
 use App\Models\User;
 use App\Models\UserEmail;
 use Exception;
+use Illuminate\Support\Facades\Mail;
+use PHPMailer\PHPMailer\PHPMailer;
 use Illuminate\Support\Facades\Validator;
+use Swift_Mailer;
+use Swift_SmtpTransport;
 use Webklex\PHPIMAP\ClientManager;
 
 class EmailOutboundController extends Controller
@@ -339,9 +343,27 @@ class EmailOutboundController extends Controller
                 'mail_encryption' => strtolower($request->input('mail_encryption')['option']),
                
             ];
-          
-        
             $check =  EmailOutbound::create($data);
+            try{
+                // $security = (request()->input('security') != 'None') ? request()->input('security') : null;
+            $transport = new Swift_SmtpTransport($data['mail_host'], $data['mail_port'], $data['mail_encryption']);
+            $transport->setUsername($data['mail_username']);
+            $transport->setPassword($data['mail_password']);
+            $mailer = new Swift_Mailer($transport);
+            $mailer->getTransport()->start();
+            EmailsSetting::where(['id' => $data['id']])->update([
+                'outbound_status' => 'tick'
+            ]);
+            }catch(Exception $ex){
+                EmailsSetting::where(['id' => $data['id']])->update([
+                    'outbound_status' => 'alert'
+                ]);
+                // $this->response["status"] = false;
+                // $this->response["message"] = 'Invalid Credentials';
+                // // $this->response['data'] = EmailOutbound::where(['id' => $id])->first();
+                // return response()->json($this->response, 422);
+            }
+        
             
             EmailsSetting::where(['id' => $request->input('id')])->update([
                 'outbound_status' => 'tick'
@@ -690,6 +712,25 @@ class EmailOutboundController extends Controller
                
             ];
             
+            try{
+                // $security = (request()->input('security') != 'None') ? request()->input('security') : null;
+            $transport = new Swift_SmtpTransport($data['mail_host'], $data['mail_port'], $data['mail_encryption']);
+            $transport->setUsername($data['mail_username']);
+            $transport->setPassword($data['mail_password']);
+            $mailer = new Swift_Mailer($transport);
+            $mailer->getTransport()->start();
+            EmailsSetting::where(['id' => $id])->update([
+                'outbound_status' => 'tick'
+            ]);
+            }catch(Exception $ex){
+                EmailsSetting::where(['id' => $id])->update([
+                    'outbound_status' => 'alert'
+                ]);
+                // $this->response["status"] = false;
+                // $this->response["message"] = 'Invalid Credentials';
+                // // $this->response['data'] = EmailOutbound::where(['id' => $id])->first();
+                // return response()->json($this->response, 422);
+            }
            
             $check =  EmailOutbound::where(['id' => $id])->update($data);
             $cm = new ClientManager();

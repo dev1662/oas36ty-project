@@ -318,6 +318,7 @@ class EmailInboundController extends Controller
             // return $data;
            
             $check =  EmailInbound::create($data);
+          
             $cm = new ClientManager();
 
             $client = $cm->make([
@@ -328,10 +329,20 @@ class EmailInboundController extends Controller
                 'password'   => $request->input('mail_password'),
                 'encryption' => strtolower($request->input('mail_encryption')['option']),
             ]);
-            $client->connect();
-            EmailsSetting::where(['id' => $request->input('id')])->update([
-                'inbound_status' => 'tick'
-              ]);
+         
+                $res = $client->connect();
+                // return response()->json($res);
+                // return response()->json($client);
+                if($res == 'false'){
+                          EmailsSetting::where(['id' => $check->id])->update([
+                        'inbound_status' => 'alert'
+                    ]);
+                }else{
+                          EmailsSetting::where(['id' => $check->id])->update([
+                        'inbound_status' => 'tick'
+                    ]);
+                }
+
             if ($check) {
                 $this->response["status"] = true;
                 $this->response["message"] = __('strings.store_success');
@@ -675,21 +686,71 @@ class EmailInboundController extends Controller
                 'mail_encryption' => strtolower($request->input('mail_encryption')['option']),
                
             ];
-            
+            if($data['mail_transport'] == 'imap' && $data['mail_port'] == '995'){
+                $this->response["status"] = false;
+                $this->response["message"] = 'Mail Port is Invalid for this protocol';
+             
+                return response()->json($this->response, 422);
+            }
+            // return 'h';
+            // set_time_limit(20);
            
-            $check =  EmailInbound::where(['id' => $id])->update($data);
+            // $imap_details = '{'.$data['mail_host'].':'. (int)$data['mail_port'] .'/'. $data['mail_transport'] .'/'. $data['mail_encryption'] .'}';
+            // $imap_details = "{imap.gmail.com:993/imap/ssl}";
+            // echo phpinfo();
+            // return $imap_details;
+            // $mbox = imap_open($imap_details, $data['mail_username'], $data['mail_password']);
+            // return $mbox;
             $cm = new ClientManager();
-
+            
             $client = $cm->make([
-                'protocol'  => strtolower($request->input('mail_transport')['option']),
-                'host'       => $request->input('mail_host'),
-                'port'       => $request->input('mail_port'),
-                'username'   => $request->input('mail_username'),
-                'password'   => $request->input('mail_password'),
-                'encryption' => strtolower($request->input('mail_encryption')['option']),
-            ]);
-            // $client->connect();
-             $client->connect();
+                    'protocol'  => strtolower($request->input('mail_transport')['option']),
+                    'host'       => $request->input('mail_host'),
+                    'port'       => $request->input('mail_port'),
+                    'username'   => $request->input('mail_username'),
+                    'password'   => $request->input('mail_password'),
+                    'encryption' => strtolower($request->input('mail_encryption')['option']),
+                ]);
+                $res = $client->connect();
+                // return response()->json($res);
+                // return response()->json($client);
+                if($res == 'false'){
+                          EmailsSetting::where(['id' => $id])->update([
+                        'inbound_status' => 'alert'
+                    ]);
+                }else{
+                          EmailsSetting::where(['id' => $id])->update([
+                        'inbound_status' => 'tick'
+                    ]);
+                }
+                
+
+                
+                // if($mbox ){
+                    
+                //     EmailsSetting::where(['id' => $id])->update([
+                //         'inbound_status' => 'tick'
+                //     ]);
+                // }
+                // if(!($mbox = imap_open($imap_details, $data['mail_username'], $data['mail_password']))){
+                    
+                //     EmailsSetting::where(['id' => $id])->update([
+                //         'inbound_status' => 'alert'
+                //     ]);
+                // }
+                $check =  EmailInbound::where(['id' => $id])->update($data);
+            // $cm = new ClientManager();
+
+            // $client = $cm->make([
+            //     'protocol'  => strtolower($request->input('mail_transport')['option']),
+            //     'host'       => $request->input('mail_host'),
+            //     'port'       => $request->input('mail_port'),
+            //     'username'   => $request->input('mail_username'),
+            //     'password'   => $request->input('mail_password'),
+            //     'encryption' => strtolower($request->input('mail_encryption')['option']),
+            // ]);
+            // // $client->connect();
+            //  $client->connect();
               
              
             if ($check) {
