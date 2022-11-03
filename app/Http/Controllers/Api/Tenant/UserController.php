@@ -758,7 +758,7 @@ class UserController extends Controller
 
         $validator = Validator::make(['user_id' => $id] + $request->all(), [
             'user_id' => 'required|exists:App\Models\User,id',
-            'image' => 'required',
+            // 'image' => 'required',
             'name' => 'required',
             'emails' => 'nullable',
         ]);
@@ -789,14 +789,17 @@ class UserController extends Controller
         $oldCentralUserTenantsCount = tenancy()->central(function ($tenant) use ($oldCentralUser) {
             return $oldCentralUser->tenants()->count();
         });
-        $base64String = $request->input('image');
-        // $base64String= "base64 string";
-      
-        // $image = $request->image; // the base64 image you want to upload
-        $slug = time().$user->id; //name prefix
-        $avatar = $this->getFileName($base64String, $slug);
-         Storage::disk('s3')->put('user-images/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
-         $url = Storage::disk('s3')->url('user-images/' . $avatar['name']);
+        if($request->input('image')){
+
+            $base64String = $request->input('image');
+            // $base64String= "base64 string";
+            
+            // $image = $request->image; // the base64 image you want to upload
+            $slug = time().$user->id; //name prefix
+            $avatar = $this->getFileName($base64String, $slug);
+            Storage::disk('s3')->put('user-images/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
+            $url = Storage::disk('s3')->url('user-images/' . $avatar['name']);
+        }
 
 // $p = Storage::disk('s3')->put('' . $imageName, $image, 'public'); 
 
@@ -836,7 +839,10 @@ class UserController extends Controller
         // return $file;
         if ($oldCentralUserTenantsCount == 1) {
             $member->name = $request->name;
-            $member->avatar = $url;
+            if($request->input('image')){
+
+                $member->avatar = $url;
+            }
             // $member->avatar = $imageName;
             $member->update();
 
