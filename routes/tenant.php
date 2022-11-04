@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\Tenant\EmailOutboundController;
 use App\Http\Controllers\Api\Tenant\EmailInboundController;
 use App\Http\Controllers\Api\Tenant\EmailMasterController;
 use App\Http\Controllers\Api\Tenant\MailboxController;
+use App\Http\Controllers\Api\Tenant\StatusMasterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,6 +77,7 @@ Route::middleware([
 
             Route::apiResource('to-dos', ToDoController::class);
             Route::apiResource('clients', CompanyController::class);
+            Route::apiResource('status_master', StatusMasterController::class);
             Route::get('contact-people/leads',[ContactPersonController::class,'getDataForLeads']);
             Route::apiResource('contact-people', ContactPersonController::class);
             Route::apiResource('contact-people.emails', ContactPersonEmailController::class);

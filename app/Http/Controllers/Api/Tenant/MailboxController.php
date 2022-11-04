@@ -67,6 +67,18 @@ class MailboxController extends Controller
 
                 $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
             }
+            if($req->folder == 'draft'){
+
+                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+            }
+            if($req->folder == 'spam'){
+
+                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Spam'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+            }
+            if($req->folder == 'trash'){
+
+                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Trash'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+            }
             if(!$req->folder){
 
                 $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
@@ -93,7 +105,7 @@ class MailboxController extends Controller
         }
         if ($total_count) {
 
-            $count_of_msg = $total_count['count']->inbound_msg_count;
+            $count_of_msg = $total_count['count']->inbound_msg_count ?? '';
         } else {
             $count_of_msg = 0;
         }
