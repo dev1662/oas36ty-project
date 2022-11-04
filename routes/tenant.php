@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\Tenant\EmailInboundController;
 use App\Http\Controllers\Api\Tenant\EmailMasterController;
 use App\Http\Controllers\Api\Tenant\MailboxController;
 use App\Http\Controllers\Api\Tenant\StatusMasterController;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -101,7 +102,13 @@ Route::middleware([
             Route::post('email-inbound-status', [EmailInboundController::class, 'update_active_inactive_status']);
            
             Route::get('apps/todo/tasks', [ToDoController::class, 'index']);
-
+            Route::get('audits', function(){
+                $audits = DB::table('audits')->join('users', 'users.id', '=', 'audits.user_id')->get();
+                $this->response['status'] = true;
+                $this->response['message'] = 'Audits Fetched';
+                $this->response['data'] = $audits ?? [];
+                return response()->json($this->response);
+            });
          
             Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);
             Route::post('/tasks/inlineUpdate', [TaskController::class, 'inline_update']);
