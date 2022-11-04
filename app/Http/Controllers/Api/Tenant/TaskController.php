@@ -99,7 +99,7 @@ class TaskController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
     
-            $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+            $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
@@ -115,6 +115,7 @@ class TaskController extends Controller
                 'users' => function ($q) {
                     $q->select('users.id', 'name','avatar');
                 },
+                'status_master',
                 'audits',
                 // 'priorities' => function($q){
                 //     $q->select('id', 'icons');
@@ -199,7 +200,7 @@ class TaskController extends Controller
                        if(!empty($filters['status'])){
                         $query
 
-                        ->where('status','LIKE','%'.$filters['status'].'%');
+                        ->where('status_master_id','LIKE','%'.$filters['status'].'%');
                     }
 
                     if(!empty($filters['priority'])){
@@ -261,7 +262,7 @@ class TaskController extends Controller
                         //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
-                       })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                       })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
                         'branch' => function ($q) {
                             $q->select('id', 'name');
 
@@ -573,10 +574,10 @@ class TaskController extends Controller
 
                 $filters['contact'] =  ContactPerson::where('name','LIKE','%'.$filters['contact'].'%')->first()['id'];
             }
-            if($filters['user']){
+            // if($filters['user']){
 
-                $filters['user'] =  User::where('name','LIKE','%'.$filters['user'].'%')->first()['id'];
-            }
+            //     $filters['user'] =  User::where('name','LIKE','%'.$filters['user'].'%')->first()['n'];
+            // }
 
 
         // return $filters;
@@ -595,11 +596,11 @@ class TaskController extends Controller
                 //    ->where('business_type','!=',3)
                 //    ->where('parent_id','=',null)
                    ->where(function($query) use ($filters){
-                       if(!empty($filters['status'])){
-                        $query
+                    //    if(!empty($filters['status'])){
+                    //     $query
 
-                        ->where('status','LIKE','%'.$filters['status'].'%');
-                    }
+                    //     ->where('status','LIKE','%'.$filters['status'].'%');
+                    // }
 
                     if(!empty($filters['priority'])){
                         $query
@@ -660,7 +661,7 @@ class TaskController extends Controller
                         //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
-                       })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+                       })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
                         'branch' => function ($q) {
                             $q->select('id', 'name');
 
@@ -676,14 +677,17 @@ class TaskController extends Controller
                         },
                         'users' => function ($q) use($filters) {
                             
-                            $q->where('users.id', 'LIKE', '%'. $filters['user']. '%')->select('users.id', 'name', 'avatar');
+                            $q->where('users.name', 'LIKE', '%'. $filters['user']. '%')->select('users.id', 'name', 'avatar');
+                        },
+                        'status_master' => function($q) use($filters){
+                            $q->where('type', 'LIKE', '%' . $filters['status'].'%')->select('id', 'type');
                         },
                         'audits',
                         // 'priorities' => function($q){
                         //     $q->select('id', 'icons');
                         // },
             
-                    ])
+                    ])->latest()
                     //    ->orderBy('created_at', 'desc')
                        ->get();
                     //    return $tasks;
@@ -992,7 +996,7 @@ class TaskController extends Controller
          
             // return $request->user_data;
         }
-        $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+        $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
             'branch' => function ($q) {
                 $q->where('name', 'banglo')->select('id', 'name');
 
@@ -1010,6 +1014,7 @@ class TaskController extends Controller
                 
                 $q->select('users.id', 'name', 'avatar');
             },
+            'status_master',
             'audits',
             // 'priorities' => function($q){
             //     $q->select('id', 'icons');
@@ -1188,7 +1193,7 @@ return response()->json($this->response);
 
 
         // echo '<pre>';print_r($task);exit;
-        $task->status = Task::STATUS_OPEN;
+        $task->status_master_id = $request->status['id'] ?? 0;
         // return $request->users[$i];
         $task->save();
         for ($i = 0; $i < count($request->users); $i++) {
@@ -1294,7 +1299,7 @@ return response()->json($this->response);
             return response()->json($this->response, 422);
         }
 
-        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
+        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
             'branch' => function ($q) {
                 $q->select('id', 'name');
             },
@@ -1310,6 +1315,7 @@ return response()->json($this->response);
             'users' => function ($q) {
                 $q->select('users.id', 'name');
             },
+            'status_master',
             'audits'
         ])->find($id);
 
@@ -1433,7 +1439,7 @@ return response()->json($this->response);
             'type' => $request->type,
             'due_date' => $request->due_date ?? null,
             'priority' => $request->priority['id'] ?? null,
-            'status' => $request->status['status'] ?? null,
+            'status_master_id' => $request->status['id'] ?? null,
         ]);
 
         $real_task = Task::find($id);
