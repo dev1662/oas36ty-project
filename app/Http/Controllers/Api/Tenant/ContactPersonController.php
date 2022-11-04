@@ -189,6 +189,25 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+        $email = array_merge($request->default_email, $request->additional_email);
+        $phone = array_merge($request->default_phone, $request->additional_phone);
+        if(count($email) == 0){
+            $this->response["status"] = false;
+            $this->response["message"] = 'Email field is required';
+            return response()->json($this->response);
+        }
+        if(count($phone) == 0){
+            $this->response["status"] = false;
+            $this->response["message"] = 'Phone field is required';
+            return response()->json($this->response);
+        }
+        // $this->response["status"] = true;
+        // $this->response["message"] = __('strings.store_success');
+        // return response()->json($this->response);
+       
+
+        // return [$request->all(), $email, $phone];
+
         // $data =array();
         // $phoness = array();
         // for($i=0;$i<count($request->email);$i++){
@@ -210,13 +229,13 @@ class ContactPersonController extends Controller
         // $id = DB::getPdo()->lastInsertId();;
         $id = $contactPerson->id;
 
-        if(count($request->email) > 1){
+        if(count($email) > 1){
 
-        for($i=0;$i<count($request->email);$i++){
+        for($i=0;$i<count($email);$i++){
         $contactPersonEmail = new ContactPersonEmail();
 
             $contactPersonEmail->contact_person_id = $id;
-            $contactPersonEmail->email = $request->email[$i];
+            $contactPersonEmail->email = $email[$i];
             // return $contactPersonEmail
             $contactPersonEmail->save();
             }
@@ -224,22 +243,22 @@ class ContactPersonController extends Controller
         $contactPersonEmail = new ContactPersonEmail();
 
             $contactPersonEmail->contact_person_id = $id;
-            $contactPersonEmail->email = $request->email[0];
+            $contactPersonEmail->email = $email[0];
             $contactPersonEmail->save();
         }
-        if(count($request->phone) > 1){
-            for($i=0;$i<count($request->phone);$i++){
+        if(count($phone) > 1){
+            for($i=0;$i<count($phone);$i++){
         $contactPersonPhone = new ContactPersonPhone();
 
                 $contactPersonPhone->contact_person_id = $id;
-                $contactPersonPhone->phone = $request->phone[$i];
+                $contactPersonPhone->phone = $phone[$i];
                 $contactPersonPhone->save();
             }
         }else{
         $contactPersonPhone = new ContactPersonPhone();
 
             $contactPersonPhone->contact_person_id = $id;
-                $contactPersonPhone->phone = $request->phone[0];
+                $contactPersonPhone->phone = $phone[0];
                 $contactPersonPhone->save();
         }
         $this->response["status"] = true;
