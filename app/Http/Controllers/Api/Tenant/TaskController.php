@@ -115,6 +115,9 @@ class TaskController extends Controller
                 'users' => function ($q) {
                     $q->select('users.id', 'name','avatar');
                 },
+                'comments' => function($q){
+                    $q->select('id', 'comment', 'task_id', 'user_id');
+                },
                 'status_master',
                 'audits',
                 // 'priorities' => function($q){
@@ -645,7 +648,10 @@ class TaskController extends Controller
                         $query->where(function($query) use($search){
 
                             $query->where('description','LIKE','%'.$search.'%')
-                            
+                            ->orWhereHas('comments', function($q) use($search){
+                                $q->where('comment', 'LIKE', '%'.$search.'%');
+                            })
+                            // ->comments()->orWhere('comment','LIKE', '%'.$search.'%')
                             ->orWhere('subject', 'LIKE', '%'.$search.'%');
                         });
                     }
@@ -682,6 +688,16 @@ class TaskController extends Controller
                         'status_master' => function($q) use($filters){
                             $q->where('type', 'LIKE', '%' . $filters['status'].'%')->select('id', 'type');
                         },
+                        'comments' ,
+                        // => function($q) use($filters){
+                        //     if(!empty($filters['search'])){
+                        //         $search = $filters['search'];
+
+                        //         $q->where(function($q) use($search){
+                        //         $q->where('comment', 'LIKE', '%' . $search. '%')->select('id', 'comment', 'task_id', 'user_id');
+                        //         });
+                        //     }
+                        // },
                         'audits',
                         // 'priorities' => function($q){
                         //     $q->select('id', 'icons');

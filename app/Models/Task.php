@@ -38,6 +38,7 @@ class Task extends Model implements Auditable
     {
         return $this->belongsToMany(User::class, TaskUser::class, 'task_id', 'user_id');
     }
+   
     // public function users()
     // {
     //     // DB::connection()->setDatabaseName('oas36ty_org_NanakOrg');
