@@ -65,8 +65,14 @@ class MailboxController extends Controller
             // return $username->mail_username;
             // $result[$index]= Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->paginate(20);
             if($req->folder == 'sent'){
+                if($req->q){
 
-                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                }
+                if(!$req->q){
+                    $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+
+                }
             }
             if($req->folder == 'draft'){
 
@@ -81,8 +87,14 @@ class MailboxController extends Controller
                 $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Trash'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
             }
             if(!$req->folder){
+                if($req->q){
 
-                $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                }
+                if(!$req->q){
+                    $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+
+                }
             }
             if($req->folder == 'starred'){
                 $result[] = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();

@@ -27,7 +27,7 @@ class CreateTasksTable extends Migration
             $table->unsignedTinyInteger('priority')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->foreignId('status_master_id')->nullable()->constrained();
+            $table->unsignedBigInteger('status_master_id')->nullable();
         });
     }
 
