@@ -156,6 +156,12 @@ class MailboxController extends Controller
         // return $request->all();
         $bcc=  $request->data['bcc'] ?? '';
         $cc=  $request->data['cc'] ?? '';
+         $attach = $request->data['attach'] ?? '';
+        //  [
+        //     public_path('/files/rbn.jpeg'),
+        //     public_path('/files/frnt.txt'),
+        // ];
+        // return $attach;
 
         $outbound_id= $request->data['from']['id'];
         $centralUser =  CentralUser::where('email', json_decode($request->header('currrent'))->email)->first();
@@ -211,7 +217,7 @@ class MailboxController extends Controller
         $status = [];
         foreach($request->data['to'] as $email){
             $data_arr= [
-              'message' => $message, 'subject' => $subject, 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc
+              'message' => $message, 'subject' => $subject, 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach'=> $attach
             ];
             // return $data_arr;
             $status = $this->SendEmailDriven($data_arr);
@@ -233,6 +239,7 @@ class MailboxController extends Controller
             if (!empty($email_data) && array_key_exists('email', $email_data)) {
                 $email = $email_data['email'];
                 if ($email) {
+                    $files = $email_data['attach'];
                     $data = [];
                     $email_template = array_key_exists('email_template', $email_data)  ? $email_data['email_template'] : '';
                     $data['email'] = $email;
@@ -249,7 +256,7 @@ class MailboxController extends Controller
 
                     //return $data;
 
-                    Mail::send($email_template, $data, function ($message) use ($data) {
+                    Mail::send($email_template, $data, function ($message) use ($data, $files ) {
                         $message->from($data['email_from'], $data['email_from_name']);
                         $message->to($data['email']);
                         $message->subject($data['email_subject']);
@@ -265,9 +272,11 @@ class MailboxController extends Controller
 
                             $message->replyTo($data['email_replyTo']);
                         }
-                        if($data['email_attach']){
+                        if($files){
 
-                            $message->attach($data['email_attach']);
+                            foreach ($files as $file){
+                                $message->attach($file);
+                            }
                         }
                         // $message ->replyTo($data['email_replyTo']) ?? '';
                         // $message->attach($data['email_attach']) ?? '';
@@ -294,6 +303,7 @@ class MailboxController extends Controller
         $email_data['email_subject'] = $data_arr['subject'];
         $email_data['email_template'] = "emails.auth.hello";
         $email_data['template_data'] = ['body' => $data_arr['message']];
+        $email_data['attach'] = $data_arr['attach'];
         // return $email_data;
          $check = $this->send_email_sms($email_data, []);
         if ($check) {
