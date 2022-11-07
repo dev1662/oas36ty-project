@@ -1209,7 +1209,7 @@ return response()->json($this->response);
 
 
         // echo '<pre>';print_r($task);exit;
-        $task->status_master_id = $request->status['id'] ?? 0;
+        $task->status_master_id = $request->status['id'] ?? 1;
         // return $request->users[$i];
         $task->save();
         for ($i = 0; $i < count($request->users); $i++) {
