@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class MailboxController extends Controller
 {
@@ -151,16 +152,47 @@ class MailboxController extends Controller
         
         
     }
+    private function getFileName($image, $namePrefix)
+    {
+        list($type, $file) = explode(';', $image);
+        list(, $extension) = explode('/', $type);
+        list(, $file) = explode(',', $file);
+        $result['name'] = $namePrefix . '.' . $extension;
+        $result['file'] = $file;
+        // $result['name'] = str_replace(' ','' ,$result['name']);
+        return $result;
+    }
     public function sendEmail(Request $request)
     {
         // return $request->all();
+        $user = $request->user();
         $bcc=  $request->data['bcc'] ?? '';
         $cc=  $request->data['cc'] ?? '';
-         $attach = $request->data['attach'] ?? '';
+        //  $attach = $request->data['attach'] ?? '';
         //  [
         //     public_path('/files/rbn.jpeg'),
         //     public_path('/files/frnt.txt'),
         // ];
+        // return $attach;
+        if($request->data['attach']){
+
+            $base64String = $request->data['attach'];
+            // $base64String= "base64 string";
+            $attach = [];
+            foreach($base64String as $file){
+
+                // $image = $request->image; // the base64 image you want to upload
+                $slug = time().$user->id; //name prefix
+                $avatar = $this->getFileName($file, $slug);
+                // $original_name = explode(' ', $avatar['name']);
+                // return $original_name;
+                Storage::disk('s3')->put('email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
+                
+                $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
+                $attach[] = $url ?? '';
+            }
+        }
+
         // return $attach;
 
         $outbound_id= $request->data['from']['id'];
