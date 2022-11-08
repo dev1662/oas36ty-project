@@ -248,8 +248,15 @@ class SignUpController extends Controller
             'signup_token' => 'required',
             'email' => 'required|email|max:64|exists:App\Models\CentralOnboarding,email',
             'organization_name' => 'required|max:255',
-            'organization_url' => 'required|alpha_num|max:32|unique:App\Models\Tenant,id',
+            'organization_url' => 'required|alpha_num|max:32',
         ]);
+        if($request->organization_url){
+            $organisation= CentralOrganization::where(['subdomain' => $request->organization_url])->where('status', '!=',CentralOrganization::STATUS_PENDING)->first();
+            if($organisation){
+                $this->response["message"] = 'This organization url already exists.';
+                return response()->json($this->response, 422);
+            }
+        }
         if($validator->fails()) {
             $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();
@@ -267,7 +274,7 @@ class SignUpController extends Controller
         $centralOnboarding = CentralOnboarding::where(['id' => $centralOnboardingID, 'email' => $request->input('email'), 'status' => CentralOnboarding::STATUS_PENDING])->whereNotNull('email_verified_at')->first();
         if(!$centralOnboarding){
             $this->response["message"] = __('strings.something_wrong');
-            return response()->json($this->response, 401);
+            return response()->json($this->response, 401); 
         }
         // $db = DB::connection();
         // $dbs = $db->select('show databases');
