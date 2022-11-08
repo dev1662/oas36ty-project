@@ -311,8 +311,28 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        $email = array_merge($request->default_email, $request->additional_email);
-        $phone = array_merge($request->default_phone, $request->additional_phone);
+        if($request->additional_email){
+            $email = array_merge($request->email, $request->additional_email);
+           }
+           else if($request->email){
+            $email = $request->email;
+           }
+           else{
+            $this->response['message'] = 'Something went wrong with email';
+            return response($this->response, 422);
+           }
+           if($request->additional_phone){
+            $phone = array_merge($request->phone, $request->additional_phone);
+           }
+         else if($request->phone){
+            $phone = $request->phone;
+           }
+           else{
+            $this->response['message'] = 'Something went wrong with mobile';
+            return response($this->response, 422);
+           }
+        // $email = array_merge($request->default_email, $request->additional_email);
+        // $phone = array_merge($request->default_phone, $request->additional_phone);
         if(count($email) == 0){
             $this->response["status"] = false;
             $this->response["message"] = 'Email field is required';
