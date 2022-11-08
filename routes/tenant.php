@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\Tenant\EmailInboundController;
 use App\Http\Controllers\Api\Tenant\EmailMasterController;
 use App\Http\Controllers\Api\Tenant\MailboxController;
 use App\Http\Controllers\Api\Tenant\StatusMasterController;
+use App\Models\Task;
 use Illuminate\Support\Facades\DB;
 
 /*
@@ -103,7 +104,14 @@ Route::middleware([
            
             Route::get('apps/todo/tasks', [ToDoController::class, 'index']);
             Route::get('audits', function(){
-                $audits = DB::table('audits')->join('users', 'users.id', '=', 'audits.user_id')->get();
+                if($_GET['route'] == 'leads-inner-folder'){
+                    $route = 'lead';
+                }
+                // $audits = DB::table('audits')->join('users', 'users.id', '=', 'audits.user_id')->get();
+                $audits = Task::where(['type' =>  $route, 'id' => $_GET['id']])->with([
+                    'audits'
+                ])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')
+                ->latest()->get();
                 $this->response['status'] = true;
                 $this->response['message'] = 'Audits Fetched';
                 $this->response['data'] = $audits ?? [];
