@@ -837,12 +837,12 @@ class UserController extends Controller
         //     true // Mark it as test, since the file isn't from real HTTP POST.
         // );
         // return $file;
-        if ($oldCentralUserTenantsCount == 1) {
+        // if ($oldCentralUserTenantsCount == 1) {
             $member->name = $request->name;
             if($request->input('image')){
 
                 $member->avatar = $url;
-            }
+            // }
             // $member->avatar = $imageName;
             $member->update();
 
