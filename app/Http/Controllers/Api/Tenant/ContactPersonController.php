@@ -597,7 +597,7 @@ class ContactPersonController extends Controller
 
     public function update(Request $request, $contactPersonID)
     {
-        return [$request->all(), $contactPersonID];
+        // return [$request->all(), $contactPersonID];
         $validator = Validator::make(['contact_person_id' => $contactPersonID] + $request->all(), [
             'name' => 'required|max:64',
             'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
@@ -612,18 +612,39 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 200);
         }
-       
-        ContactPerson::where('id', $contactPersonID)->update(['name'=>$request->name]);
-        ContactPersonEmail::where('contact_person_id', $contactPersonID)->delete();
-        ContactPersonPhone::where('contact_person_id', $contactPersonID)->delete();
-        $id = $contactPersonID;
-        if(count($request->email) > 1){
+        if($request->new_email){
+        $email = array_merge($request->email, $request->new_email);
+       }
+       else if($request->email){
+        $email = $request->email;
+       }
+       else{
+        $this->response['message'] = 'Something went wrong with email';
+        return response($this->response, 422);
+       }
+       if($request->new_phone){
+        $phone = array_merge($request->phone, $request->new_phone);
+       }
+     else if($request->phone){
+        $phone = $request->phone;
+       }
+       else{
+        $this->response['message'] = 'Something went wrong with mobile';
+        return response($this->response, 422);
+       }
 
-            for($i=0;$i<count($request->email);$i++){
+    //    return [$email, $phone];
+        ContactPerson::where('id', $contactPersonID)->update(['name'=>$request->name]);
+        ContactPersonEmail::where('contact_person_id', $contactPersonID)->forceDelete();
+        ContactPersonPhone::where('contact_person_id', $contactPersonID)->forceDelete();
+        $id = $contactPersonID;
+        if(count($email) > 1){
+
+            for($i=0;$i<count($email);$i++){
             $contactPersonEmail = new ContactPersonEmail();
     
                 $contactPersonEmail->contact_person_id = $id;
-                $contactPersonEmail->email = $request->email[$i];
+                $contactPersonEmail->email = $email[$i];
                 // return $contactPersonEmail
                 $contactPersonEmail->save();
                 }
@@ -631,22 +652,22 @@ class ContactPersonController extends Controller
             $contactPersonEmail = new ContactPersonEmail();
     
                 $contactPersonEmail->contact_person_id = $id;
-                $contactPersonEmail->email = $request->email[0];
+                $contactPersonEmail->email = $email[0];
                 $contactPersonEmail->save();
             }
-            if(count($request->phone) > 1){
-                for($i=0;$i<count($request->phone);$i++){
+            if(count($phone) > 1){
+                for($i=0;$i<count($phone);$i++){
             $contactPersonPhone = new ContactPersonPhone();
     
                     $contactPersonPhone->contact_person_id = $id;
-                    $contactPersonPhone->phone = $request->phone[$i];
+                    $contactPersonPhone->phone = $phone[$i];
                     $contactPersonPhone->save();
                 }
             }else{
             $contactPersonPhone = new ContactPersonPhone();
     
                 $contactPersonPhone->contact_person_id = $id;
-                    $contactPersonPhone->phone = $request->phone[0];
+                    $contactPersonPhone->phone = $phone[0];
                     $contactPersonPhone->save();
             }
       
