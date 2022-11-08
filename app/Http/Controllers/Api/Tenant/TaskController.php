@@ -27,11 +27,12 @@ class TaskController extends Controller
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"tasks"},
-     *     path="/tasks",
+     *     path="/tasks?route={route}",
      *     operationId="getTasks",
      *     summary="Tasks",
      *     description="Tasks",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *    @OA\Parameter(name="route", in="path", required=true, description="tasks/leads"),
      *     @OA\Response(
      *          response=200,
      *          description="Successful Response",
@@ -1112,7 +1113,7 @@ return response()->json($this->response);
      *             @OA\Property(property="subject", type="string", example="Task subject", description=""),
      *             @OA\Property(property="description", type="string", example="Task description", description=""),
      *             @OA\Property(property="due_date", type="string", example="2022-06-01", description=""),
-     *             @OA\Property(property="importance", type="string", example="3", description=""),
+     *             @OA\Property(property="priority", type="string", example="3", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -1364,9 +1365,21 @@ return response()->json($this->response);
      *             @OA\Property(property="subject", type="string", example="Task subject", description=""),
      *             @OA\Property(property="description", type="string", example="Task description", description=""),
      *             @OA\Property(property="due_date", type="string", example="2022-06-01", description=""),
-     *             @OA\Property(property="importance", type="string", example="3", description=""),
+     *             @OA\Property(property="priority", type="string", example="3", description=""),
      *             @OA\Property(property="status", type="string", example="closed", description=""),
-     *         )
+     *                @OA\Property(
+     *                  property="users",
+     *                   type="array",
+     *                  @OA\Items(
+     *                         @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                  ),
+     * 
+     *                  ),
+     *         ),
      *     ),
      *     @OA\Response(
      *          response=200,
@@ -1417,7 +1430,7 @@ return response()->json($this->response);
 
     public function update(Request $request, $id)
     {
-        // return $request->all();
+        //  return $request->all();
         $validator = Validator::make(['task_id' => $id] + $request->all(), [
             'task_id' => 'required|exists:App\Models\Task,id',
             'branch_id' => 'required',
@@ -1442,7 +1455,7 @@ return response()->json($this->response);
 
         // UPDATE TASK TABLE
 
-        // return $request->all();
+           
         
         $updateTask = Task::find($id);
         $updateTask->update([
@@ -1460,7 +1473,7 @@ return response()->json($this->response);
 
         $real_task = Task::find($id);
 
-
+           
 
         // UPDATE FOREIGN KEY TABLES
 
@@ -1494,7 +1507,7 @@ return response()->json($this->response);
         // insert newly added data
         // return "insert";
         foreach ($request->users as $input_users) {
-            // return "forloop";
+            //  return "forloop";
             if (!in_array($input_users['id'], $user_values)) {
                 $new_taskUser = new TaskUser();
                 $new_taskUser->task_id = $id;

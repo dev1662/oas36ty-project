@@ -65,6 +65,112 @@ class ContactPersonController extends Controller
      *                         type="string",
      *                         example="Contact Person Name"
      *                      ),
+     *                      @OA\Property(
+     *                         property="Type",
+     *                         type="string",
+     *                         example="dont_delete"
+     *                      ),
+     *                  @OA\Property(
+     *                  property="audits",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="user_type",
+     *                         type="string",
+     *                         example="App\\Models\\User"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="user_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                  @OA\Property(
+     *                         property="event",
+     *                         type="string",
+     *                         example="Created"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="auditable_type",
+     *                         type="string",
+     *                         example="App\\Models\\ContactPerson"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="auditable_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                  @OA\Property(
+     *                         property="url",
+     *                         type="string",
+     *                         example="http://127.0.0.1:8000/v1/tasks/2/comments"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="ip_address",
+     *                         type="string",
+     *                         example="127.0.0.1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="user_agent",
+     *                         type="string",
+     *                         example="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="tags",
+     *                         type="string",
+     *                         example="null"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="created_at",
+     *                         type="timestamp",
+     *                         example="2022-09-02T06:01:37.000000Z"
+     *                      ), 
+     *                      @OA\Property(
+     *                         property="updated_at",
+     *                         type="timestamp",
+     *                         example="2022-09-02T06:01:37.000000Z"
+     *                      ), 
+     *                     ),
+     *                  ),
+     *                   @OA\Property(
+     *                  property="emails",
+     *                  type="array",
+     *                  @OA\Items(
+     *                           @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                        @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ),
+     *                      
+     *                          ),
+     *                      ),
+     *                   @OA\Property(
+     *                  property="phone",
+     *                  type="array",
+     *                  @OA\Items(
+     *                           @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                        @OA\Property(
+     *                         property="phone",
+     *                         type="string",
+     *                         example="655 649 9874"
+     *                      ),
+     *                      
+     *                          ),
+     *                      ),
+     * 
      *                  ),
      *              ),
      *          )
@@ -95,20 +201,18 @@ class ContactPersonController extends Controller
         // $result = ContactPerson::select('id','name','type')->get();
         $id = ContactPerson::select('id','name','type')->with('audits')->orderBy('id', 'DESC')->get();
         // $result = array();
-        $result = [];
-                  foreach($id as $key => $val){
+        foreach($id as $key => $val){
 
             $email = ContactPersonEmail::where(['contact_person_id' => $val->id])->select('id','email')->get();
             $phone = ContactPersonPhone::where(['contact_person_id' => $val->id])->select('phone')->get();
 
-
+            
             $result[$key]=[
-                 "data" => $val,
+                "data" => $val,
                 'email'=>$email ?? [],
                 'phone'=>$phone ?? []
             ];
-
-
+          
         }
             $this->response["status"] = true;
             $this->response["message"] = __('strings.get_all_success');
@@ -132,7 +236,25 @@ class ContactPersonController extends Controller
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Contact Person", description=""),
-     *         )
+     *             @OA\Property(
+     *              property="phone", 
+     *              type="array", 
+     *                @OA\Items(
+     *                         type="string",
+     *                         example="655 987 4562"
+     *                  ),
+     *          ),
+     *           @OA\Property(
+     *              property="email", 
+     *              type="array", 
+     *                @OA\Items(
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                  ),
+     *          ),
+     *         ),
+     * 
+     *          
      *     ),
      *     @OA\Response(
      *          response=200,
@@ -287,7 +409,7 @@ class ContactPersonController extends Controller
      *                  property="data",
      *                  type="array",
      *                  @OA\Items(
-     *                      @OA\Property(
+     *                     @OA\Property(
      *                         property="id",
      *                         type="integer",
      *                         example="1"
@@ -297,6 +419,46 @@ class ContactPersonController extends Controller
      *                         type="string",
      *                         example="Contact Person Name"
      *                      ),
+     *                      @OA\Property(
+     *                         property="Type",
+     *                         type="string",
+     *                         example="dont_delete"
+     *                      ),
+     *                        @OA\Property(
+     *                  property="emails",
+     *                  type="array",
+     *                  @OA\Items(
+     *                           @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                        @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                      ),
+     *                      
+     *                          ),
+     *                      ),
+     *                   @OA\Property(
+     *                  property="phone",
+     *                  type="array",
+     *                  @OA\Items(
+     *                           @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                        @OA\Property(
+     *                         property="phone",
+     *                         type="string",
+     *                         example="655 649 9874"
+     *                      ),
+     *                      
+     *                          ),
+     *                      ),
+     * 
      *                  ),
      *              ),
      *          )
@@ -332,9 +494,19 @@ class ContactPersonController extends Controller
 
         $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
 
+        $email = ContactPersonEmail::where(['contact_person_id' => $contactPerson->id])->select('id','email')->get();
+        $phone = ContactPersonPhone::where(['contact_person_id' => $contactPerson->id])->select('id','phone')->get();
+
+        
+        $result[]=[
+            "data" => $contactPerson,
+            'email'=>$email ?? [],
+            'phone'=>$phone ?? []
+        ];
+
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
-        $this->response["data"] = $contactPerson;
+        $this->response["data"] = $result;
         return response()->json($this->response);
     }
 
@@ -349,12 +521,31 @@ class ContactPersonController extends Controller
      *     description="Update Contact Person",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="contactPersonID", in="path", required=true, description="Contact Person ID"),
-     *     @OA\RequestBody(
+     *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="name", type="string", example="Contact Person name", description=""),
-     *         )
+     *             
+     *             @OA\Property(property="name", type="string", example="Contact Person", description=""),
+     *             @OA\Property(
+     *              property="phone", 
+     *              type="array", 
+     *                @OA\Items(
+     *                         type="string",
+     *                         example="655 987 4562"
+     *                  ),
+     *          ),
+     *           @OA\Property(
+     *              property="email", 
+     *              type="array", 
+     *                @OA\Items(
+     *                         type="string",
+     *                         example="example@gmail.com"
+     *                  ),
+     *          ),
+     *         ),
+     * 
+     *          
      *     ),
      *     @OA\Response(
      *          response=200,
@@ -402,6 +593,8 @@ class ContactPersonController extends Controller
      *     ),
      * )
      */
+
+
     public function update(Request $request, $contactPersonID)
     {
         return [$request->all(), $contactPersonID];
@@ -418,6 +611,69 @@ class ContactPersonController extends Controller
             $this->response["message"] = $validator->errors()->first();
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 200);
+        }
+       
+        ContactPerson::where('id', $contactPersonID)->update(['name'=>$request->name]);
+        ContactPersonEmail::where('contact_person_id', $contactPersonID)->delete();
+        ContactPersonPhone::where('contact_person_id', $contactPersonID)->delete();
+        $id = $contactPersonID;
+        if(count($request->email) > 1){
+
+            for($i=0;$i<count($request->email);$i++){
+            $contactPersonEmail = new ContactPersonEmail();
+    
+                $contactPersonEmail->contact_person_id = $id;
+                $contactPersonEmail->email = $request->email[$i];
+                // return $contactPersonEmail
+                $contactPersonEmail->save();
+                }
+            }else{
+            $contactPersonEmail = new ContactPersonEmail();
+    
+                $contactPersonEmail->contact_person_id = $id;
+                $contactPersonEmail->email = $request->email[0];
+                $contactPersonEmail->save();
+            }
+            if(count($request->phone) > 1){
+                for($i=0;$i<count($request->phone);$i++){
+            $contactPersonPhone = new ContactPersonPhone();
+    
+                    $contactPersonPhone->contact_person_id = $id;
+                    $contactPersonPhone->phone = $request->phone[$i];
+                    $contactPersonPhone->save();
+                }
+            }else{
+            $contactPersonPhone = new ContactPersonPhone();
+    
+                $contactPersonPhone->contact_person_id = $id;
+                    $contactPersonPhone->phone = $request->phone[0];
+                    $contactPersonPhone->save();
+            }
+      
+       
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.update_success');
+        return response()->json($this->response);
+    }
+
+
+
+
+    public function updateOld(Request $request, $contactPersonID)
+    {
+        $validator = Validator::make(['contact_person_id' => $contactPersonID] + $request->all(), [
+            'name' => 'required|max:64',
+            'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
+            // 'contact_email_id' => 'required|exists:App\Models\ContactPersonEmail,id',
+            // 'contact_phone_id' => 'required|exists:App\Models\ContactPersonPhone,id',
+
+
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
         }
         // if(count($request->emails) > )
         $emails = ContactPersonEmail::where('contact_person_id', $request->contact_person_id)->get();

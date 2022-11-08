@@ -200,7 +200,6 @@ class EmailMasterController extends Controller
      */
 
     public function getEmailCredential(Request $request){
-
     $dbname = $request->header('X-Tenant'); //json_decode($request->header('currrent'))->tenant->organization->name;
     $dbname = config('tenancy.database.prefix').strtolower($dbname);
     // return   $dbname;
@@ -215,7 +214,7 @@ class EmailMasterController extends Controller
 
     }
 
-        /**
+  /**
      *
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
@@ -343,6 +342,94 @@ class EmailMasterController extends Controller
         $this->response["data"] = $data;
         return response()->json($this->response);
     }
+
+    
+  /**
+     *
+     * @OA\Put(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Mail Setting"},
+     *     path="/update-email/{emailSettingID}",
+     *     operationId="postUpdateEmail",
+     *     summary="Update Email",
+     *     description="Update Email",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     * @OA\Parameter(name="emailSettingID", in="path", required=true, description="Email setting ID"),
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *              @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *              @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="robin@gmail.com"
+     *                      ),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Created new record successfully"),
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="object",
+     *                   @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="robin@gmail.com"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="status",
+     *                         type="string",
+     *                         example="active / inactive"
+     *                      ),
+     *                     
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="email",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected email is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
     public function update(Request $request, $id)
     {
         try{

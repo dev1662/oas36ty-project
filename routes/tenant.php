@@ -78,7 +78,7 @@ Route::middleware([
 // Route::get('/tasks/1/comments/assigned_users',[TaskCommentController::class, 'usersAssigned']);
 
             Route::apiResource('to-dos', ToDoController::class);
-            Route::apiResource('clients', CompanyController::class);
+            Route::apiResource('Companys', CompanyController::class);
             Route::apiResource('status_master', StatusMasterController::class);
             Route::get('contact-people/leads',[ContactPersonController::class,'getDataForLeads']);
             Route::apiResource('contact-people', ContactPersonController::class);
