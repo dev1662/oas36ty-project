@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use PDO;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
+
+use function PHPUnit\Framework\returnSelf;
+
 /**
  * @OA\Server(
  *  url="https://api-office36ty.protracked.in/v1",
@@ -88,5 +93,28 @@ class Controller extends BaseController
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ]);
+    }
+
+    public function uploadFile($request, $fileName, $path) {
+        $return = false;      
+        // $fileName = 'image';
+        return [$request, $fileName, $path];
+       if ($request->hasFile($fileName)) :
+        $file = $request->file($fileName);
+        $fullName = $file->getClientOriginalName();
+        $stringName = $this->my_random_string(explode('.', $fullName)[0]);
+        $fileName = $stringName . time() . '.' . $file->getClientOriginalExtension();
+         $filepath = $path . $fileName;
+        $urls = Storage::disk('s3')->put($filepath, file_get_contents($file));
+         // $destinationPath = public_path($path);
+        //$check = $file->move($destinationPath, $fileName);
+        $url = Storage::disk('s3')->url($filepath);
+       // $return = $destinationPath ? $fileName : false;
+    endif;
+    return $url;
+    }
+
+    protected function my_random_string($char) {
+        return uniqid('Oas36ty');
     }
 }

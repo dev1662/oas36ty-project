@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateToDosTable extends Migration
+class CreateAttachmentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,15 @@ class CreateToDosTable extends Migration
      */
     public function up()
     {
-        Schema::create('to_dos', function (Blueprint $table) {
+        Schema::create('attachments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('task_id')->nullable()->constrained();
-            $table->string('title');
-            $table->string('to_do');
+            $table->string('attachment');
+            $table->enum('type', ['company', 'task']);
+            $table->foreignId('company_id')->constrained();
+            $table->foreignId('task_id')->constrained();
             $table->timestamps();
             $table->softDeletes();
-            $table->enum('status', ['not-done', 'done'])->default('not-done');
+
         });
     }
 
@@ -32,6 +32,6 @@ class CreateToDosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('to_dos');
+        Schema::dropIfExists('attachments');
     }
 }

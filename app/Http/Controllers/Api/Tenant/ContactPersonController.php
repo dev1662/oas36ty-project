@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\ContactPerson;
 use App\Models\ContactPersonEmail;
 use App\Models\ContactPersonPhone;
+use Doctrine\DBAL\Schema\Schema;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema as FacadesSchema;
 use PDO;
 
 class ContactPersonController extends Controller
@@ -23,7 +26,7 @@ class ContactPersonController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
         // $result = ContactPerson::select('id','name','type')->get();
-        $result = ContactPerson::select('id','name','type')->get();
+        $result = ContactPerson::select('id','name','type')->orderBy('id', 'DESC')->get();
         // $result = array();
 
             $this->response["status"] = true;
@@ -196,7 +199,7 @@ class ContactPersonController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
         // $result = ContactPerson::select('id','name','type')->get();
-        $id = ContactPerson::select('id','name','type')->with('audits')->get();
+        $id = ContactPerson::select('id','name','type')->with('audits')->orderBy('id', 'DESC')->get();
         // $result = array();
         foreach($id as $key => $val){
 
@@ -308,6 +311,25 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+        $email = array_merge($request->default_email, $request->additional_email);
+        $phone = array_merge($request->default_phone, $request->additional_phone);
+        if(count($email) == 0){
+            $this->response["status"] = false;
+            $this->response["message"] = 'Email field is required';
+            return response()->json($this->response);
+        }
+        if(count($phone) == 0){
+            $this->response["status"] = false;
+            $this->response["message"] = 'Phone field is required';
+            return response()->json($this->response);
+        }
+        // $this->response["status"] = true;
+        // $this->response["message"] = __('strings.store_success');
+        // return response()->json($this->response);
+       
+
+        // return [$request->all(), $email, $phone];
+
         // $data =array();
         // $phoness = array();
         // for($i=0;$i<count($request->email);$i++){
@@ -329,13 +351,13 @@ class ContactPersonController extends Controller
         // $id = DB::getPdo()->lastInsertId();;
         $id = $contactPerson->id;
 
-        if(count($request->email) > 1){
+        if(count($email) > 1){
 
-        for($i=0;$i<count($request->email);$i++){
+        for($i=0;$i<count($email);$i++){
         $contactPersonEmail = new ContactPersonEmail();
 
             $contactPersonEmail->contact_person_id = $id;
-            $contactPersonEmail->email = $request->email[$i];
+            $contactPersonEmail->email = $email[$i];
             // return $contactPersonEmail
             $contactPersonEmail->save();
             }
@@ -343,22 +365,22 @@ class ContactPersonController extends Controller
         $contactPersonEmail = new ContactPersonEmail();
 
             $contactPersonEmail->contact_person_id = $id;
-            $contactPersonEmail->email = $request->email[0];
+            $contactPersonEmail->email = $email[0];
             $contactPersonEmail->save();
         }
-        if(count($request->phone) > 1){
-            for($i=0;$i<count($request->phone);$i++){
+        if(count($phone) > 1){
+            for($i=0;$i<count($phone);$i++){
         $contactPersonPhone = new ContactPersonPhone();
 
                 $contactPersonPhone->contact_person_id = $id;
-                $contactPersonPhone->phone = $request->phone[$i];
+                $contactPersonPhone->phone = $phone[$i];
                 $contactPersonPhone->save();
             }
         }else{
         $contactPersonPhone = new ContactPersonPhone();
 
             $contactPersonPhone->contact_person_id = $id;
-                $contactPersonPhone->phone = $request->phone[0];
+                $contactPersonPhone->phone = $phone[0];
                 $contactPersonPhone->save();
         }
         $this->response["status"] = true;
@@ -575,6 +597,7 @@ class ContactPersonController extends Controller
 
     public function update(Request $request, $contactPersonID)
     {
+        return [$request->all(), $contactPersonID];
         $validator = Validator::make(['contact_person_id' => $contactPersonID] + $request->all(), [
             'name' => 'required|max:64',
             'contact_person_id' => 'required|exists:App\Models\ContactPerson,id',
@@ -587,7 +610,7 @@ class ContactPersonController extends Controller
             $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();
             $this->response["errors"] = $validator->errors();
-            return response()->json($this->response, 422);
+            return response()->json($this->response, 200);
         }
        
         ContactPerson::where('id', $contactPersonID)->update(['name'=>$request->name]);
@@ -848,23 +871,36 @@ class ContactPersonController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+        // FacadesSchema::table('contact_people')->disableForeignKeyConstraints();
+        // FacadesSchema::table('contact_person_emails')->disableForeignKeyConstraints();
+        // FacadesSchema::disableForeignKeyConstraints();
 
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         $contactPerson = ContactPerson::select('id', 'name')->find($contactPersonID);
+        $contact_emails = ContactPersonEmail::where('contact_person_id', $contactPersonID)->get();
 
+        $contact_phones = ContactPersonPhone::where('contact_person_id', $contactPersonID)->get();
         if(!$contactPerson){
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }
-
-        // ContactPersonEmail::where('contact_person_id', $contactPersonID)->delete();
-        // ContactPersonPhone::where('contact_person_id', $contactPersonID)->delete();
-        if ($contactPerson->forceDelete()) {
-            $this->response["status"] = true;
-            $this->response["message"] = __('strings.destroy_success');
-            return response()->json($this->response);
+        // return [
+        //     $contact_emails, $contactPerson, $contact_phone
+        // ];
+        foreach($contact_emails as $contact_email){
+            foreach ($contact_phones as $contact_phone) {
+                # code...
+                if ( $contact_email->forceDelete() && $contact_phone->forceDelete() && $contactPerson->forceDelete() ) {
+                    $this->response["status"] = true;
+                    $this->response["message"] = __('strings.destroy_success');
+                    DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                    
+                    return response()->json($this->response);
+                }
+                
+                $this->response["message"] = __('strings.destroy_failed');
+                return response()->json($this->response, 422);
+            }
+            }
         }
-
-        $this->response["message"] = __('strings.destroy_failed');
-        return response()->json($this->response, 422);
     }
-}

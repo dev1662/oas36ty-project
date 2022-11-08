@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class MailboxController extends Controller
 {
@@ -187,10 +188,13 @@ class MailboxController extends Controller
 
     public function fetchEmails(Request $req)
     {
-       
-            $user_id =  $req->currrent['id'];
-            $emails = $req->currrent['email'];
-      
+
+
+
+
+        $user_id = $req->currrent['id'];
+        $emails = $req->currrent['email'];
+
         // return $req->page;
 
         $page = $req->page;
@@ -220,12 +224,36 @@ class MailboxController extends Controller
             // return $username->mail_username;
             // $result[$index]= Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->paginate(20);
             if($req->folder == 'sent'){
+                if($req->q){
 
-                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                }
+                if(!$req->q){
+                    $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+
+                }
+            }
+            if($req->folder == 'draft'){
+
+                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+            }
+            if($req->folder == 'spam'){
+
+                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Spam'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+            }
+            if($req->folder == 'trash'){
+
+                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Trash'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
             }
             if(!$req->folder){
+                if($req->q){
 
-                $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                }
+                if(!$req->q){
+                    $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+
+                }
             }
             if($req->folder == 'starred'){
                 $result[] = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
@@ -493,26 +521,43 @@ class MailboxController extends Controller
    
     public function sendEmail(Request $request)
     {
-        // $emails =  $request->data['to'];
-        // foreach($emails as $in => $emailt){
-        //     $tt[$in]= $emailt;
-        // }
-        // return $tt;
+        // return $request->all();
+        $user = $request->user();
         $bcc=  $request->data['bcc'] ?? '';
         $cc=  $request->data['cc'] ?? '';
-        $user_id = $request->currrent['id'];   //json_decode($request->header('currrent'))->id;
-        $user_email = $request->currrent['email'];//json_decode($request->header('currrent'))->email;
-        // $user_id = json_decode($request->header('currrent'))->id;
-        // $user_email = json_decode($request->header('currrent'))->email;
+        //  $attach = $request->data['attach'] ?? '';
+        //  [
+        //     public_path('/files/rbn.jpeg'),
+        //     public_path('/files/frnt.txt'),
+        // ];
+        // return $attach;
+        if($request->data['attach']){
 
+            $base64String = $request->data['attach'];
+            // $base64String= "base64 string";
+            $attach = [];
+            foreach($base64String as $file){
+
+                // $image = $request->image; // the base64 image you want to upload
+                $slug = time().$user->id; //name prefix
+                $avatar = $this->getFileName($file, $slug);
+                // $original_name = explode(' ', $avatar['name']);
+                // return $original_name;
+                Storage::disk('s3')->put('email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
+                
+                $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
+                $attach[] = $url ?? '';
+            }
+        }
+
+        // return $attach;
 
         $outbound_id= $request->data['from']['id'];
-
-        $centralUser =  CentralUser::where('email', $user_email )->first();
+        $centralUser =  CentralUser::where('email', json_decode($request->header('currrent'))->email)->first();
 
         $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
         tenancy()->initialize($tenant);
-      $user_setting  = UserEmail::where(['user_id'=> $user_id , 'emails_setting_id' => $outbound_id])->get();
+      $user_setting  = UserEmail::where(['user_id'=> json_decode($request->header('currrent'))->id, 'emails_setting_id' => $outbound_id])->get();
     //   $details_outbound = [];
     //   foreach ($user_setting as $index => $user_emails) {
         if($user_setting){
@@ -561,21 +606,23 @@ class MailboxController extends Controller
         $status = [];
         foreach($request->data['to'] as $email){
             $data_arr= [
-              'message' => $message, 'subject' => $subject, 'email' => $email['name'], 'email_bcc' => $bcc, 'email_cc' => $cc
+              'message' => $message, 'subject' => $subject, 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach'=> $attach
             ];
-            //return $data_arr;
             // return $data_arr;
             $status = $this->SendEmailDriven($data_arr);
-        //   $status =  Mail::to('devoas36ty@gmail.com')->send(new MailBoxSendMail($message, $subject));
-        //      config(['mail.mailers.smtp.username' => 'robin@gmail.com']);
-        //      config(['mail.mailers.smtp.password' => 'robin@gmail.com']);
-        //      config(['mail.mailers.smtp.username' => 'robin@gmail.com']);
+        //   $status =  mailto:mail::to('devoas36ty@gmail.com')->send(new MailBoxSendMail($message, $subject));
+        //      config(['mail.mailers.smtp.username' => 'mailto:robin@gmail.com']);
+        //      config(['mail.mailers.smtp.password' => 'mailto:robin@gmail.com']);
+        //      config(['mail.mailers.smtp.username' => 'mailto:robin@gmail.com']);
 
         //     //  return config('mail.mailers.smtp.username');
             
         }
         return $status;
     }
+
+
+
     public function send_email_sms($email_data = [], $sms_data = [])
     {
         ## sending email
@@ -584,6 +631,7 @@ class MailboxController extends Controller
             if (!empty($email_data) && array_key_exists('email', $email_data)) {
                 $email = $email_data['email'];
                 if ($email) {
+                    $files = $email_data['attach'];
                     $data = [];
                     $email_template = array_key_exists('email_template', $email_data)  ? $email_data['email_template'] : '';
                     $data['email'] = $email;
@@ -600,7 +648,7 @@ class MailboxController extends Controller
 
                     //return $data;
 
-                    Mail::send($email_template, $data, function ($message) use ($data) {
+                    Mail::send($email_template, $data, function ($message) use ($data, $files ) {
                         $message->from($data['email_from'], $data['email_from_name']);
                         $message->to($data['email']);
                         $message->subject($data['email_subject']);
@@ -616,9 +664,11 @@ class MailboxController extends Controller
 
                             $message->replyTo($data['email_replyTo']);
                         }
-                        if($data['email_attach']){
+                        if($files){
 
-                            $message->attach($data['email_attach']);
+                            foreach ($files as $file){
+                                $message->attach($file);
+                            }
                         }
                         // $message ->replyTo($data['email_replyTo']) ?? '';
                         // $message->attach($data['email_attach']) ?? '';
@@ -645,6 +695,7 @@ class MailboxController extends Controller
         $email_data['email_subject'] = $data_arr['subject'];
         $email_data['email_template'] = "emails.auth.hello";
         $email_data['template_data'] = ['body' => $data_arr['message']];
+        $email_data['attach'] = $data_arr['attach'];
         // return $email_data;
          $check = $this->send_email_sms($email_data, []);
         if ($check) {

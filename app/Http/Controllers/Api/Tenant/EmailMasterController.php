@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Models\EmailInbound;
+use App\Models\EmailOutbound;
 use App\Models\EmailsSetting;
 use App\Models\User;
 use Exception;
@@ -472,5 +474,42 @@ class EmailMasterController extends Controller
                  'result' => $this->result
      ]);
          }
+    }
+    public function destroy($id)
+    {
+        $validator = Validator::make(['email_id' => $id], [
+            'email_id' => 'required|exists:App\Models\EmailsSetting,id',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+        // return $id;
+        $email_master = EmailsSetting::find($id);
+
+        $inbound = EmailInbound::find($id);
+        $outbound = EmailOutbound::find($id);
+
+        if(!$email_master){
+            $this->response["message"] = 'Email Not found';
+            return response()->json($this->response, 422);
+        }
+        if($inbound){
+            $inbound->forceDelete();
+        }
+        if($outbound){
+            $outbound->forceDelete();
+        }
+            if ($email_master->forceDelete()) {
+                $this->response["status"] = true;
+                $this->response["message"] = __('strings.destroy_success');
+                return response()->json($this->response);
+            }
+
+        $this->response["message"] = __('strings.destroy_failed');
+        return response()->json($this->response, 422);
+    
     }
 }

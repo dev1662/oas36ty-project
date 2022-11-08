@@ -19,6 +19,7 @@ use App\Models\Branch;
 use App\Models\EmailsSetting;
 use App\Models\Mailbox;
 use App\Models\UserEmail;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
@@ -29,6 +30,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use PDO;
+use Symfony\Component\HttpFoundation\File\File as FileFile;
 
 class UserController extends Controller
 {
@@ -676,6 +678,17 @@ class UserController extends Controller
      *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
      *     @OA\RequestBody(
      *          required=true,
+     *  @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     description="file to upload",
+     *                     property="file",
+     *                     type="file",
+     *                ),
+     *                 required={"file"}
+     *             )
+     *         ),
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="email", type="string", example="naveen.w3master@gmail.com", description=""),
@@ -730,6 +743,15 @@ class UserController extends Controller
      *     ),
      * )
      */
+    private function getFileName($image, $namePrefix)
+{
+    list($type, $file) = explode(';', $image);
+    list(, $extension) = explode('/', $type);
+    list(, $file) = explode(',', $file);
+    $result['name'] = $namePrefix . '.' . $extension;
+    $result['file'] = $file;
+    return $result;
+}
     public function update(Request $request, $id)
     {
         $user = $request->user();
@@ -737,9 +759,9 @@ class UserController extends Controller
 
         $validator = Validator::make(['user_id' => $id] + $request->all(), [
             'user_id' => 'required|exists:App\Models\User,id',
-            'image' => 'required',
+            // 'image' => 'required',
             'name' => 'required',
-            'emails' => 'required',
+            'emails' => 'nullable',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -768,14 +790,60 @@ class UserController extends Controller
         $oldCentralUserTenantsCount = tenancy()->central(function ($tenant) use ($oldCentralUser) {
             return $oldCentralUser->tenants()->count();
         });
-        // $base64_image = $request->input('image'); // your base64 encoded     
-        // @list($type, $file_data) = explode(';', $base64_image);
-        // @list(, $file_data) = explode(',', $file_data);
-        // $imageName = Str::random(10) . '.' . 'png';
+        if($request->input('image')){
 
-        // Storage::put($imageName, base64_decode($file_data));
+            $base64String = $request->input('image');
+            // $base64String= "base64 string";
+            
+            // $image = $request->image; // the base64 image you want to upload
+            $slug = time().$user->id; //name prefix
+            $avatar = $this->getFileName($base64String, $slug);
+            Storage::disk('s3')->put('user-images/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
+            $url = Storage::disk('s3')->url('user-images/' . $avatar['name']);
+        }
+
+// $p = Storage::disk('s3')->put('' . $imageName, $image, 'public'); 
+
+// $image_url = Storage::disk()->url($imageName);
+        
+        // $imgdata = base64_decode($base64File);
+        // $mime = getImageP
+
+        // $image_parts = explode(";base64,", $base64File);
+        // $image_type_aux = explode("image/", $image_parts[0]);
+        // $image_type = $image_type_aux[1];
+        // $image_base64 = base64_decode($image_parts[1]);
+        
+        // $this->uploadFile();
+        // $path = "user-images/";
+        //  $request->request->add(['image' => $base64File]);
+        // return $request->all();
+        // $check = $this->uploadFile('', 'image', $path);
+        // return $check;
+        // decode the base64 file
+        // $fileData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64File));
+        // // return $fileData;
+        // // save it to temporary dir first.
+        // return file_get_contents($fileData);
+        // $tmpFilePath = sys_get_temp_dir() . '/' . Str::uuid()->toString();
+        // // file_put_contents($tmpFilePath, $fileData);
+        // // this just to help us get file info.
+        // $tmpFile = new FileFile($tmpFilePath);
+        
+        // $file = new UploadedFile(
+        //     // $tmpFile->getPathname(),
+        //     $tmpFile->getFilename(),
+        //     $tmpFile->getMimeType(),
+        //     0,
+        //     true // Mark it as test, since the file isn't from real HTTP POST.
+        // );
+        // return $file;
         if ($oldCentralUserTenantsCount == 1) {
             $member->name = $request->name;
+            if($request->input('image')){
+
+                $member->avatar = $url;
+            }
             // $member->avatar = $imageName;
             $member->update();
 
@@ -784,12 +852,16 @@ class UserController extends Controller
         // return $id;
         $this->switchingDB($tenantName);
             // $user = $tenant->run(function ($tenant) use ($oldCentralUser, $request) {
+                if($request->emails){
+
+                
                 foreach($request->emails as $all_email){
                    $exists_user_emails =  UserEmail::where(['user_id' => $id, 'emails_setting_id' => $all_email['id']])->get();
 
                     if(count($exists_user_emails) >= 1){
+                        $this->response['status'] = true;
                         $this->response["message"] = 'Emails are already assigned choose another email';
-                        return response()->json($this->response,500);
+                        return response()->json($this->response,200);
                     }else{
                         // $email_of_user = User::where('id', $id)->first()
                         UserEmail::create([
@@ -801,6 +873,7 @@ class UserController extends Controller
                     }
                     
                 }
+            }
             // });
  //else {
       

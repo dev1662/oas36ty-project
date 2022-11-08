@@ -27,7 +27,7 @@ class CreateTasksTable extends Migration
             $table->unsignedTinyInteger('priority')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->enum('status', ['open', 'completed', 'invoiced', 'closed'])->default('open');
+            $table->unsignedBigInteger('status_master_id')->nullable();
         });
     }
 

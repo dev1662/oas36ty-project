@@ -29,6 +29,8 @@ use App\Http\Controllers\Api\Tenant\EmailOutboundController;
 use App\Http\Controllers\Api\Tenant\EmailInboundController;
 use App\Http\Controllers\Api\Tenant\EmailMasterController;
 use App\Http\Controllers\Api\Tenant\MailboxController;
+use App\Http\Controllers\Api\Tenant\StatusMasterController;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,8 +74,11 @@ Route::middleware([
 
             Route::apiResource('tasks.users', TaskUserController::class);
             Route::apiResource('tasks.comments', TaskCommentController::class);
+// Route::get('/tasks/1/comments/assigned_users',[TaskCommentController::class, 'usersAssigned']);
+
             Route::apiResource('to-dos', ToDoController::class);
             Route::apiResource('Companys', CompanyController::class);
+            Route::apiResource('status_master', StatusMasterController::class);
             Route::get('contact-people/leads',[ContactPersonController::class,'getDataForLeads']);
             Route::apiResource('contact-people', ContactPersonController::class);
             Route::apiResource('contact-people.emails', ContactPersonEmailController::class);
@@ -82,6 +87,7 @@ Route::middleware([
             // Route::get('recieve-emails', [UserController::class, 'emails_recieved']);
             //------------------------EmailConfig -----------------------------
             Route::post('/store-email',[EmailMasterController::class,'storeMail']);
+            Route::delete('/delete/{email_master}', [EmailMasterController::class, 'destroy']);
             Route::post('/get-emails',[EmailMasterController::class,'getEmailCredential']);
             Route::post('/find-emails',[EmailMasterController::class,'show']);
             Route::match(['put', 'patch'],'update-email/{id}', [EmailMasterController::class, 'update']);
@@ -96,10 +102,16 @@ Route::middleware([
             Route::post('email-inbound-status', [EmailInboundController::class, 'update_active_inactive_status']);
            
             Route::get('apps/todo/tasks', [ToDoController::class, 'index']);
-
+            Route::get('audits', function(){
+                $audits = DB::table('audits')->join('users', 'users.id', '=', 'audits.user_id')->get();
+                $this->response['status'] = true;
+                $this->response['message'] = 'Audits Fetched';
+                $this->response['data'] = $audits ?? [];
+                return response()->json($this->response);
+            });
          
             Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);
-
+            Route::post('/tasks/inlineUpdate', [TaskController::class, 'inline_update']);
             Route::get('assignedEmails-outBound', [EmailOutboundController::class, 'fetchEmails_outbound']);
         });
         
@@ -107,8 +119,9 @@ Route::middleware([
 });
 
 Route::prefix('v1')->group(function(){
+   
     Route::get('recieve-emails', [UserController::class, 'emails_recieved']);
-
+    
     //new user
     Route::post('set-password', [ResetPasswordController::class, 'setPassword']);
     // existing user accept

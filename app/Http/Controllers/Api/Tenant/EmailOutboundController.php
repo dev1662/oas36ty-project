@@ -9,7 +9,11 @@ use App\Models\EmailOutbound;
 use App\Models\User;
 use App\Models\UserEmail;
 use Exception;
+use Illuminate\Support\Facades\Mail;
+use PHPMailer\PHPMailer\PHPMailer;
 use Illuminate\Support\Facades\Validator;
+use Swift_Mailer;
+use Swift_SmtpTransport;
 use Webklex\PHPIMAP\ClientManager;
 
 class EmailOutboundController extends Controller
@@ -313,12 +317,12 @@ class EmailOutboundController extends Controller
         try{
             $validator =  Validator::make(request()->all(), [
                 'id'=>'required|exists:App\Models\EmailsSetting,id|unique:App\Models\EmailOutbound,id',
-                'mail_transport'  => 'required| ',
+                'mail_transport'  => 'required|',
                 'mail_host'       => 'required',
                 'mail_port'       => 'required|in:25,465,587,2525',
                 'mail_username'   => 'required|unique:App\Models\EmailOutbound',
                 'mail_password'   => 'required',
-                'mail_encryption.option' => 'required|in:tls,ssl,starttls',
+                'mail_encryption.option' => 'required|in:TLS,SSL,STARTLS',
                 
             ]
         );
@@ -336,12 +340,30 @@ class EmailOutboundController extends Controller
                 'mail_port'       => $request->input('mail_port'),
                 'mail_username'   => $request->input('mail_username'),
                 'mail_password'   => $request->input('mail_password'),
-                'mail_encryption' => $request->input('mail_encryption')['option'],
+                'mail_encryption' => strtolower($request->input('mail_encryption')['option']),
                
             ];
-          
-        
             $check =  EmailOutbound::create($data);
+            try{
+                // $security = (request()->input('security') != 'None') ? request()->input('security') : null;
+            $transport = new Swift_SmtpTransport($data['mail_host'], $data['mail_port'], $data['mail_encryption']);
+            $transport->setUsername($data['mail_username']);
+            $transport->setPassword($data['mail_password']);
+            $mailer = new Swift_Mailer($transport);
+            $mailer->getTransport()->start();
+            EmailsSetting::where(['id' => $data['id']])->update([
+                'outbound_status' => 'tick'
+            ]);
+            }catch(Exception $ex){
+                EmailsSetting::where(['id' => $data['id']])->update([
+                    'outbound_status' => 'alert'
+                ]);
+                // $this->response["status"] = false;
+                // $this->response["message"] = 'Invalid Credentials';
+                // // $this->response['data'] = EmailOutbound::where(['id' => $id])->first();
+                // return response()->json($this->response, 422);
+            }
+        
             
             EmailsSetting::where(['id' => $request->input('id')])->update([
                 'outbound_status' => 'tick'
@@ -669,7 +691,7 @@ class EmailOutboundController extends Controller
                 'mail_port'       => 'required|in:25,465,587,2525',
                 'mail_username'   => 'sometimes|required|unique:App\Models\EmailOutbound'.',id,'.$request->id,
                 'mail_password'   => 'required',
-                'mail_encryption.option' => 'required|in:tls,ssl,starttls',
+                'mail_encryption.option' => 'required|in:TLS,SSL,STARTLS',
                
             ]
         );
@@ -682,15 +704,34 @@ class EmailOutboundController extends Controller
             }
             $data = [
                // 'id'=> $request->input('id'),
-                'mail_transport'  => $request->input('mail_transport'),
+                'mail_transport'  => strtolower($request->input('mail_transport')),
                 'mail_host'       => $request->input('mail_host'),
                 'mail_port'       => $request->input('mail_port'),
                 'mail_username'   => $request->input('mail_username'),
                 'mail_password'   => $request->input('mail_password'),
-                'mail_encryption' => $request->input('mail_encryption')['option'],
+                'mail_encryption' => strtolower($request->input('mail_encryption')['option']),
                
             ];
             
+            try{
+                // $security = (request()->input('security') != 'None') ? request()->input('security') : null;
+            $transport = new Swift_SmtpTransport($data['mail_host'], $data['mail_port'], $data['mail_encryption']);
+            $transport->setUsername($data['mail_username']);
+            $transport->setPassword($data['mail_password']);
+            $mailer = new Swift_Mailer($transport);
+            $mailer->getTransport()->start();
+            EmailsSetting::where(['id' => $id])->update([
+                'outbound_status' => 'tick'
+            ]);
+            }catch(Exception $ex){
+                EmailsSetting::where(['id' => $id])->update([
+                    'outbound_status' => 'alert'
+                ]);
+                // $this->response["status"] = false;
+                // $this->response["message"] = 'Invalid Credentials';
+                // // $this->response['data'] = EmailOutbound::where(['id' => $id])->first();
+                // return response()->json($this->response, 422);
+            }
            
             $check =  EmailOutbound::where(['id' => $id])->update($data);
             $cm = new ClientManager();
