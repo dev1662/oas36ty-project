@@ -65,6 +65,7 @@ Route::middleware([
             Route::apiResource('tasks', TaskController::class)->parameters([
                 'tasks' => 'id'
             ]);
+            // Route::post('')
             Route::post('/sendEmail-outBound', [MailboxController::class, 'sendEmail']);
             
             Route::get('all-users', [ApiUserController::class, 'fetch']);

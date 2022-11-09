@@ -518,7 +518,15 @@ class MailboxController extends Controller
      *     ),
      * )
      */
-   
+    private function getFileName($image, $namePrefix)
+    {
+        list($type, $file) = explode(';', $image);
+        list(, $extension) = explode('/', $type);
+        list(, $file) = explode(',', $file);
+        $result['name'] = $namePrefix . '.' . $extension;
+        $result['file'] = $file;
+        return $result;
+    }
     public function sendEmail(Request $request)
     {
         // return $request->all();
