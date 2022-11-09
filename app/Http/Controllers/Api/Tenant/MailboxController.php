@@ -191,7 +191,8 @@ class MailboxController extends Controller
 
 
 
-
+        
+        
         $user_id = $req->currrent['id'];
         $emails = $req->currrent['email'];
 
@@ -239,11 +240,11 @@ class MailboxController extends Controller
             }
             if($req->folder == 'spam'){
 
-                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Spam'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
             }
             if($req->folder == 'trash'){
-
-                $result[] = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Trash'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                // return $req->result;
             }
             if(!$req->folder){
                 if($req->q){
