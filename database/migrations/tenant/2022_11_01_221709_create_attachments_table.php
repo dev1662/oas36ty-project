@@ -13,6 +13,7 @@ class CreateAttachmentsTable extends Migration
      */
     public function up()
     {
+        if(!(Schema::hasTable('attachments'))){
         Schema::create('attachments', function (Blueprint $table) {
             $table->id();
             $table->string('attachment');
@@ -23,6 +24,7 @@ class CreateAttachmentsTable extends Migration
             $table->softDeletes();
 
         });
+    }
     }
 
     /**
