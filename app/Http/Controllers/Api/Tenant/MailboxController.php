@@ -539,11 +539,11 @@ class MailboxController extends Controller
         //     public_path('/files/frnt.txt'),
         // ];
         // return $attach;
+        $attach = [];
         if($request->data['attach']){
 
             $base64String = $request->data['attach'];
             // $base64String= "base64 string";
-            $attach = [];
             foreach($base64String as $file){
 
                 // $image = $request->image; // the base64 image you want to upload
