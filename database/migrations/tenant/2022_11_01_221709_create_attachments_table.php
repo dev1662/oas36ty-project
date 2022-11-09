@@ -17,8 +17,8 @@ class CreateAttachmentsTable extends Migration
             $table->id();
             $table->string('attachment');
             $table->enum('type', ['company', 'task']);
-            $table->foreignId('company_id')->constrained();
-            $table->foreignId('task_id')->constrained();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('task_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
