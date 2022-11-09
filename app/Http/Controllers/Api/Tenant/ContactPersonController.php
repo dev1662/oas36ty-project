@@ -216,7 +216,7 @@ class ContactPersonController extends Controller
         }
             $this->response["status"] = true;
             $this->response["message"] = __('strings.get_all_success');
-            $this->response["data"] = $result;
+            $this->response["data"] = $result ?? [];
             return response()->json($this->response);
 
     }
