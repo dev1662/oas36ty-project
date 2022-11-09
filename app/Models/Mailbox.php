@@ -25,7 +25,8 @@ class Mailbox extends Model implements Auditable
         'type',
         'date',
         'u_date',
-        'folder'
+        'folder',
+        'references'
     ];
     
 }
