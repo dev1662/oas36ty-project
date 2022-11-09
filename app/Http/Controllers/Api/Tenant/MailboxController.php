@@ -269,12 +269,12 @@ class MailboxController extends Controller
             $total_count =  ['count' => UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
         }
     }
-        //  return $total_count;
+        //   return $total_count;
         //  return $result;
         // $result = Mailbox::all();
         if ($result) {
             $result = $result[0];
-           $total_count = $total_count[0] ?? [];
+           $total_count = $total_count ?? [];
         }
         if ($total_count) {
            
@@ -283,7 +283,7 @@ class MailboxController extends Controller
             $count_of_msg = 0;
         }
 
-        // return $total_count;
+        //  return $count_of_msg;
         // $msg = [];
 
         // return $result;
