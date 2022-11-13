@@ -201,22 +201,26 @@ class ContactPersonController extends Controller
         // $result = ContactPerson::select('id','name','type')->get();
         $id = ContactPerson::select('id','name','type')->with('audits')->orderBy('id', 'DESC')->get();
         // $result = array();
+        
         foreach($id as $key => $val){
 
-            $email = ContactPersonEmail::where(['contact_person_id' => $val->id])->select('id','email')->get();
-            $phone = ContactPersonPhone::where(['contact_person_id' => $val->id])->select('phone')->get();
+            $email[] = ContactPersonEmail::where(['contact_person_id' => $val->id])->select('id','email')->get();
+            $phone[] = ContactPersonPhone::where(['contact_person_id' => $val->id])->select('phone')->get();
 
             
             $result[$key]=[
                 "data" => $val,
-                'email'=>$email ?? [],
-                'phone'=>$phone ?? []
+               
+                // 'phone'=>$phone ?? []
             ];
-          
+            // $email[] = ['email' => $email ?? []];
+            // $emails[] = $email ?? [];
         }
+        // return $email;
             $this->response["status"] = true;
             $this->response["message"] = __('strings.get_all_success');
-            $this->response["data"] = $result ?? [];
+            $this->response["data"] = ['result' => $result ?? [], 'email' => $email , 'phone' => $phone];
+            
             return response()->json($this->response);
 
     }

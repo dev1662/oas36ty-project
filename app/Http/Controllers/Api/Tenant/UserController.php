@@ -260,6 +260,7 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
+        $user = $request->user();
         $dbname = $request->header('X-Tenant');
         $dbname = config('tenancy.database.prefix') . strtolower($dbname);
 
@@ -281,14 +282,31 @@ class UserController extends Controller
         // $path = 'http://localhost/oas36ty/local_api/storage/tenant'.$request->header('X-Tenant').'/';
 
         // return $path;
-        $users = User::select('id', 'name', 'avatar', 'email', 'status')->where(function ($q) use ($search) {
+        $users_emails =UserEmail::with([
+            'users' => function($q) use($search){
+                $q->select('id', 'name', 'avatar', 'email', 'status')
+                // ->where(function ($q) use ($search) {
+                //     if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
+                // })
+                // ->latest()
+                ;
+            },
+            'EmailsSetting' => function($q) use($user){
+                $q->select('id', 'email', 'inbound_status', 'outbound_status');
+            }
+        ])->get();
+        
+       $users =  User::select('id', 'name', 'avatar', 'email', 'status')->where(function ($q) use ($search) {
             if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
         })->latest()->get();
+
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] =
-         ["users" => $users,
+         [
+            "users" => $users,
+            "user_emails" => $users_emails
         //  "path" => $path
         ];
         // $request_email = json_decode($request->header('currrent'))->email;
@@ -662,7 +680,12 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::find($id);
+        $this->response['status'] = true;
+        $this->response['message'] = 'user Fetched';
+        $this->response['data'] = $user;
+        return response()->json($this->response);
+
     }
 
     /**
@@ -754,7 +777,7 @@ class UserController extends Controller
 }
     public function update(Request $request, $id)
     {
-        $user = $request->user();
+       $user = $request->user();
 
 
         $validator = Validator::make(['user_id' => $id] + $request->all(), [
@@ -845,9 +868,9 @@ class UserController extends Controller
                 $member->avatar = $url;
             // }
             // $member->avatar = $imageName;
-            $member->update();
-
+            
         }
+        $member->update();
         // $tenant = $oldCentralUser->tenants()->find($tenantName);
         // return $id;
         $this->switchingDB($tenantName);
