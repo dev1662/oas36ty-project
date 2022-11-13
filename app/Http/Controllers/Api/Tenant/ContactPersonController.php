@@ -216,10 +216,56 @@ class ContactPersonController extends Controller
             // $email[] = ['email' => $email ?? []];
             // $emails[] = $email ?? [];
         }
-        // return $email;
+        foreach($email as $mail){
+            foreach($mail as $em){
+
+                 $real_email[] = $em->email;
+            }
+        }
+        foreach($phone as $number){
+            foreach($number as $num){
+
+                 $real_phone[] = $num->phone;
+            }
+        }
+        // return $real_email;
             $this->response["status"] = true;
             $this->response["message"] = __('strings.get_all_success');
-            $this->response["data"] = ['result' => $result ?? [], 'email' => $email , 'phone' => $phone];
+            $this->response["data"] = ['result' => $result ?? [], 'email' => $real_email , 'phone' => $real_phone];
+            
+            return response()->json($this->response);
+
+    }
+
+    public function showAll(Request $request)
+    {
+        $dbname = $request->header('X-Tenant');
+        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+        // return   $dbname;
+        $this->switchingDB($dbname);
+        // $result = ContactPerson::select('id','name','type')->get();
+        $id = ContactPerson::select('id','name','type')->with('audits')->orderBy('id', 'DESC')->get();
+        // $result = array();
+        
+        foreach($id as $key => $val){
+
+            $email = ContactPersonEmail::where(['contact_person_id' => $val->id])->select('id','email')->get();
+            $phone = ContactPersonPhone::where(['contact_person_id' => $val->id])->select('phone')->get();
+
+            
+            $result[$key]=[
+                "data" => $val,
+                "email" => $email ?? [],
+                'phone'=>$phone ?? []
+            ];
+            // $email[] = ['email' => $email ?? []];
+            // $emails[] = $email ?? [];
+        }
+      
+        // return $real_email;
+            $this->response["status"] = true;
+            $this->response["message"] = __('strings.get_all_success');
+            $this->response["data"] = ['result' => $result ?? []];
             
             return response()->json($this->response);
 

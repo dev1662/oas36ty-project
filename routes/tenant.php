@@ -73,6 +73,7 @@ Route::middleware([
             Route::post('users/{id}/deactivate', [UserController::class, 'deactivate']);
             Route::get('/users/get-emails-to-assign', [UserController::class, 'get_emails_to_assign']);
             Route::apiResource('users', UserController::class);
+            Route::get('contact-people/show_all', [ContactPersonController::class, 'showAll']);
 
             Route::apiResource('tasks.users', TaskUserController::class);
             Route::apiResource('tasks.comments', TaskCommentController::class);
