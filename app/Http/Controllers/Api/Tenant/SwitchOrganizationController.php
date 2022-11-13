@@ -81,6 +81,7 @@ class SwitchOrganizationController extends Controller
         });
         
         $newTenant = $centralUser->tenants()->with('organization')->find($request->tenant_id);
+        // return $newTenant;
         // $avatar = '';
         // return $avatar;
         if(!$newTenant) {
