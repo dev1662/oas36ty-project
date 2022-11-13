@@ -1224,6 +1224,9 @@ return response()->json($this->response);
         $task->status_master_id = $request->status['id'] ?? 1;
         // return $request->users[$i];
         $task->save();
+        if($request->users && count($request->users) > 0){
+
+        
         for ($i = 0; $i < count($request->users); $i++) {
 
             $taskss = Task::find($task->id);
@@ -1236,6 +1239,7 @@ return response()->json($this->response);
 
             $taskss->users()->attach($request->users[$i]['id']);
         }
+    }
 
         $data = [
             'type' => 'dont_delete',

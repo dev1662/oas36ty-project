@@ -439,13 +439,20 @@ class SignUpController extends Controller
                             [
                                 'name' => $request->input('name'),
                                 'password' => Hash::make($request->input('password')),
-                                'avatar' => 'https://ui-avatars.com/api/?name='.$request->input('name'),
                                 'status' => CentralUser::STATUS_ACTIVE,
                                 ]
                             );
                             if(!$centralUser->hasVerifiedEmail()) $centralUser->markEmailAsVerified();
 
                             $centralUser->tenants()->attach($tenant);
+                            $tenant2 = $centralUser->tenants()->find($tenant->id);
+                            $name = $request->name;
+                
+                                $user = $tenant2->run(function ($tenant) use ($centralUser, $name) {
+                                    return User::where("email", $centralUser->email)->update([
+                                        'avatar' => 'https://ui-avatars.com/api/?name='.$name,
+                                    ]);
+                                });
 
                             $centralOnboarding->status = CentralOnboarding::STATUS_COMPLETED;
                             $centralOnboarding->update();
@@ -468,14 +475,28 @@ class SignUpController extends Controller
                                 [
                                     'name' => $request->input('name'),
                                     // 'password' => Hash::make($request->input('password')),
-                                'avatar' => 'https://ui-avatars.com/api/?name='.$request->input('name'),
+                                // 'avatar' => 'https://ui-avatars.com/api/?name='.$request->input('name'),
 
                                     'status' => CentralUser::STATUS_ACTIVE,
                                     ]
                                 );
+                                
                                 if(!$centralUser->hasVerifiedEmail()) $centralUser->markEmailAsVerified();
-
+                                
                                 $centralUser->tenants()->attach($tenant);
+                                // return $tenant;
+                                $tenant2 = $centralUser->tenants()->find($tenant->id);
+                                $name = $request->name;
+                                // return $tenant2;
+                                     $user = $tenant2->run(function ($tenant) use ($centralUser, $name) {
+                                        return User::where("email", $centralUser->email)->update([
+                                            'avatar' => 'https://ui-avatars.com/api/?name='.$name,
+                                        ]);
+                                    });
+                                // User::where('global_id',$centralUser->global_id)->update([
+                                //     'avatar' => 'https://ui-avatars.com/api/?name='.$request->input('name'),
+                                    
+                                // ]);
 
                                 $centralOnboarding->status = CentralOnboarding::STATUS_COMPLETED;
                                 $centralOnboarding->update();

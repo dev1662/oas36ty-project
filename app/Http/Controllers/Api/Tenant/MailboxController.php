@@ -524,7 +524,7 @@ class MailboxController extends Controller
         list($type, $file) = explode(';', $image);
         list(, $extension) = explode('/', $type);
         list(, $file) = explode(',', $file);
-        $result['name'] = $namePrefix . '.' . $extension;
+        $result['name'] = 'oas36ty'.$namePrefix . '.' . $extension;
         $result['file'] = $file;
         return $result;
     }
@@ -545,21 +545,22 @@ class MailboxController extends Controller
 
             $base64String = $request->data['attach'];
             // $base64String= "base64 string";
-            foreach($base64String as $file){
+            // $attach = [];
+            foreach($base64String as  $file){
 
                 // $image = $request->image; // the base64 image you want to upload
                 $slug = time().$user->id; //name prefix
-                $avatar = $this->getFileName($file, $slug);
+                $avatar[] = $this->getFileName($file, $slug);
                 // $original_name = explode(' ', $avatar['name']);
                 // return $original_name;
-                Storage::disk('s3')->put('email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
+                // Storage::disk('s3')->put('email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
                 
-                $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
-                $attach[] = $url ?? '';
+                // $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
+                // $attach[] = $url ?? '';
             }
         }
 
-        // return $attach;
+        return $avatar;
 
         $outbound_id= $request->data['from']['id'];
         $centralUser =  CentralUser::where('email', json_decode($request->header('currrent'))->email)->first();
@@ -652,7 +653,7 @@ class MailboxController extends Controller
                     $data['email_cc'] = array_key_exists('email_cc', $email_data)  ? $email_data['email_cc'] : '';
                     $data['email_bcc'] = array_key_exists('email_bcc', $email_data)  ? $email_data['email_bcc'] : '';
                     $data['email_replyTo'] = array_key_exists('email_replyTo', $email_data)  ? $email_data['email_replyTo'] : '';
-                    $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
+                    // $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
                     // return $data;
 
                     //return $data;

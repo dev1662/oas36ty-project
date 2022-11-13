@@ -15,6 +15,7 @@ use App\Models\User;
 
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\OrganizationResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class SwitchOrganizationController extends Controller
@@ -80,20 +81,22 @@ class SwitchOrganizationController extends Controller
         });
         
         $newTenant = $centralUser->tenants()->with('organization')->find($request->tenant_id);
+        // $avatar = '';
+        // return $avatar;
         if(!$newTenant) {
             $this->response["message"] = 'Invalid switch to the Tenant!';
             return response()->json($this->response, 422);
         }
-        
         // tenancy()->initialize($newTenant);
-        $newUser = $newTenant->run(function ($tenant) use($user) {
+         $newUser = $newTenant->run(function ($newTenant) use($user) {
             return User::where(["email" => $user->email])->first();
         });
+        // return DB::connection()->getDatabaseName();
         $newUserToken = $newTenant->run(function ($tenant) use($newUser) {
             return $newUser->createToken("Tenant: " . $newUser->name . " (" . $newUser->email . ")")->accessToken;
         });
 
-        $newUser = User::where(["email" => $user->email])->first();
+        // $newUser = User::where(["email" => $user->email])->first();
         if(!$newUser) {
             $this->response["message"] = 'User not exists in the Tenant!';
             return response()->json($this->response, 422);
