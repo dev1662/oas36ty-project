@@ -259,7 +259,7 @@ class MailboxController extends Controller
                         
                         $eamils_arr = Mailbox::where('references','LIKE','%'.$res['message_id'].'%')->get();
                         if(count($eamils_arr)>0){
-                            $result[] = $eamils_arr;
+                            $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                         }else{
                             $result[]=$res;
                         }
