@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use PhpParser\Node\Stmt\Return_;
 
 class MailboxController extends Controller
 {
@@ -252,9 +253,20 @@ class MailboxController extends Controller
                     $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+
+                    foreach($results as $key=> $res){
+                        
+                        $eamils_arr = Mailbox::where('references','LIKE','%'.$res['message_id'].'%')->get();
+                        if(count($eamils_arr)>0){
+                            $result[] = $eamils_arr;
+                        }else{
+                            $result[]=$res;
+                        }
+                    }
 
                 }
+                // return $result;
             }
             if($req->folder == 'starred'){
                 $result[] = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
