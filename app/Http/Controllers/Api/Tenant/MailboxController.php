@@ -253,7 +253,7 @@ class MailboxController extends Controller
                     $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('references','!=',null)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
 
                     foreach($results as $key=> $res){
                         
