@@ -13,8 +13,10 @@ class CreateTasksTable extends Migration
      */
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
-            $table->id();
+        if(!Schema::hasTable('tasks')){
+
+            Schema::create('tasks', function (Blueprint $table) {
+                $table->id();
             $table->foreignId('branch_id')->nullable()->constrained();
             $table->foreignId('category_id')->nullable()->constrained();
             $table->foreignId('company_id')->nullable()->constrained();
@@ -29,6 +31,7 @@ class CreateTasksTable extends Migration
             $table->softDeletes();
             $table->unsignedBigInteger('status_master_id')->nullable();
         });
+        }
     }
 
     /**

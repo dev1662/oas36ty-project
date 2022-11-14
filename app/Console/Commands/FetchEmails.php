@@ -213,6 +213,9 @@ class FetchEmails extends Command
                                     $from_name = $oMessage->sender ?? '';
                                     $message_id = $oMessage->message_id ?? '';
                                     $to_email = $oMessage->to ?? '';
+                                    $references = $oMessage->references ?? '';
+                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
                                     // if($oMessage->hasHTMLBody()){
@@ -253,6 +256,8 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'folder' => $inbox->name,
+                                        'references'=> $references[0] ?? '',
+                                        'in_reply_to' => $in_reply_to[0] ?? '',
                                         'attachments'=> $attachments ?? 0,
                                         //    'recent' => $header->recent,
                                         
@@ -279,7 +284,9 @@ class FetchEmails extends Command
                                     $to_email = $oMessage->to ?? '';
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
-                          
+                                    
+                                    $references = $oMessage->references ?? '';
+                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -308,7 +315,10 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
-                                        'folder' => $sent->name
+                                        'folder' => $sent->name,
+
+                                        'references'=> $references[0] ?? '',
+                                        'in_reply_to' => $in_reply_to[0] ?? '',
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -334,7 +344,8 @@ class FetchEmails extends Command
                                     $to_email = $oMessage->to ?? '';
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
-                          
+                                    $references = $oMessage->references ?? '';
+                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -363,6 +374,8 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
+                                        'references'=> $references[0] ?? '',
+                                        'in_reply_to' => $in_reply_to[0] ?? '',
                                         'folder' => $draft->name
                                         //    'recent' => $header->recent,
                           
@@ -388,7 +401,8 @@ class FetchEmails extends Command
                                     $to_email = $oMessage->to ?? '';
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
-                          
+                                    $references = $oMessage->references ?? '';
+                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -417,6 +431,8 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
+                                        'references'=> $references[0] ?? '',
+                                        'in_reply_to' => $in_reply_to[0] ?? '',
                                         'folder' => $spam->name
                                         //    'recent' => $header->recent,
                           
@@ -442,8 +458,10 @@ class FetchEmails extends Command
                                     $message_id = $oMessage->message_id ?? '';
                                     $to_email = $oMessage->to ?? '';
                                     $u_date = $oMessage->t ?? '';
+                                    
                                     $date = $oMessage->date ?? '';
-                          
+                                    $references = $oMessage->references ?? '';
+                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -472,6 +490,8 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
+                                        'references'=> $references[0] ?? '',
+                                        'in_reply_to' => $in_reply_to[0] ?? '',
                                         'folder' => $trash->name
                                         //    'recent' => $header->recent,
                           

@@ -285,7 +285,7 @@ class MailboxController extends Controller
         //  return $result;
         // $result = Mailbox::all();
         if ($result) {
-            $result = $result[0];
+            $result = $result;
            $total_count = $total_count ?? [];
         }
         if ($total_count) {
@@ -302,7 +302,7 @@ class MailboxController extends Controller
         if ($page > 1) {
             $count_email = ($page - 1) * 20 + count($result);
         } else {
-            $count_email =count($result);
+            $count_email =0;//count($result);
         }
         $meta = [
             'emailsMeta' =>  $count_email,
