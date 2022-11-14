@@ -800,10 +800,10 @@ class UserController extends Controller
         
         // $path = tenant_asset($stored);
         $member = User::find($id);
-        if ($member->status == User::STATUS_PENDING) {
-            $this->response["message"] = __('strings.update_failed');
-            return response()->json($this->response, Response::HTTP_FORBIDDEN);
-        }
+        // if ($member->status == User::STATUS_PENDING) {
+        //     $this->response["message"] = __('strings.update_failed');
+        //     return response()->json($this->response, Response::HTTP_FORBIDDEN);
+        // }
         // return $member;
 
         $oldCentralUser = tenancy()->central(function ($tenant) use ($member) {
