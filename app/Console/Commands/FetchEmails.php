@@ -239,7 +239,7 @@ class FetchEmails extends Command
                                     // return $oMessage;
                                     // return $oMessage->getBodies();
                                     
-                                    $check_email = Mailbox::where('message_id', $message_id)->first();
+                                    $check_email = Mailbox::where(['message_id'=> $message_id,'folder' => 'INBOX'])->first();
                                     // $check_email = "";
                                     // return $check_email;
                                     if (!$check_email) {
@@ -298,7 +298,7 @@ class FetchEmails extends Command
                                     // return $oMessage->getHeader();
                           
                           
-                                    $check_email = Mailbox::where('message_id', $message_id)->first();
+                                    $check_email = Mailbox::where(['message_id'=> $message_id, 'folder' => 'Sent Mail'])->first();
                                     // $check_email = "";
                                     // return $check_email;
                                     if (!$check_email) {
@@ -357,7 +357,7 @@ class FetchEmails extends Command
                                     // return $oMessage->getHeader();
                           
                           
-                                    $check_email = Mailbox::where('message_id', $message_id)->first();
+                                    $check_email = Mailbox::where(['message_id'=> $message_id, 'folder'=>'Drafts'])->first();
                                     // $check_email = "";
                                     // return $check_email;
                                     if (!$check_email) {
@@ -414,7 +414,7 @@ class FetchEmails extends Command
                                     // return $oMessage->getHeader();
                           
                           
-                                    $check_email = Mailbox::where('message_id', $message_id)->first();
+                                    $check_email = Mailbox::where(['message_id'=> $message_id, 'folder' => 'Spam'])->first();
                                     // $check_email = "";
                                     // return $check_email;
                                     if (!$check_email) {
@@ -473,7 +473,7 @@ class FetchEmails extends Command
                                     // return $oMessage->getHeader();
                           
                           
-                                    $check_email = Mailbox::where('message_id', $message_id)->first();
+                                    $check_email = Mailbox::where(['message_id'=> $message_id, 'folder' => 'Trash'])->first();
                                     // $check_email = "";
                                     // return $check_email;
                                     if (!$check_email) {
