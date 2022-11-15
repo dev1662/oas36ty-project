@@ -236,7 +236,7 @@ class MailboxController extends Controller
                 }
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
@@ -250,7 +250,7 @@ class MailboxController extends Controller
                 $results = Mailbox::where(['from_email' => $username->mail_username])->where('folder','=','Drafts')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Drafts'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
