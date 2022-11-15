@@ -24,6 +24,7 @@ class CreateMailboxTable extends Migration
             $table->longText('message')->nullable();
             $table->string('attachments')->nullable();
             $table->string('references')->nullable();
+            $table->string('in_reply_to')->nullable();
             $table->string('label')->nullable();
             $table->boolean('isStarred')->default(false);
             $table->enum('type',['primary','promotions','social'])->default("primary");
