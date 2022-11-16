@@ -202,7 +202,7 @@ class FetchEmails extends Command
                                 }else{
                                   $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->get();
                                 }
-
+                                // $this->info($inbox_messages);
 
                                 foreach ($inbox_messages as $n => $oMessage) {
                                     // $reply[]=$oMessage->cc;
