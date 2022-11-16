@@ -190,10 +190,6 @@ class MailboxController extends Controller
     public function fetchEmails(Request $req)
     {
 
-
-
-        
-        
         $user_id = $req->currrent['id'];
         $emails = $req->currrent['email'];
 
@@ -290,11 +286,20 @@ class MailboxController extends Controller
                     $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->where('is_parent',1)->offset($offset)->limit(20)->get();
 
                     foreach($results as $key=> $res){
-                        
-                        $eamils_arr = Mailbox::where('references','LIKE','%'.$res['message_id'].'%')->where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->get();
+                        $eamils_arr = [];
+                        // if(!empty($res['in_reply_to'])){
+                        $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])
+                        ->where('message_id','!=',$res['message_id'])
+                        ->where(function($query) use ($res){
+                            $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                            if(!empty($res['in_reply_to'])){
+                                $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                            }
+                               })->get();
+                            // }    
                         if(count($eamils_arr)>0){
                             $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                         }else{

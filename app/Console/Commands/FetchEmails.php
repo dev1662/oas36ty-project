@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use PDO;
 use Webklex\PHPIMAP\ClientManager;
 
@@ -206,15 +207,18 @@ class FetchEmails extends Command
 
                                 foreach ($inbox_messages as $n => $oMessage) {
                                     // $reply[]=$oMessage->cc;
-                                    // $oMessage->setFlag(['Seen', 'Flagged']);         
+                                    // $oMessage->setFlag(['Seen', 'Flagged']);  
+                                    // $oMessage->peek();       
                                     $message ='';
                                     $subject = $oMessage->subject ?? '';
                                     $from_email = $oMessage->sender[0]->mail ?? '';
                                     $from_name = $oMessage->sender ?? '';
                                     $message_id = $oMessage->message_id ?? '';
                                     $to_email = $oMessage->to ?? '';
-                                    $references = $oMessage->references ?? '';
-                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+                                    $references = str_replace('<','',$oMessage->references) ?? '';
+                                    $references = str_replace('>',',', $references) ?? '';
+                                    $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                                    $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
 
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
@@ -244,7 +248,35 @@ class FetchEmails extends Command
                                     // return $check_email;
                                     if (!$check_email) {
                                       //  return "h";
-                                      
+                                      $is_parent = null;
+                                      if($in_reply_to){
+                                      // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                                      $check_parent = Mailbox::where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+
+                                      if(!empty($check_parent)){
+                                        $is_parent = 0;
+                                      $update =  Mailbox::where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])
+                                        ->where('is_parent',1)
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+                                      if($update){
+                                        if($update->u_date < strtotime($date)){
+                                          Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                        }
+                                      }
+                                      }else{
+                                        $is_parent = 1;
+                                      }
+                                    }
                                       $details_of_email = [
                                         'subject' => $subject ?? "",
                                         'from_name' => $from_name ?? "",
@@ -256,9 +288,10 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'folder' => $inbox->name,
-                                        'references'=> $references[0] ?? '',
-                                        'in_reply_to' => $in_reply_to[0] ?? '',
+                                        'references'=> $references ?? '',
+                                        'in_reply_to' => $in_reply_to ?? '',
                                         'attachments'=> $attachments ?? 0,
+                                        'is_parent'=> $is_parent ?? 1
                                         //    'recent' => $header->recent,
                                         
                                       ];
@@ -268,6 +301,7 @@ class FetchEmails extends Command
                                         Mailbox::create($details_of_email);
                                         
                                       } catch (Exception $ex) {
+                                        Log::info("======= While inserting new email message : ".$ex." ==========");
                                         continue;
                                       }
                                     }
@@ -285,8 +319,10 @@ class FetchEmails extends Command
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
                                     
-                                    $references = $oMessage->references ?? '';
-                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+                                    $references = str_replace('<','',$oMessage->references) ?? '';
+                                    $references = str_replace('>',',', $references) ?? '';
+                                    $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                                    $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -317,8 +353,8 @@ class FetchEmails extends Command
                                         'attachments'=> $attachments ?? 0,
                                         'folder' => $sent->name,
 
-                                        'references'=> $references[0] ?? '',
-                                        'in_reply_to' => $in_reply_to[0] ?? '',
+                                        'references'=> $references ?? '',
+                                        'in_reply_to' => $in_reply_to ?? '',
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -344,8 +380,11 @@ class FetchEmails extends Command
                                     $to_email = $oMessage->to ?? '';
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
-                                    $references = $oMessage->references ?? '';
-                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+                                    $references = str_replace('<','',$oMessage->references) ?? '';
+                                    $references = str_replace('>',',', $references) ?? '';
+
+                                    $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                                    $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -374,8 +413,8 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
-                                        'references'=> $references[0] ?? '',
-                                        'in_reply_to' => $in_reply_to[0] ?? '',
+                                        'references'=> $references ?? '',
+                                        'in_reply_to' => $in_reply_to ?? '',
                                         'folder' => $draft->name
                                         //    'recent' => $header->recent,
                           
@@ -401,8 +440,10 @@ class FetchEmails extends Command
                                     $to_email = $oMessage->to ?? '';
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
-                                    $references = $oMessage->references ?? '';
-                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+                                    $references = str_replace('<','',$oMessage->references) ?? '';
+                                    $references = str_replace('>',',', $references) ?? '';
+                                    $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                                    $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -431,7 +472,7 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
-                                        'references'=> $references[0] ?? '',
+                                        'references'=> $references ?? '',
                                         'in_reply_to' => $in_reply_to[0] ?? '',
                                         'folder' => $spam->name
                                         //    'recent' => $header->recent,
@@ -460,8 +501,10 @@ class FetchEmails extends Command
                                     $u_date = $oMessage->t ?? '';
                                     
                                     $date = $oMessage->date ?? '';
-                                    $references = $oMessage->references ?? '';
-                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+                                    $references = str_replace('<','',$oMessage->references) ?? '';
+                                    $references = str_replace('>',',', $references) ?? '';
+                                    $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                                    $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -490,8 +533,8 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
-                                        'references'=> $references[0] ?? '',
-                                        'in_reply_to' => $in_reply_to[0] ?? '',
+                                        'references'=> $references ?? '',
+                                        'in_reply_to' => $in_reply_to ?? '',
                                         'folder' => $trash->name
                                         //    'recent' => $header->recent,
                           
