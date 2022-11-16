@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use PDO;
 use Webklex\PHPIMAP\ClientManager;
 
@@ -247,7 +248,35 @@ class FetchEmails extends Command
                                     // return $check_email;
                                     if (!$check_email) {
                                       //  return "h";
-                                      
+                                      $is_parent = null;
+                                      if($in_reply_to){
+                                      // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                                      $check_parent = Mailbox::where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+
+                                      if(!empty($check_parent)){
+                                        $is_parent = 0;
+                                      $update =  Mailbox::where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])
+                                        ->where('is_parent',1)
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+                                      if($update){
+                                        if($update->u_date < strtotime($date)){
+                                          Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                        }
+                                      }
+                                      }else{
+                                        $is_parent = 1;
+                                      }
+                                    }
                                       $details_of_email = [
                                         'subject' => $subject ?? "",
                                         'from_name' => $from_name ?? "",
@@ -262,6 +291,7 @@ class FetchEmails extends Command
                                         'references'=> $references ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
                                         'attachments'=> $attachments ?? 0,
+                                        'is_parent'=> $is_parent ?? 1
                                         //    'recent' => $header->recent,
                                         
                                       ];
@@ -271,6 +301,7 @@ class FetchEmails extends Command
                                         Mailbox::create($details_of_email);
                                         
                                       } catch (Exception $ex) {
+                                        Log::info("======= While inserting new email message : ".$ex." ==========");
                                         continue;
                                       }
                                     }
