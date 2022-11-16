@@ -206,15 +206,18 @@ class FetchEmails extends Command
 
                                 foreach ($inbox_messages as $n => $oMessage) {
                                     // $reply[]=$oMessage->cc;
-                                    // $oMessage->setFlag(['Seen', 'Flagged']);         
+                                    // $oMessage->setFlag(['Seen', 'Flagged']);  
+                                    // $oMessage->peek();       
                                     $message ='';
                                     $subject = $oMessage->subject ?? '';
                                     $from_email = $oMessage->sender[0]->mail ?? '';
                                     $from_name = $oMessage->sender ?? '';
                                     $message_id = $oMessage->message_id ?? '';
                                     $to_email = $oMessage->to ?? '';
-                                    $references = $oMessage->references ?? '';
-                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+                                    $references = str_replace('<','',$oMessage->references) ?? '';
+                                    $references = str_replace('>',',', $references) ?? '';
+                                    $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                                    $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
 
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
@@ -256,8 +259,8 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'folder' => $inbox->name,
-                                        'references'=> $references[0] ?? '',
-                                        'in_reply_to' => $in_reply_to[0] ?? '',
+                                        'references'=> $references ?? '',
+                                        'in_reply_to' => $in_reply_to ?? '',
                                         'attachments'=> $attachments ?? 0,
                                         //    'recent' => $header->recent,
                                         
@@ -285,8 +288,10 @@ class FetchEmails extends Command
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
                                     
-                                    $references = $oMessage->references ?? '';
-                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+                                    $references = str_replace('<','',$oMessage->references) ?? '';
+                                    $references = str_replace('>',',', $references) ?? '';
+                                    $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                                    $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -317,8 +322,8 @@ class FetchEmails extends Command
                                         'attachments'=> $attachments ?? 0,
                                         'folder' => $sent->name,
 
-                                        'references'=> $references[0] ?? '',
-                                        'in_reply_to' => $in_reply_to[0] ?? '',
+                                        'references'=> $references ?? '',
+                                        'in_reply_to' => $in_reply_to ?? '',
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -344,8 +349,11 @@ class FetchEmails extends Command
                                     $to_email = $oMessage->to ?? '';
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
-                                    $references = $oMessage->references ?? '';
-                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+                                    $references = str_replace('<','',$oMessage->references) ?? '';
+                                    $references = str_replace('>',',', $references) ?? '';
+
+                                    $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                                    $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -374,8 +382,8 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
-                                        'references'=> $references[0] ?? '',
-                                        'in_reply_to' => $in_reply_to[0] ?? '',
+                                        'references'=> $references ?? '',
+                                        'in_reply_to' => $in_reply_to ?? '',
                                         'folder' => $draft->name
                                         //    'recent' => $header->recent,
                           
@@ -401,8 +409,10 @@ class FetchEmails extends Command
                                     $to_email = $oMessage->to ?? '';
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
-                                    $references = $oMessage->references ?? '';
-                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+                                    $references = str_replace('<','',$oMessage->references) ?? '';
+                                    $references = str_replace('>',',', $references) ?? '';
+                                    $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                                    $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -431,7 +441,7 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
-                                        'references'=> $references[0] ?? '',
+                                        'references'=> $references ?? '',
                                         'in_reply_to' => $in_reply_to[0] ?? '',
                                         'folder' => $spam->name
                                         //    'recent' => $header->recent,
@@ -460,8 +470,10 @@ class FetchEmails extends Command
                                     $u_date = $oMessage->t ?? '';
                                     
                                     $date = $oMessage->date ?? '';
-                                    $references = $oMessage->references ?? '';
-                                    $in_reply_to  = $oMessage->in_reply_to ?? '';
+                                    $references = str_replace('<','',$oMessage->references) ?? '';
+                                    $references = str_replace('>',',', $references) ?? '';
+                                    $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                                    $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -490,8 +502,8 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
-                                        'references'=> $references[0] ?? '',
-                                        'in_reply_to' => $in_reply_to[0] ?? '',
+                                        'references'=> $references ?? '',
+                                        'in_reply_to' => $in_reply_to ?? '',
                                         'folder' => $trash->name
                                         //    'recent' => $header->recent,
                           
