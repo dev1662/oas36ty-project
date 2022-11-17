@@ -217,7 +217,7 @@ class MailboxController extends Controller
         //  return $inbound_array;
         $total_count = [];
         foreach ($inbound_array as $index => $username) {
-            // return $username;
+            // return $username->mail_username;
             if($username != null){
             // return $username->mail_username;
             // $result[$index]= Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->paginate(20);
@@ -305,10 +305,10 @@ class MailboxController extends Controller
                         }else{
                             $result[]=$res;
                         }
+                        // return $res;
                     }
-
+                    
                 }
-                // return $result;
             }
             if($req->folder == 'starred'){
                 $results = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
