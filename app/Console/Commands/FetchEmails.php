@@ -160,7 +160,7 @@ class FetchEmails extends Command
                                     ]);
                                 }
 
-                                $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->get(); //$inbox->query()->get();
+                                $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->limit(20,1)->get(); //$inbox->query()->get();
                                 // $inbox_messages = $inbox->messages()->all()->limit(20, $request->page)->get();//$inbox->query()->get();
 
                             } else {
@@ -179,26 +179,26 @@ class FetchEmails extends Command
 
                             if($check1){
                                 $sent = $client->getFolderByName('Sent Mail');
-                              $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->get();//$sent->messages()->all()->limit(20, $request->page)->get();
+                              $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(10,1)->get();//$sent->messages()->all()->limit(20, $request->page)->get();
                               }else{
                                 $sent = $client->getFolderByName('Sent Mail');
                                 $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->get();
                               }
                         
                               if($draft_check){
-                              $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->get();//$sent->messages()->all()->limit(20, $request->page)->get();
+                              $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(10,1)->get();//$sent->messages()->all()->limit(20, $request->page)->get();
                         
                               }else{
                                 $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->get();
                               }
                               if($trash_check){
-                                $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->get();//$sent->messages()->all()->limit(20, $request->page)->get();
+                                $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(10,1)->get();//$sent->messages()->all()->limit(20, $request->page)->get();
                           
                                 }else{
                                   $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->get();
                                 }
                               if($spam_check){
-                                $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->get();//$sent->messages()->all()->limit(20, $request->page)->get();
+                                $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(10,1)->get();//$sent->messages()->all()->limit(20, $request->page)->get();
                           
                                 }else{
                                   $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->get();
