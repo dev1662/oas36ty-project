@@ -224,15 +224,24 @@ class MailboxController extends Controller
             if($req->folder == 'sent'){
                 if($req->q){
 
-                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','=','')->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
 
                 }
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    // $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])
+                    ->where('message_id','!=',$res['message_id'])
+                    ->where(function($query) use ($res){
+                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                        if(!empty($res['in_reply_to'])){
+                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                        }
+                           })->get();
+
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
@@ -243,10 +252,18 @@ class MailboxController extends Controller
             }
             if($req->folder == 'draft'){
 
-                $results = Mailbox::where(['from_email' => $username->mail_username])->where('folder','=','Drafts')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $results = Mailbox::where(['from_email' => $username->mail_username])->where('folder','=','Drafts')->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    // $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])
+                    ->where('message_id','!=',$res['message_id'])
+                    ->where(function($query) use ($res){
+                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                        if(!empty($res['in_reply_to'])){
+                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                        }
+                           })->get();
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
@@ -256,23 +273,51 @@ class MailboxController extends Controller
             }
             if($req->folder == 'spam'){
 
-                $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    // $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    $eamils_arr = [];
+                    // if(!empty($res['in_reply_to'])){
+                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])
+                    ->where('message_id','!=',$res['message_id'])
+                    ->where(function($query) use ($res){
+                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                        if(!empty($res['in_reply_to'])){
+                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                        }
+                           })->get();
+                        // }    
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
                         $result[]=$res;
                     }
+
+                    // if(count($eamils_arr)>0){
+                    //     $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
+                    // }else{
+                    //     $result[]=$res;
+                    // }
                 }
             }
             if($req->folder == 'trash'){
-                $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 // return $req->result;
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    // $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    $eamils_arr = [];
+                    // if(!empty($res['in_reply_to'])){
+                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])
+                    ->where('message_id','!=',$res['message_id'])
+                    ->where(function($query) use ($res){
+                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                        if(!empty($res['in_reply_to'])){
+                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                        }
+                           })->get();
+
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
@@ -311,10 +356,23 @@ class MailboxController extends Controller
                 // return $result;
             }
             if($req->folder == 'starred'){
-                $results = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
+                $results = Mailbox::where(['isStarred' => 1])->where('is_parent',1)
+                ->where(function($query) use ($username){
+                    $query->where(['to_email' => $username->mail_username ])
+                    ->orWhere(['from_email' => $username->mail_username]);
+                })
+                ->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where('references','LIKE','%'.$res['message_id'].'%')->where(['to_email' => $username->mail_username, 'isStarred' => 1])->get();
+                    // $eamils_arr = Mailbox::where('references','LIKE','%'.$res['message_id'].'%')->where(['to_email' => $username->mail_username, 'isStarred' => 1])->get();
+                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username])
+                    ->where('message_id','!=',$res['message_id'])
+                    ->where(function($query) use ($res){
+                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                        if(!empty($res['in_reply_to'])){
+                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                        }
+                           })->get();
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
