@@ -102,11 +102,11 @@ class FetchEmails extends Command
                         $client = $cm->make([
                             'host'          => $imap_array['mail_host'],
                             'port'          => $imap_array['mail_port'],
-                            'encryption'    => 'ssl',
+                            'encryption'    => $imap_array['mail_encryption'] ?? 'ssl',
                             'validate_cert' => true,
                             'username'      => $imap_array['mail_username'],
                             'password'      => $imap_array['mail_password'],
-                            'protocol'      => 'imap',
+                            'protocol'      => $imap_array['mail_transport'] ?? 'imap',
                             // 'options' => [
                             //   'delimiter' => '/',
                             //   'fetch' => PHPIMAPIMAP::FT_UID,
@@ -149,8 +149,9 @@ class FetchEmails extends Command
                             $draft = $client->getFolderByName('Drafts');
                             $spam = $client->getFolderByName('Spam');
                             // $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->get();
+                            if($inbox){
                             if ($check) {
-
+                              try{
                                 $totalMessages = $inbox->query()->all()->count();
 
 
@@ -160,13 +161,17 @@ class FetchEmails extends Command
                                     ]);
                                 }
 
-                                $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->limit(20,1)->get(); //$inbox->query()->get();
+                                $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->limit(20,1)->get() ?? []; //$inbox->query()->get();
                                 // $inbox_messages = $inbox->messages()->all()->limit(20, $request->page)->get();//$inbox->query()->get();
+                              }catch(Exception $e){
+                                $inbox_messages = [];
+                                continue;
+                              }
 
                             } else {
-
+                              try{
                                 // $inbox = $client->getFolderByName('INBOX');
-                                $inbox_messages = $inbox->messages()->all()->get();
+                                $inbox_messages = $inbox->messages()->all()->get() ?? [];
                                 $totalMessages = $inbox->query()->all()->count();
 
                                 if ($totalMessages) {
@@ -175,34 +180,98 @@ class FetchEmails extends Command
                                         'inbound_msg_count' => $totalMessages
                                     ]);
                                 }
+                              }catch(Exception $ex){
+                                $inbox_messages = [];
+                                continue;
+                              }
+                            }
+                          }
+                            else{
+                              $inbox_messages = [];
                             }
 
+                            $sent = $client->getFolderByName('Sent Mail');
+                            if($sent){
                             if($check1){
-                                $sent = $client->getFolderByName('Sent Mail');
-                              $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(10,1)->get();//$sent->messages()->all()->limit(20, $request->page)->get();
-                              }else{
-                                $sent = $client->getFolderByName('Sent Mail');
-                                $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->get();
+                              try{
+                               
+                              $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
+                            }catch(Exception $ex){
+                              $sent_messages = [];
+                              continue;
+                            }
+                            
+                            }else{
+                              try{
+                                // $sent = $client->getFolderByName('Sent Mail');
+                                $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                              }catch(Exception $ex){
+                                $sent_messages =[];
+                                continue;
                               }
-                        
+                              }
+                            }else{
+                              $sent_messages = [];
+                            }
+
+                            if($draft){
                               if($draft_check){
-                              $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(10,1)->get();//$sent->messages()->all()->limit(20, $request->page)->get();
-                        
+                                try{
+                              $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
+                            }catch(Exception $ex){
+                              $draft_messages = [];
+                              continue;
+                            }
                               }else{
-                                $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->get();
+                                try{
+                                $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                              }catch(Exception $ex){
+                                $draft_messages = [];
+                                continue;
                               }
+                              }
+                            }else{
+                              $draft_messages = [];
+                            }
+                              if($trash){
                               if($trash_check){
-                                $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(10,1)->get();//$sent->messages()->all()->limit(20, $request->page)->get();
-                          
+                                try{
+                                $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
+                              }catch(Exception $ex){
+                                $trash_messages =[];
+                                continue;
+                              }
                                 }else{
-                                  $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->get();
+                                  try{
+                                  $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                                }catch(Exception $ex){
+                                  $trash_messages =[];
+                                  continue;
                                 }
+                                }
+                              }else{
+                                $trash_messages =[];
+                              }
+
+                              if($spam){
                               if($spam_check){
-                                $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(10,1)->get();//$sent->messages()->all()->limit(20, $request->page)->get();
-                          
+                                try{
+                                $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
+                              }catch(Exception $ex){
+                                $spam_messages =[];
+                                continue;
+                              }
                                 }else{
-                                  $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->get();
+                                  try{
+                                  $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                                }catch(Exception $ex){
+                                  $spam_messages =[];
+                                  continue;
                                 }
+                                }
+                              }else{
+                                $spam_messages =[];
+                              }
 
 
                                 foreach ($inbox_messages as $n => $oMessage) {
@@ -340,6 +409,36 @@ class FetchEmails extends Command
                                     if (!$check_email) {
                                       //  return "h";
                           
+                                      $is_parent = null;
+                                      if($in_reply_to){
+                                      // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                                      $check_parent = Mailbox::where(['from_email'=>$from_email, 'folder'=>$sent->name])
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+
+                                      if(!empty($check_parent)){
+                                        $is_parent = 0;
+                                      $update =  Mailbox::where(['from_email'=>$from_email, 'folder'=>$sent->name])
+                                        ->where('is_parent',1)
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+                                      if($update){
+                                        if($update->u_date < strtotime($date)){
+                                          Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                        }
+                                      }
+                                      }else{
+                                        $is_parent = 1;
+                                      }
+                                    }
+
                                       $details_of_email = [
                                         'subject' => $subject ?? "",
                                         'from_name' => $from_name ?? "",
@@ -355,6 +454,7 @@ class FetchEmails extends Command
 
                                         'references'=> $references ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
+                                        'is_parent' =>$is_parent ?? 1
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -401,7 +501,37 @@ class FetchEmails extends Command
                                     // return $check_email;
                                     if (!$check_email) {
                                       //  return "h";
-                          
+                                      $is_parent = null;
+                                      if($in_reply_to){
+                                      // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                                      $check_parent =  Mailbox::where(['from_email'=>$from_email, 'folder'=>$draft->name])
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+
+                                      if(!empty($check_parent)){
+                                        $is_parent = 0;
+                                      $update =  Mailbox::where(['from_email'=>$from_email, 'folder'=>$draft->name])
+                                        ->where('is_parent',1)
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+                                      if($update){
+                                        if($update->u_date < strtotime($date)){
+                                          Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                        }
+                                      }
+                                      }else{
+                                        $is_parent = 1;
+                                      }
+                                    }
+
+
                                       $details_of_email = [
                                         'subject' => $subject ?? "",
                                         'from_name' => $from_name ?? "",
@@ -415,7 +545,8 @@ class FetchEmails extends Command
                                         'attachments'=> $attachments ?? 0,
                                         'references'=> $references ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
-                                        'folder' => $draft->name
+                                        'folder' => $draft->name,
+                                        'is_parent' => $is_parent ?? 1
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -460,6 +591,36 @@ class FetchEmails extends Command
                                     // return $check_email;
                                     if (!$check_email) {
                                       //  return "h";
+
+                                      $is_parent = null;
+                                      if($in_reply_to){
+                                      // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                                      $check_parent =  Mailbox::where(['to_email' => $to_email, 'folder'=>$spam->name])
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+
+                                      if(!empty($check_parent)){
+                                        $is_parent = 0;
+                                      $update =  Mailbox::where(['to_email' => $to_email, 'folder'=>$spam->name])
+                                        ->where('is_parent',1)
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+                                      if($update){
+                                        if($update->u_date < strtotime($date)){
+                                          Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                        }
+                                      }
+                                      }else{
+                                        $is_parent = 1;
+                                      }
+                                    }
                           
                                       $details_of_email = [
                                         'subject' => $subject ?? "",
@@ -474,7 +635,8 @@ class FetchEmails extends Command
                                         'attachments'=> $attachments ?? 0,
                                         'references'=> $references ?? '',
                                         'in_reply_to' => $in_reply_to[0] ?? '',
-                                        'folder' => $spam->name
+                                        'folder' => $spam->name,
+                                        'is_parent' => $is_parent ?? 1
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -521,7 +683,41 @@ class FetchEmails extends Command
                                     // return $check_email;
                                     if (!$check_email) {
                                       //  return "h";
-                          
+                                      $is_parent = null;
+                                      if($in_reply_to){
+                                      // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                                      $check_parent =  Mailbox::where(['folder'=>$trash->name])
+                                      ->where(function($query) use ($to_email,$from_email){
+                                        $query->where(['to_email' => $to_email])
+                                        ->orWhere('from_email',$from_email);
+                                      })
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+
+                                      if(!empty($check_parent)){
+                                        $is_parent = 0;
+                                      $update =  Mailbox::where(['to_email' => $to_email, 'folder'=>$trash->name])
+                                        ->where('is_parent',1)
+                                      ->where(function($query) use ($in_reply_to){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                           })->first();
+                                      if($update){
+                                        if($update->u_date < strtotime($date)){
+                                          Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                        }
+                                      }
+                                      }else{
+                                        $is_parent = 1;
+                                      }
+                                    }
+
+
                                       $details_of_email = [
                                         'subject' => $subject ?? "",
                                         'from_name' => $from_name ?? "",
@@ -535,7 +731,8 @@ class FetchEmails extends Command
                                         'attachments'=> $attachments ?? 0,
                                         'references'=> $references ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
-                                        'folder' => $trash->name
+                                        'folder' => $trash->name,
+                                        'is_parent' => $is_parent ?? 1
                                         //    'recent' => $header->recent,
                           
                                       ];
