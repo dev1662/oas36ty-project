@@ -502,22 +502,26 @@ class MailboxController extends Controller
   
     public function updateEmails(Request $req)
     {
-        //  return $req->dataToUpdate['isStarred'];
-        if($req->dataToUpdate['isStarred'] == true){
-
+      //  return $req->dataToUpdate['isStarred'];
+    //  return 
+      if(array_key_exists('isStarred', $req->dataToUpdate) != 1){
+        return;
+      }
+          if($req->dataToUpdate['isStarred'] == true){
+            
             $email_id = $req->emailIds;
-         
+            
             Mailbox::find($email_id)->update([
-                'isStarred' => 1
+              'isStarred' => 1
             ]);
-        }else if($req->dataToUpdate['isStarred'] == false){
+          }else if($req->dataToUpdate['isStarred'] == false){
             $email_id = $req->emailIds;
-         
+            
             Mailbox::find($email_id)->update([
-                'isStarred' => 0
+              'isStarred' => 0
             ]);
-        }
-        
+          }
+          
         
     }
 
