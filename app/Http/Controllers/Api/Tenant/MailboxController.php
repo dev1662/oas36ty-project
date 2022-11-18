@@ -245,7 +245,7 @@ class MailboxController extends Controller
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
-                        $$result[]= ['parent'=>$res];
+                        $result[]= ['parent'=>$res];
                     }
                 }
 
@@ -267,7 +267,7 @@ class MailboxController extends Controller
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
-                        $$result[]= ['parent'=>$res];
+                        $result[]= ['parent'=>$res];
                     }
                 }
             }
@@ -291,13 +291,13 @@ class MailboxController extends Controller
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
-                        $$result[]= ['parent'=>$res];
+                        $result[]= ['parent'=>$res];
                     }
 
                     // if(count($eamils_arr)>0){
                     //     $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     // }else{
-                    //     $$result[]= ['parent'=>$res];
+                    //     $result[]= ['parent'=>$res];
                     // }
                 }
             }
@@ -321,7 +321,7 @@ class MailboxController extends Controller
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
-                        $$result[]= ['parent'=>$res];
+                        $result[]= ['parent'=>$res];
                     }
                 }
             }
@@ -348,7 +348,7 @@ class MailboxController extends Controller
                         if(count($eamils_arr)>0){
                             $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                         }else{
-                            $$result[]= ['parent'=>$res];
+                            $result[]= ['parent'=>$res];
                         }
                         // return $res;
                     }
