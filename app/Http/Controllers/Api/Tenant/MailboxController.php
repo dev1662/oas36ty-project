@@ -964,11 +964,11 @@ class MailboxController extends Controller
 
                     } else {
                       try{
-                        Artisan::call('fetch:emails');
-                        return['Emails fetched'];
+                        // Artisan::call('fetch:emails');
+                        // return['Emails fetched'];
 
                         // $inbox = $client->getFolderByName('INBOX');
-                        $inbox_messages = $inbox->messages()->all()->get() ?? [];
+                        $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                         $totalMessages = $inbox->query()->all()->count();
 
                         if ($totalMessages) {
@@ -1001,7 +1001,7 @@ class MailboxController extends Controller
                     }else{
                       try{
                         // $sent = $client->getFolderByName('Sent Mail');
-                        $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                        $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                       }catch(Exception $ex){
                         $sent_messages =[];
                         continue;
@@ -1021,7 +1021,7 @@ class MailboxController extends Controller
                     }
                       }else{
                         try{
-                        $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                        $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                       }catch(Exception $ex){
                         $draft_messages = [];
                         continue;
@@ -1040,7 +1040,7 @@ class MailboxController extends Controller
                       }
                         }else{
                           try{
-                          $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                          $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                         }catch(Exception $ex){
                           $trash_messages =[];
                           continue;
@@ -1060,7 +1060,7 @@ class MailboxController extends Controller
                       }
                         }else{
                           try{
-                          $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                          $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                         }catch(Exception $ex){
                           $spam_messages =[];
                           continue;
