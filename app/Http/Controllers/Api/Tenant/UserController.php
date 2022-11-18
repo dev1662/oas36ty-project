@@ -881,7 +881,7 @@ class UserController extends Controller
                 foreach($request->emails as $all_email){
                    $exists_user_emails =  UserEmail::where(['user_id' => $id, 'emails_setting_id' => $all_email['id']])->get();
 
-                    if(count($exists_user_emails) >= 1){
+                    if(count($exists_user_emails) > 1){
                         $this->response['status'] = true;
                         $this->response["message"] = 'Emails are already assigned choose another email';
                         return response()->json($this->response,200);
