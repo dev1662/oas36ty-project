@@ -31,6 +31,7 @@ use App\Http\Controllers\Api\Tenant\EmailMasterController;
 use App\Http\Controllers\Api\Tenant\MailboxController;
 use App\Http\Controllers\Api\Tenant\StatusMasterController;
 use App\Models\Task;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 /*
@@ -67,6 +68,7 @@ Route::middleware([
             ]);
             // Route::post('')
             Route::post('/sendEmail-outBound', [MailboxController::class, 'sendEmail']);
+            Route::post('/fetch-latestEmails', [MailboxController::class, 'fetch_latestEmails']);
             
             Route::get('all-users', [ApiUserController::class, 'fetch']);
             
@@ -123,6 +125,8 @@ Route::middleware([
             Route::post('/tasks/filter-data', [TaskController::class, 'filterData']);
             Route::post('/tasks/inlineUpdate', [TaskController::class, 'inline_update']);
             Route::get('assignedEmails-outBound', [EmailOutboundController::class, 'fetchEmails_outbound']);
+            
+
         });
         
     });
