@@ -243,7 +243,7 @@ class MailboxController extends Controller
                            })->get();
 
                     if(count($eamils_arr)>0){
-                        $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
+                        $result[] = [$res,'childs'=>$eamils_arr];
                     }else{
                         $result[]=$res;
                     }
@@ -265,7 +265,7 @@ class MailboxController extends Controller
                         }
                            })->get();
                     if(count($eamils_arr)>0){
-                        $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
+                        $result[] = [$res,'childs'=>$eamils_arr];
                     }else{
                         $result[]=$res;
                     }
@@ -289,7 +289,7 @@ class MailboxController extends Controller
                            })->get();
                         // }    
                     if(count($eamils_arr)>0){
-                        $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
+                        $result[] = [$res,'childs'=>$eamils_arr];
                     }else{
                         $result[]=$res;
                     }
@@ -319,7 +319,7 @@ class MailboxController extends Controller
                            })->get();
 
                     if(count($eamils_arr)>0){
-                        $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
+                        $result[] = [$res,'childs'=>$eamils_arr];
                     }else{
                         $result[]=$res;
                     }
@@ -346,7 +346,7 @@ class MailboxController extends Controller
                                })->get();
                             // }    
                         if(count($eamils_arr)>0){
-                            $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
+                            $result[] = [$res,'childs'=>$eamils_arr];
                         }else{
                             $result[]=$res;
                         }
@@ -374,7 +374,7 @@ class MailboxController extends Controller
                         }
                            })->get();
                     if(count($eamils_arr)>0){
-                        $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
+                        $result[] = [$res,'childs'=>$eamils_arr];
                     }else{
                         $result[]=$res;
                     }
