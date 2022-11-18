@@ -14,6 +14,7 @@ use App\Models\UserEmail;
 use Exception;
 use Illuminate\Http\Client\ResponseSequence;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -959,6 +960,9 @@ class MailboxController extends Controller
 
                     } else {
                       try{
+                        Artisan::call('fetch:emails');
+                        return['Emails fetched'];
+
                         // $inbox = $client->getFolderByName('INBOX');
                         $inbox_messages = $inbox->messages()->all()->get() ?? [];
                         $totalMessages = $inbox->query()->all()->count();
