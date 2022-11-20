@@ -171,7 +171,6 @@ class FetchEmails extends Command
                             } else {
                               try{
                                 // $inbox = $client->getFolderByName('INBOX');
-                                $inbox_messages = $inbox->messages()->all()->get() ?? [];
                                 $totalMessages = $inbox->query()->all()->count();
 
                                 if ($totalMessages) {
@@ -180,6 +179,7 @@ class FetchEmails extends Command
                                         'inbound_msg_count' => $totalMessages
                                     ]);
                                 }
+                                $inbox_messages = $inbox->messages()->all()->setFetchOrder('desc')->limit(50,1)->get() ?? [];
                               }catch(Exception $ex){
                                 $inbox_messages = [];
                                 continue;
@@ -204,7 +204,7 @@ class FetchEmails extends Command
                             }else{
                               try{
                                 // $sent = $client->getFolderByName('Sent Mail');
-                                $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                                $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(50,1)->get() ?? [];
                               }catch(Exception $ex){
                                 $sent_messages =[];
                                 continue;
@@ -224,7 +224,7 @@ class FetchEmails extends Command
                             }
                               }else{
                                 try{
-                                $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                                $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(50,1)->get() ?? [];
                               }catch(Exception $ex){
                                 $draft_messages = [];
                                 continue;
@@ -243,7 +243,7 @@ class FetchEmails extends Command
                               }
                                 }else{
                                   try{
-                                  $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                                  $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(50,1)->get() ?? [];
                                 }catch(Exception $ex){
                                   $trash_messages =[];
                                   continue;
@@ -263,7 +263,7 @@ class FetchEmails extends Command
                               }
                                 }else{
                                   try{
-                                  $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->get() ?? [];
+                                  $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(50,1)->get() ?? [];
                                 }catch(Exception $ex){
                                   $spam_messages =[];
                                   continue;
@@ -273,7 +273,7 @@ class FetchEmails extends Command
                                 $spam_messages =[];
                               }
 
-
+                              $code_inbox= 0;
                                 foreach ($inbox_messages as $n => $oMessage) {
                                     // $reply[]=$oMessage->cc;
                                     // $oMessage->setFlag(['Seen', 'Flagged']);  
@@ -367,7 +367,9 @@ class FetchEmails extends Command
                                       // return $details_of_email[$n];
                                       //  return $attachments;
                                       try {
-                                        Mailbox::create($details_of_email);
+                                        if(Mailbox::create($details_of_email)){
+                                          $code_inbox = 200;
+                                        }
                                         
                                       } catch (Exception $ex) {
                                         Log::info("======= While inserting new email message : ".$ex." ==========");
@@ -375,6 +377,11 @@ class FetchEmails extends Command
                                       }
                                     }
                                   }
+                                  if($code_inbox == 200){
+                                    $this->info('Messages Fetched');
+
+                                  }
+                                  $code_inbox = 0;
                                   //  return [$insert];
                                   //  return $reply;
                                   foreach ($sent_messages as $n => $oMessage) {
@@ -746,7 +753,6 @@ class FetchEmails extends Command
                                       }
                                     }
                                   }
-                            $this->info('Messages Fetched');
                         }
 
                         //   if($imap_array){
