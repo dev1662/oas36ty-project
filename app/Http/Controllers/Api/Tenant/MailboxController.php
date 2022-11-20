@@ -14,11 +14,14 @@ use App\Models\UserEmail;
 use Exception;
 use Illuminate\Http\Client\ResponseSequence;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use PhpParser\Node\Stmt\Return_;
+use Webklex\PHPIMAP\ClientManager;
 
 class MailboxController extends Controller
 {
@@ -190,10 +193,6 @@ class MailboxController extends Controller
     public function fetchEmails(Request $req)
     {
 
-
-
-        
-        
         $user_id = $req->currrent['id'];
         $emails = $req->currrent['email'];
 
@@ -221,66 +220,111 @@ class MailboxController extends Controller
         //  return $inbound_array;
         $total_count = [];
         foreach ($inbound_array as $index => $username) {
-            // return $username;
+            // return $username->mail_username;
             if($username != null){
             // return $username->mail_username;
             // $result[$index]= Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->paginate(20);
             if($req->folder == 'sent'){
                 if($req->q){
 
-                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','=','')->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
 
                 }
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    // $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])
+                    ->where('message_id','!=',$res['message_id'])
+                    ->where(function($query) use ($res){
+                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                        if(!empty($res['in_reply_to'])){
+                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                        }
+                           })->get();
+
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
-                        $result[]=$res;
+                        $result[]= ['parent'=>$res];
                     }
                 }
 
             }
             if($req->folder == 'draft'){
 
-                $results = Mailbox::where(['from_email' => $username->mail_username])->where('folder','=','Drafts')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $results = Mailbox::where(['from_email' => $username->mail_username])->where('folder','=','Drafts')->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    // $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])
+                    ->where('message_id','!=',$res['message_id'])
+                    ->where(function($query) use ($res){
+                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                        if(!empty($res['in_reply_to'])){
+                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                        }
+                           })->get();
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
-                        $result[]=$res;
+                        $result[]= ['parent'=>$res];
                     }
                 }
             }
             if($req->folder == 'spam'){
 
-                $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    // $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    $eamils_arr = [];
+                    // if(!empty($res['in_reply_to'])){
+                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])
+                    ->where('message_id','!=',$res['message_id'])
+                    ->where(function($query) use ($res){
+                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                        if(!empty($res['in_reply_to'])){
+                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                        }
+                           })->get();
+                        // }    
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
-                        $result[]=$res;
+                        $result[]= ['parent'=>$res];
                     }
+
+                    // if(count($eamils_arr)>0){
+                    //     $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
+                    // }else{
+                    //     $result[]= ['parent'=>$res];
+                    // }
                 }
             }
             if($req->folder == 'trash'){
-                $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 // return $req->result;
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    // $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
+                    $eamils_arr = [];
+                    // if(!empty($res['in_reply_to'])){
+                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])
+                    ->where('message_id','!=',$res['message_id'])
+                    ->where(function($query) use ($res){
+                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                        if(!empty($res['in_reply_to'])){
+                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                        }
+                           })->get();
+
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
-                        $result[]=$res;
+                        $result[]= ['parent'=>$res];
                     }
                 }
             }
@@ -290,30 +334,52 @@ class MailboxController extends Controller
                     $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->where('is_parent',1)->offset($offset)->limit(20)->get();
 
                     foreach($results as $key=> $res){
-                        
-                        $eamils_arr = Mailbox::where('references','LIKE','%'.$res['message_id'].'%')->where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->get();
+                        $eamils_arr = [];
+                        // if(!empty($res['in_reply_to'])){
+                        $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])
+                        ->where('message_id','!=',$res['message_id'])
+                        ->where(function($query) use ($res){
+                            $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                            if(!empty($res['in_reply_to'])){
+                                $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                            }
+                               })->get();
+                            // }    
                         if(count($eamils_arr)>0){
                             $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                         }else{
-                            $result[]=$res;
+                            $result[]= ['parent'=>$res];
                         }
+                        // return $res;
                     }
-
+                    
                 }
-                // return $result;
             }
             if($req->folder == 'starred'){
-                $results = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->where('references','=','')->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
+                $results = Mailbox::where(['isStarred' => 1])->where('is_parent',1)
+                ->where(function($query) use ($username){
+                    $query->where(['to_email' => $username->mail_username ])
+                    ->orWhere(['from_email' => $username->mail_username]);
+                })
+                ->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
                 foreach($results as $key=> $res){
                         
-                    $eamils_arr = Mailbox::where('references','LIKE','%'.$res['message_id'].'%')->where(['to_email' => $username->mail_username, 'isStarred' => 1])->get();
+                    // $eamils_arr = Mailbox::where('references','LIKE','%'.$res['message_id'].'%')->where(['to_email' => $username->mail_username, 'isStarred' => 1])->get();
+                    $eamils_arr = Mailbox::where(['to_email' => $username->mail_username])
+                    ->where('message_id','!=',$res['message_id'])
+                    ->where(function($query) use ($res){
+                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                        if(!empty($res['in_reply_to'])){
+                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                        }
+                           })->get();
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
-                        $result[]=$res;
+                        $result[]= ['parent'=>$res];
                     }
                 }
 
@@ -436,22 +502,26 @@ class MailboxController extends Controller
   
     public function updateEmails(Request $req)
     {
-        //  return $req->dataToUpdate['isStarred'];
-        if($req->dataToUpdate['isStarred'] == true){
-
+      //  return $req->dataToUpdate['isStarred'];
+    //  return 
+      if(array_key_exists('isStarred', $req->dataToUpdate) != 1){
+        return;
+      }
+          if($req->dataToUpdate['isStarred'] == true){
+            
             $email_id = $req->emailIds;
-         
+            
             Mailbox::find($email_id)->update([
-                'isStarred' => 1
+              'isStarred' => 1
             ]);
-        }else if($req->dataToUpdate['isStarred'] == false){
+          }else if($req->dataToUpdate['isStarred'] == false){
             $email_id = $req->emailIds;
-         
+            
             Mailbox::find($email_id)->update([
-                'isStarred' => 0
+              'isStarred' => 0
             ]);
-        }
-        
+          }
+          
         
     }
 
@@ -607,7 +677,7 @@ class MailboxController extends Controller
             foreach($base64String as  $file){
 
                 // $image = $request->image; // the base64 image you want to upload
-                $slug = time().$user->id; //name prefix
+                $slug = time().$user_id; //name prefix
                 $avatar[] = $this->getFileName($file, $slug);
                 // $original_name = explode(' ', $avatar['name']);
                 // return $original_name;
@@ -781,4 +851,711 @@ class MailboxController extends Controller
             return response()->json($this->response);
         }
     }
+
+    public function fetch_latestEmails(Request $request)
+    {
+
+    
+        // return $request->all();
+        $centralUser =  CentralUser::where('email', $request->currrent['email'])->first();
+    
+        $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
+        tenancy()->initialize($tenant);
+        $user_id = $request->currrent['id'];
+    
+    
+        $check = Schema::hasTable('emails_inbound_setting');
+        $check1 = Schema::hasTable('emails_settings');
+        $check2 = Schema::hasTable('mailbox');
+    
+    
+        if ($check && $check1 && $check2) {
+    
+          $user_setting  = UserEmail::where('user_id', $request->currrent['id'])->get();
+          // return $user_setting[0]->emails_setting_id;
+          $details_inbound = [];
+          $function = [];
+          foreach ($user_setting as $index => $user_emails) {
+            // return $user_emails;
+            $details_inbound[$index] = EmailInbound::where('id', $user_emails->emails_setting_id)->first();
+          }
+          // return json_decode($request->currrent)->id;
+          foreach ($details_inbound as  $data) {
+            if ($data) {
+
+                $imap_array = [
+                    'mail_host' => $data->mail_host,
+                    'mail_transport' => $data->mail_transport,
+                    'mail_encryption' => $data->mail_encryption,
+                    'mail_username' => $data->mail_username,
+                    'mail_password' => $data->mail_password,
+                    'mail_port' => (int)$data->mail_port,
+                ];
+                $cm  = new ClientManager();
+                // $cm->account()
+                $client = $cm->make([
+                    'host'          => $imap_array['mail_host'],
+                    'port'          => $imap_array['mail_port'],
+                    'encryption'    => $imap_array['mail_encryption'] ?? 'ssl',
+                    'validate_cert' => true,
+                    'username'      => $imap_array['mail_username'],
+                    'password'      => $imap_array['mail_password'],
+                    'protocol'      => $imap_array['mail_transport'] ?? 'imap',
+                    // 'options' => [
+                    //   'delimiter' => '/',
+                    //   'fetch' => PHPIMAPIMAP::FT_UID,
+                    //   'fetch_body' => true,
+                    //   'fetch_attachment' => true,
+                    //   'fetch_flags' => true,
+                    //   'message_key' => 'id',
+                    //   'fetch_order' => 'asc',
+                    //   'open' => [
+                    //       // 'DISABLE_AUTHENTICATOR' => 'GSSAPI'
+                    //   ],
+                    //   'decoder' => [
+                    //       'message' => [
+                    //           'subject' => 'utf-8' // mimeheader
+                    //       ],
+                    //       'attachment' => [
+                    //           'name' => 'utf-8' // mimeheader
+                    //       ]
+                    //   ]
+                    // ],
+
+                    // 'masks' => [
+                    //     'message' => MessageMask::class,
+                    //     'attachment' => AttachmentMask::class
+                    // ]
+                ]);
+
+                if ($client->connect() == 'false') {
+
+                    return['connection not established'];
+                } else {
+                    $check = Mailbox::where(['to_email' => $imap_array['mail_username'], 'folder' => 'INBOX'])->first();
+                    $check1 = Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Sent Mail'])->first();
+                    $trash_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Trash'])->first();
+                    $draft_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Drafts'])->first();
+                    $spam_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Spam'])->first();
+
+                    $inbox = $client->getFolderByName('INBOX');
+                    $trash = $client->getFolderByName('Trash');
+                    $draft = $client->getFolderByName('Drafts');
+                    $spam = $client->getFolderByName('Spam');
+                    // $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->get();
+                    if($inbox){
+                    if ($check) {
+                      try{
+                        $totalMessages = $inbox->query()->all()->count();
+
+
+                        if ($totalMessages) {
+                            UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
+                                'inbound_msg_count' => $totalMessages
+                            ]);
+                        }
+
+                        $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->limit(20,1)->get() ?? []; //$inbox->query()->get();
+                        // $inbox_messages = $inbox->messages()->all()->limit(20, $request->page)->get();//$inbox->query()->get();
+                      }catch(Exception $e){
+                        $inbox_messages = [];
+                        continue;
+                      }
+
+                    } else {
+                      try{
+                        // Artisan::call('fetch:emails');
+                        // return['Emails fetched'];
+
+                        // $inbox = $client->getFolderByName('INBOX');
+                        $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
+                        $totalMessages = $inbox->query()->all()->count();
+
+                        if ($totalMessages) {
+
+                            UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
+                                'inbound_msg_count' => $totalMessages
+                            ]);
+                        }
+                      }catch(Exception $ex){
+                        $inbox_messages = [];
+                        continue;
+                      }
+                    }
+                  }
+                    else{
+                      $inbox_messages = [];
+                    }
+
+                    $sent = $client->getFolderByName('Sent Mail');
+                    if($sent){
+                    if($check1){
+                      try{
+                       
+                      $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(5,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
+                    }catch(Exception $ex){
+                      $sent_messages = [];
+                      continue;
+                    }
+                    
+                    }else{
+                      try{
+                        // $sent = $client->getFolderByName('Sent Mail');
+                        $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
+                      }catch(Exception $ex){
+                        $sent_messages =[];
+                        continue;
+                      }
+                      }
+                    }else{
+                      $sent_messages = [];
+                    }
+
+                    if($draft){
+                      if($draft_check){
+                        try{
+                      $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(5,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
+                    }catch(Exception $ex){
+                      $draft_messages = [];
+                      continue;
+                    }
+                      }else{
+                        try{
+                        $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
+                      }catch(Exception $ex){
+                        $draft_messages = [];
+                        continue;
+                      }
+                      }
+                    }else{
+                      $draft_messages = [];
+                    }
+                      if($trash){
+                      if($trash_check){
+                        try{
+                        $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(5,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
+                      }catch(Exception $ex){
+                        $trash_messages =[];
+                        continue;
+                      }
+                        }else{
+                          try{
+                          $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
+                        }catch(Exception $ex){
+                          $trash_messages =[];
+                          continue;
+                        }
+                        }
+                      }else{
+                        $trash_messages =[];
+                      }
+
+                      if($spam){
+                      if($spam_check){
+                        try{
+                        $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(5,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
+                      }catch(Exception $ex){
+                        $spam_messages =[];
+                        continue;
+                      }
+                        }else{
+                          try{
+                          $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
+                        }catch(Exception $ex){
+                          $spam_messages =[];
+                          continue;
+                        }
+                        }
+                      }else{
+                        $spam_messages =[];
+                      }
+
+
+                        foreach ($inbox_messages as $n => $oMessage) {
+                            // $reply[]=$oMessage->cc;
+                            // $oMessage->setFlag(['Seen', 'Flagged']);  
+                            // $oMessage->peek();       
+                            $message ='';
+                            $subject = $oMessage->subject ?? '';
+                            $from_email = $oMessage->sender[0]->mail ?? '';
+                            $from_name = $oMessage->sender ?? '';
+                            $message_id = $oMessage->message_id ?? '';
+                            $to_email = $oMessage->to ?? '';
+                            $references = str_replace('<','',$oMessage->references) ?? '';
+                            $references = str_replace('>',',', $references) ?? '';
+                            $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                            $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+
+                            $u_date = $oMessage->t ?? '';
+                            $date = $oMessage->date ?? '';
+                            // if($oMessage->hasHTMLBody()){
+                            //     // return "htmlbody";
+                            //     $message = $oMessage->getHTMLBody(true);
+                            //   }
+                            //    elseif($oMessage->hasTextBody()){
+                            //       // return "textbody";
+                            //         $message =$oMessage->getTextBody();
+                            //       }else{
+                            //     $message =$oMessage->getBodies();
+                            //     // return "getbody ". $message;
+                            //   }
+                           $message = $oMessage->getHTMLBody();
+                           if(!$message){
+                            $message = $oMessage->getHTMLBody(true);
+                            $message = $message;
+                           }
+                            $attachments = $oMessage->getAttachments()->count();
+                            //  return $oMessage->getXFailedRecipients();
+                            // return $oMessage;
+                            // return $oMessage->getBodies();
+                            
+                            $check_email = Mailbox::where(['message_id'=> $message_id,'folder' => 'INBOX'])->first();
+                            // $check_email = "";
+                            // return $check_email;
+                            if (!$check_email) {
+                              //  return "h";
+                              $is_parent = null;
+                              if($in_reply_to){
+                              // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                              $check_parent = Mailbox::where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])
+                              ->where(function($query) use ($in_reply_to){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                   })->first();
+
+                              if(!empty($check_parent)){
+                                $is_parent = 0;
+                              $update =  Mailbox::where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])
+                                ->where('is_parent',1)
+                              ->where(function($query) use ($in_reply_to){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                   })->first();
+                              if($update){
+                                if($update->u_date < strtotime($date)){
+                                  Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                }
+                              }
+                              }else{
+                                $is_parent = 1;
+                              }
+                            }
+                              $details_of_email = [
+                                'subject' => $subject ?? "",
+                                'from_name' => $from_name ?? "",
+                                'from_email' => $from_email ?? "",
+                                'message_id' =>  $message_id ?? "",
+                                'to_email' => $data->mail_username ?? "", //$header_info[$n]->to[0]->mailbox. '@'. $header_info[$n]->to[0]->host,
+                                // 'message' => preg_replace('/[^A-Za-z0-9\-]/', ' ', $message[$n]) ?? ""
+                                "message" => $message ?? "",
+                                'date' =>  $date ?? "",
+                                'u_date' => strtotime($date),
+                                'folder' => $inbox->name,
+                                'references'=> $references ?? '',
+                                'in_reply_to' => $in_reply_to ?? '',
+                                'attachments'=> $attachments ?? 0,
+                                'is_parent'=> $is_parent ?? 1
+                                //    'recent' => $header->recent,
+                                
+                              ];
+                              // return $details_of_email[$n];
+                              //  return $attachments;
+                              try {
+                                Mailbox::create($details_of_email);
+                                
+                              } catch (Exception $ex) {
+                                // Log::info("======= While inserting new email message : ".$ex." ==========");
+                                continue;
+                              }
+                            }
+                          }
+                          //  return [$insert];
+                          //  return $reply;
+                          foreach ($sent_messages as $n => $oMessage) {
+                            
+                            $attachments = $oMessage->getAttachments()->count() ?? '';
+                            $subject = $oMessage->subject ?? '';
+                            $from_email = $oMessage->sender[0]->mail ?? '';
+                            $from_name = $oMessage->sender ?? '';
+                            $message_id = $oMessage->message_id ?? '';
+                            $to_email = $oMessage->to ?? '';
+                            $u_date = $oMessage->t ?? '';
+                            $date = $oMessage->date ?? '';
+                            
+                            $references = str_replace('<','',$oMessage->references) ?? '';
+                            $references = str_replace('>',',', $references) ?? '';
+                            $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                            $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+                            if($oMessage->hasTextBody()){
+                              $message =$oMessage->getTextBody();
+                            }
+                            if($oMessage->hasHTMLBody()){
+                              $message = $oMessage->getHTMLBody(true);
+                            }
+                           
+                            
+                            // return $oMessage->getHeader();
+                  
+                  
+                            $check_email = Mailbox::where(['message_id'=> $message_id, 'folder' => 'Sent Mail'])->first();
+                            // $check_email = "";
+                            // return $check_email;
+                            if (!$check_email) {
+                              //  return "h";
+                  
+                              $is_parent = null;
+                              if($in_reply_to){
+                              // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                              $check_parent = Mailbox::where(['from_email'=>$from_email, 'folder'=>$sent->name])
+                              ->where(function($query) use ($in_reply_to){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                   })->first();
+
+                              if(!empty($check_parent)){
+                                $is_parent = 0;
+                              $update =  Mailbox::where(['from_email'=>$from_email, 'folder'=>$sent->name])
+                                ->where('is_parent',1)
+                              ->where(function($query) use ($in_reply_to){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                   })->first();
+                              if($update){
+                                if($update->u_date < strtotime($date)){
+                                  Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                }
+                              }
+                              }else{
+                                $is_parent = 1;
+                              }
+                            }
+
+                              $details_of_email = [
+                                'subject' => $subject ?? "",
+                                'from_name' => $from_name ?? "",
+                                'from_email' => $from_email ?? "",
+                                'message_id' =>  $message_id ?? "",
+                                'to_email' => $to_email ?? "", //$header_info[$n]->to[0]->mailbox. '@'. $header_info[$n]->to[0]->host,
+                                // 'message' => preg_replace('/[^A-Za-z0-9\-]/', ' ', $message[$n]) ?? ""
+                                "message" => $message ?? "",
+                                'date' =>  $date ?? "",
+                                'u_date' => strtotime($date),
+                                'attachments'=> $attachments ?? 0,
+                                'folder' => $sent->name,
+
+                                'references'=> $references ?? '',
+                                'in_reply_to' => $in_reply_to ?? '',
+                                'is_parent' =>$is_parent ?? 1
+                                //    'recent' => $header->recent,
+                  
+                              ];
+                              // return $details_of_email[$n];
+                              //  return $attachments;
+                              try {
+                                $insert = Mailbox::create($details_of_email);
+                              
+                              } catch (Exception $ex) {
+                                continue;
+                              }
+                            }
+                          }
+                  
+                  
+                          foreach ($draft_messages as $n => $oMessage) {
+                            
+                            $attachments = $oMessage->getAttachments()->count() ?? '';
+                            $subject = $oMessage->subject ?? '';
+                            $from_email = $oMessage->sender[0]->mail ?? '';
+                            $from_name = $oMessage->sender ?? '';
+                            $message_id = $oMessage->message_id ?? '';
+                            $to_email = $oMessage->to ?? '';
+                            $u_date = $oMessage->t ?? '';
+                            $date = $oMessage->date ?? '';
+                            $references = str_replace('<','',$oMessage->references) ?? '';
+                            $references = str_replace('>',',', $references) ?? '';
+
+                            $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                            $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+                            if($oMessage->hasTextBody()){
+                              $message =$oMessage->getTextBody();
+                            }
+                            if($oMessage->hasHTMLBody()){
+                              $message = $oMessage->getHTMLBody(true);
+                            }
+                           
+                            
+                            // return $oMessage->getHeader();
+                  
+                  
+                            $check_email = Mailbox::where(['message_id'=> $message_id, 'folder'=>'Drafts'])->first();
+                            // $check_email = "";
+                            // return $check_email;
+                            if (!$check_email) {
+                              //  return "h";
+                              $is_parent = null;
+                              if($in_reply_to){
+                              // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                              $check_parent =  Mailbox::where(['from_email'=>$from_email, 'folder'=>$draft->name])
+                              ->where(function($query) use ($in_reply_to){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                   })->first();
+
+                              if(!empty($check_parent)){
+                                $is_parent = 0;
+                              $update =  Mailbox::where(['from_email'=>$from_email, 'folder'=>$draft->name])
+                                ->where('is_parent',1)
+                              ->where(function($query) use ($in_reply_to){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                   })->first();
+                              if($update){
+                                if($update->u_date < strtotime($date)){
+                                  Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                }
+                              }
+                              }else{
+                                $is_parent = 1;
+                              }
+                            }
+
+
+                              $details_of_email = [
+                                'subject' => $subject ?? "",
+                                'from_name' => $from_name ?? "",
+                                'from_email' => $from_email ?? "",
+                                'message_id' =>  $message_id ?? "",
+                                'to_email' => $to_email ?? "", //$header_info[$n]->to[0]->mailbox. '@'. $header_info[$n]->to[0]->host,
+                                // 'message' => preg_replace('/[^A-Za-z0-9\-]/', ' ', $message[$n]) ?? ""
+                                "message" => $message ?? "",
+                                'date' =>  $date ?? "",
+                                'u_date' => strtotime($date),
+                                'attachments'=> $attachments ?? 0,
+                                'references'=> $references ?? '',
+                                'in_reply_to' => $in_reply_to ?? '',
+                                'folder' => $draft->name,
+                                'is_parent' => $is_parent ?? 1
+                                //    'recent' => $header->recent,
+                  
+                              ];
+                              // return $details_of_email[$n];
+                              //  return $attachments;
+                              try {
+                                $insert = Mailbox::create($details_of_email);
+                              
+                              } catch (Exception $ex) {
+                                continue;
+                              }
+                            }
+                          }
+                  
+                          foreach ($spam_messages as $n => $oMessage) {
+                            
+                            $attachments = $oMessage->getAttachments()->count() ?? '';
+                            $subject = $oMessage->subject ?? '';
+                            $from_email = $oMessage->sender[0]->mail ?? '';
+                            $from_name = $oMessage->sender ?? '';
+                            $message_id = $oMessage->message_id ?? '';
+                            $to_email = $oMessage->to ?? '';
+                            $u_date = $oMessage->t ?? '';
+                            $date = $oMessage->date ?? '';
+                            $references = str_replace('<','',$oMessage->references) ?? '';
+                            $references = str_replace('>',',', $references) ?? '';
+                            $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                            $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+                            if($oMessage->hasTextBody()){
+                              $message =$oMessage->getTextBody();
+                            }
+                            if($oMessage->hasHTMLBody()){
+                              $message = $oMessage->getHTMLBody(true);
+                            }
+                           
+                            
+                            // return $oMessage->getHeader();
+                  
+                  
+                            $check_email = Mailbox::where(['message_id'=> $message_id, 'folder' => 'Spam'])->first();
+                            // $check_email = "";
+                            // return $check_email;
+                            if (!$check_email) {
+                              //  return "h";
+
+                              $is_parent = null;
+                              if($in_reply_to){
+                              // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                              $check_parent =  Mailbox::where(['to_email' => $to_email, 'folder'=>$spam->name])
+                              ->where(function($query) use ($in_reply_to){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                   })->first();
+
+                              if(!empty($check_parent)){
+                                $is_parent = 0;
+                              $update =  Mailbox::where(['to_email' => $to_email, 'folder'=>$spam->name])
+                                ->where('is_parent',1)
+                              ->where(function($query) use ($in_reply_to){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                   })->first();
+                              if($update){
+                                if($update->u_date < strtotime($date)){
+                                  Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                }
+                              }
+                              }else{
+                                $is_parent = 1;
+                              }
+                            }
+                  
+                              $details_of_email = [
+                                'subject' => $subject ?? "",
+                                'from_name' => $from_name ?? "",
+                                'from_email' => $from_email ?? "",
+                                'message_id' =>  $message_id ?? "",
+                                'to_email' => $to_email ?? "", //$header_info[$n]->to[0]->mailbox. '@'. $header_info[$n]->to[0]->host,
+                                // 'message' => preg_replace('/[^A-Za-z0-9\-]/', ' ', $message[$n]) ?? ""
+                                "message" => $message ?? "",
+                                'date' =>  $date ?? "",
+                                'u_date' => strtotime($date),
+                                'attachments'=> $attachments ?? 0,
+                                'references'=> $references ?? '',
+                                'in_reply_to' => $in_reply_to[0] ?? '',
+                                'folder' => $spam->name,
+                                'is_parent' => $is_parent ?? 1
+                                //    'recent' => $header->recent,
+                  
+                              ];
+                              // return $details_of_email[$n];
+                              //  return $attachments;
+                              try {
+                                $insert = Mailbox::create($details_of_email);
+                              
+                              } catch (Exception $ex) {
+                                continue;
+                              }
+                            }
+                          }
+                  
+                  
+                          foreach ($trash_messages as $n => $oMessage) {
+                            
+                            $attachments = $oMessage->getAttachments()->count() ?? '';
+                            $subject = $oMessage->subject ?? '';
+                            $from_email = $oMessage->sender[0]->mail ?? '';
+                            $from_name = $oMessage->sender ?? '';
+                            $message_id = $oMessage->message_id ?? '';
+                            $to_email = $oMessage->to ?? '';
+                            $u_date = $oMessage->t ?? '';
+                            
+                            $date = $oMessage->date ?? '';
+                            $references = str_replace('<','',$oMessage->references) ?? '';
+                            $references = str_replace('>',',', $references) ?? '';
+                            $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
+                            $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+                            if($oMessage->hasTextBody()){
+                              $message =$oMessage->getTextBody();
+                            }
+                            if($oMessage->hasHTMLBody()){
+                              $message = $oMessage->getHTMLBody(true);
+                            }
+                           
+                            
+                            // return $oMessage->getHeader();
+                  
+                  
+                            $check_email = Mailbox::where(['message_id'=> $message_id, 'folder' => 'Trash'])->first();
+                            // $check_email = "";
+                            // return $check_email;
+                            if (!$check_email) {
+                              //  return "h";
+                              $is_parent = null;
+                              if($in_reply_to){
+                              // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
+
+                              $check_parent =  Mailbox::where(['folder'=>$trash->name])
+                              ->where(function($query) use ($to_email,$from_email){
+                                $query->where(['to_email' => $to_email])
+                                ->orWhere('from_email',$from_email);
+                              })
+                              ->where(function($query) use ($in_reply_to){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                   })->first();
+
+                              if(!empty($check_parent)){
+                                $is_parent = 0;
+                              $update =  Mailbox::where(['to_email' => $to_email, 'folder'=>$trash->name])
+                                ->where('is_parent',1)
+                              ->where(function($query) use ($in_reply_to){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                   })->first();
+                              if($update){
+                                if($update->u_date < strtotime($date)){
+                                  Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                }
+                              }
+                              }else{
+                                $is_parent = 1;
+                              }
+                            }
+
+
+                              $details_of_email = [
+                                'subject' => $subject ?? "",
+                                'from_name' => $from_name ?? "",
+                                'from_email' => $from_email ?? "",
+                                'message_id' =>  $message_id ?? "",
+                                'to_email' => $to_email ?? "", //$header_info[$n]->to[0]->mailbox. '@'. $header_info[$n]->to[0]->host,
+                                // 'message' => preg_replace('/[^A-Za-z0-9\-]/', ' ', $message[$n]) ?? ""
+                                "message" => $message ?? "",
+                                'date' =>  $date ?? "",
+                                'u_date' => strtotime($date),
+                                'attachments'=> $attachments ?? 0,
+                                'references'=> $references ?? '',
+                                'in_reply_to' => $in_reply_to ?? '',
+                                'folder' => $trash->name,
+                                'is_parent' => $is_parent ?? 1
+                                //    'recent' => $header->recent,
+                  
+                              ];
+                              // return $details_of_email[$n];
+                              //  return $attachments;
+                              try {
+                                $insert = Mailbox::create($details_of_email);
+                              
+                              } catch (Exception $ex) {
+                                continue;
+                              }
+                            }
+                          }
+                    // $this->info('Messages Fetched');
+                }
+
+                //   if($imap_array){
+
+                //       $this->info(response()->json($imap_array));
+                //     }
+            }
+        }
+        
+        }
+    
+        
+    
+      }
 }
