@@ -284,8 +284,9 @@ class EmailInboundController extends Controller
     {
      
         try{
+            // return 'hj';
             $validator =  Validator::make(request()->all(), [
-                'id'=>'required|exists:App\Models\EmailsSetting,id|unique:App\Models\EmailInbound,id',
+                'id'=>'required|exists:App\Models\EmailsSetting,id',
                 'mail_transport.option'  => 'required|in:POP,IMAP',
                 'mail_host'       => 'required',
                 'mail_port'       => 'required|in:110,995,993,143',
@@ -757,7 +758,7 @@ class EmailInboundController extends Controller
                
                 $this->response["status"] = true;
                 $this->response["message"] = __('strings.update_success');
-                $this->response['data'] = EmailInbound::where(['id' => $id])->first();
+                $this->response['data'] = EmailsSetting::where('id', $id)->with(['emailInbound','emailOutbound'])->first();;
                 return response()->json($this->response);
     
             } else {
