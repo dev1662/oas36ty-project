@@ -171,6 +171,7 @@ class FetchEmails extends Command
                             } else {
                               try{
                                 // $inbox = $client->getFolderByName('INBOX');
+                                $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->get() ?? [];
                                 $totalMessages = $inbox->query()->all()->count();
 
                                 if ($totalMessages) {
@@ -286,6 +287,7 @@ class FetchEmails extends Command
                                     $to_email = $oMessage->to ?? '';
                                     $references = str_replace('<','',$oMessage->references) ?? '';
                                     $references = str_replace('>',',', $references) ?? '';
+                                    $references = explode(',',$references);
                                     $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
 
@@ -322,10 +324,10 @@ class FetchEmails extends Command
                                       // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
 
                                       $check_parent = Mailbox::where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])
-                                      ->where(function($query) use ($in_reply_to){
-                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
-                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
-                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                      ->where(function($query) use ($in_reply_to,$references){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('message_id','LIKE','%'.$references[0].'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')->orWhere('references','LIKE','%'.$references[0].'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$references[0].'%');
                                            })->first();
 
                                       if(!empty($check_parent)){
@@ -397,6 +399,7 @@ class FetchEmails extends Command
                                     
                                     $references = str_replace('<','',$oMessage->references) ?? '';
                                     $references = str_replace('>',',', $references) ?? '';
+                                    $references = explode(',',$references);
                                     $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
@@ -421,10 +424,10 @@ class FetchEmails extends Command
                                       // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
 
                                       $check_parent = Mailbox::where(['from_email'=>$from_email, 'folder'=>$sent->name])
-                                      ->where(function($query) use ($in_reply_to){
-                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
-                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
-                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                      ->where(function($query) use ($in_reply_to,$references){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('message_id','LIKE','%'.$references[0].'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')->orWhere('references','LIKE','%'.$references[0].'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$references[0].'%');
                                            })->first();
 
                                       if(!empty($check_parent)){
@@ -489,7 +492,7 @@ class FetchEmails extends Command
                                     $date = $oMessage->date ?? '';
                                     $references = str_replace('<','',$oMessage->references) ?? '';
                                     $references = str_replace('>',',', $references) ?? '';
-
+                                    $references = explode(',',$references);
                                     $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
@@ -513,10 +516,10 @@ class FetchEmails extends Command
                                       // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
 
                                       $check_parent =  Mailbox::where(['from_email'=>$from_email, 'folder'=>$draft->name])
-                                      ->where(function($query) use ($in_reply_to){
-                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
-                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
-                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                      ->where(function($query) use ($in_reply_to,$references){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('message_id','LIKE','%'.$references[0].'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')->orWhere('references','LIKE','%'.$references[0].'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$references[0].'%');
                                            })->first();
 
                                       if(!empty($check_parent)){
@@ -580,6 +583,7 @@ class FetchEmails extends Command
                                     $date = $oMessage->date ?? '';
                                     $references = str_replace('<','',$oMessage->references) ?? '';
                                     $references = str_replace('>',',', $references) ?? '';
+                                    $references = explode(',',$references);
                                     $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
@@ -604,10 +608,10 @@ class FetchEmails extends Command
                                       // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
 
                                       $check_parent =  Mailbox::where(['to_email' => $to_email, 'folder'=>$spam->name])
-                                      ->where(function($query) use ($in_reply_to){
-                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
-                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
-                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                      ->where(function($query) use ($in_reply_to,$references){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('message_id','LIKE','%'.$references[0].'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')->orWhere('references','LIKE','%'.$references[0].'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$references[0].'%');
                                            })->first();
 
                                       if(!empty($check_parent)){
@@ -672,6 +676,7 @@ class FetchEmails extends Command
                                     $date = $oMessage->date ?? '';
                                     $references = str_replace('<','',$oMessage->references) ?? '';
                                     $references = str_replace('>',',', $references) ?? '';
+                                    $references = explode(',',$references);
                                     $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     if($oMessage->hasTextBody()){
@@ -699,10 +704,10 @@ class FetchEmails extends Command
                                         $query->where(['to_email' => $to_email])
                                         ->orWhere('from_email',$from_email);
                                       })
-                                      ->where(function($query) use ($in_reply_to){
-                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')
-                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
-                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                                      ->where(function($query) use ($in_reply_to,$references){
+                                        $query->where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('message_id','LIKE','%'.$references[0].'%')
+                                        ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')->orWhere('references','LIKE','%'.$references[0].'%')
+                                        ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$references[0].'%');
                                            })->first();
 
                                       if(!empty($check_parent)){
