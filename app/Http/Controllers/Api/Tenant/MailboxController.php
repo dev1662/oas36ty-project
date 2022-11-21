@@ -1163,7 +1163,7 @@ class MailboxController extends Controller
                               ];
                               // return $details_of_email[$n];
                               //  return $attachments;
-                              return [$details_of_email, 'parent checking'];
+                              // return [$details_of_email, 'parent checking'];
                               try {
                                 Mailbox::create($details_of_email);
                                 
