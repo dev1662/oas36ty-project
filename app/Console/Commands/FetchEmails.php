@@ -171,7 +171,7 @@ class FetchEmails extends Command
                             } else {
                               try{
                                 // $inbox = $client->getFolderByName('INBOX');
-                                $inbox_messages = $inbox->messages()->all()->get() ?? [];
+                                $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->get() ?? [];
                                 $totalMessages = $inbox->query()->all()->count();
 
                                 if ($totalMessages) {
