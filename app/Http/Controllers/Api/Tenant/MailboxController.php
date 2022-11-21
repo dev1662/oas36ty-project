@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -1103,7 +1104,8 @@ class MailboxController extends Controller
                             $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
-
+                            $original_ref1 = $oMessage->references;
+                            $original_ref = $original_ref1[0] ?? '';
                             $u_date = $oMessage->t ?? '';
                             $date = $oMessage->date ?? '';
                             // if($oMessage->hasHTMLBody()){
@@ -1171,7 +1173,7 @@ class MailboxController extends Controller
                             'date' =>  $date ?? "",
                             'u_date' => strtotime($date),
                             'folder' => $inbox->name,
-                                'references'=> $references ?? '',
+                            'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'attachments'=> $attachments ?? 0,
                                 'is_parent'=> $is_parent ?? 1
@@ -1183,15 +1185,16 @@ class MailboxController extends Controller
                               // return [$details_of_email, 'parent checking'];
                               try {
                                 Mailbox::create($details_of_email);
+                                // $reply[] = $details_of_email;
                                 
                               } catch (Exception $ex) {
-                                // Log::info("======= While inserting new email message : ".$ex." ==========");
+                                Log::info("======= While inserting new email message : ".$ex." ==========");
                                 continue;
                               }
                             }
                           }
                           //  return [$insert];
-                          //  return $reply;
+                          //  return ['nothing to happened'];
                           foreach ($sent_messages as $n => $oMessage) {
                             
                             $attachments = $oMessage->getAttachments()->count() ?? '';
@@ -1208,6 +1211,9 @@ class MailboxController extends Controller
                             $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+
+                            $original_ref1 = $oMessage->references;
+                            $original_ref = $original_ref1[0] ?? '';
                             if($oMessage->hasTextBody()){
                               $message =$oMessage->getTextBody();
                             }
@@ -1268,7 +1274,7 @@ class MailboxController extends Controller
                                 'attachments'=> $attachments ?? 0,
                                 'folder' => $sent->name,
 
-                                'references'=> $references ?? '',
+                                'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'is_parent' =>$is_parent ?? 1
                                 //    'recent' => $header->recent,
@@ -1301,6 +1307,9 @@ class MailboxController extends Controller
                             $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+
+                            $original_ref1 = $oMessage->references;
+                            $original_ref = $original_ref1[0] ?? '';
                             if($oMessage->hasTextBody()){
                               $message =$oMessage->getTextBody();
                             }
@@ -1359,7 +1368,7 @@ class MailboxController extends Controller
                                 'date' =>  $date ?? "",
                                 'u_date' => strtotime($date),
                                 'attachments'=> $attachments ?? 0,
-                                'references'=> $references ?? '',
+                                'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'folder' => $draft->name,
                                 'is_parent' => $is_parent ?? 1
@@ -1392,6 +1401,8 @@ class MailboxController extends Controller
                             $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+                            $original_ref1 = $oMessage->references;
+                            $original_ref = $original_ref1[0] ?? '';
                             if($oMessage->hasTextBody()){
                               $message =$oMessage->getTextBody();
                             }
@@ -1450,7 +1461,7 @@ class MailboxController extends Controller
                                 'date' =>  $date ?? "",
                                 'u_date' => strtotime($date),
                                 'attachments'=> $attachments ?? 0,
-                                'references'=> $references ?? '',
+                                'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to[0] ?? '',
                                 'folder' => $spam->name,
                                 'is_parent' => $is_parent ?? 1
@@ -1485,6 +1496,8 @@ class MailboxController extends Controller
                             $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+                            $original_ref1 = $oMessage->references;
+                            $original_ref = $original_ref1[0] ?? '';
                             if($oMessage->hasTextBody()){
                               $message =$oMessage->getTextBody();
                             }
@@ -1547,7 +1560,7 @@ class MailboxController extends Controller
                                 'date' =>  $date ?? "",
                                 'u_date' => strtotime($date),
                                 'attachments'=> $attachments ?? 0,
-                                'references'=> $references ?? '',
+                                'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'folder' => $trash->name,
                                 'is_parent' => $is_parent ?? 1

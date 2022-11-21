@@ -180,7 +180,7 @@ class FetchEmails extends Command
                                         'inbound_msg_count' => $totalMessages
                                     ]);
                                 }
-                                $inbox_messages = $inbox->messages()->all()->setFetchOrder('desc')->limit(50,1)->get() ?? [];
+                                $inbox_messages = $inbox->messages()->all()->setFetchOrder('desc')->get() ?? [];
                               }catch(Exception $ex){
                                 $inbox_messages = [];
                                 continue;
@@ -205,7 +205,7 @@ class FetchEmails extends Command
                             }else{
                               try{
                                 // $sent = $client->getFolderByName('Sent Mail');
-                                $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(50,1)->get() ?? [];
+                                $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->get() ?? [];
                               }catch(Exception $ex){
                                 $sent_messages =[];
                                 continue;
@@ -225,7 +225,7 @@ class FetchEmails extends Command
                             }
                               }else{
                                 try{
-                                $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(50,1)->get() ?? [];
+                                $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->get() ?? [];
                               }catch(Exception $ex){
                                 $draft_messages = [];
                                 continue;
@@ -244,7 +244,7 @@ class FetchEmails extends Command
                               }
                                 }else{
                                   try{
-                                  $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(50,1)->get() ?? [];
+                                  $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->get() ?? [];
                                 }catch(Exception $ex){
                                   $trash_messages =[];
                                   continue;
@@ -264,7 +264,7 @@ class FetchEmails extends Command
                               }
                                 }else{
                                   try{
-                                  $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(50,1)->get() ?? [];
+                                  $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->get() ?? [];
                                 }catch(Exception $ex){
                                   $spam_messages =[];
                                   continue;
@@ -290,7 +290,8 @@ class FetchEmails extends Command
                                     $references = explode(',',$references);
                                     $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
-
+                                    $original_ref1 = $oMessage->references;
+                                    $original_ref = $original_ref1[0] ?? '';
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
                                     // if($oMessage->hasHTMLBody()){
@@ -359,7 +360,7 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'folder' => $inbox->name,
-                                        'references'=> $references ?? '',
+                                        'references'=> $original_ref ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
                                         'attachments'=> $attachments ?? 0,
                                         'is_parent'=> $is_parent ?? 1
@@ -402,6 +403,9 @@ class FetchEmails extends Command
                                     $references = explode(',',$references);
                                     $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+
+                                    $original_ref1 = $oMessage->references;
+                                    $original_ref = $original_ref1[0] ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -462,7 +466,7 @@ class FetchEmails extends Command
                                         'attachments'=> $attachments ?? 0,
                                         'folder' => $sent->name,
 
-                                        'references'=> $references ?? '',
+                                        'references'=> $original_ref ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
                                         'is_parent' =>$is_parent ?? 1
                                         //    'recent' => $header->recent,
@@ -495,6 +499,9 @@ class FetchEmails extends Command
                                     $references = explode(',',$references);
                                     $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+
+                                    $original_ref1 = $oMessage->references;
+                                    $original_ref = $original_ref1[0] ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -553,7 +560,7 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
-                                        'references'=> $references ?? '',
+                                        'references'=> $original_ref ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
                                         'folder' => $draft->name,
                                         'is_parent' => $is_parent ?? 1
@@ -586,6 +593,9 @@ class FetchEmails extends Command
                                     $references = explode(',',$references);
                                     $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+
+                                    $original_ref1 = $oMessage->references;
+                                    $original_ref = $original_ref1[0] ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -644,7 +654,7 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
-                                        'references'=> $references ?? '',
+                                        'references'=> $original_ref ?? '',
                                         'in_reply_to' => $in_reply_to[0] ?? '',
                                         'folder' => $spam->name,
                                         'is_parent' => $is_parent ?? 1
@@ -679,6 +689,8 @@ class FetchEmails extends Command
                                     $references = explode(',',$references);
                                     $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+                                    $original_ref1 = $oMessage->references;
+                                    $original_ref = $original_ref1[0] ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -741,7 +753,7 @@ class FetchEmails extends Command
                                         'date' =>  $date ?? "",
                                         'u_date' => strtotime($date),
                                         'attachments'=> $attachments ?? 0,
-                                        'references'=> $references ?? '',
+                                        'references'=> $original_ref ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
                                         'folder' => $trash->name,
                                         'is_parent' => $is_parent ?? 1
