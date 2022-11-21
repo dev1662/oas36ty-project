@@ -677,7 +677,7 @@ class MailboxController extends Controller
             foreach($base64String as  $file){
 
                 // $image = $request->image; // the base64 image you want to upload
-                $slug = time().$user_id; //name prefix
+                $slug = time().$user->id; //name prefix
                 $avatar[] = $this->getFileName($file, $slug);
                 // $original_name = explode(' ', $avatar['name']);
                 // return $original_name;
@@ -927,17 +927,17 @@ class MailboxController extends Controller
                     //     'attachment' => AttachmentMask::class
                     // ]
                 ]);
-
                 if ($client->connect() == 'false') {
-
-                    return['connection not established'];
+                  
+                  return['connection not established'];
                 } else {
+                  // return 'h';
                     $check = Mailbox::where(['to_email' => $imap_array['mail_username'], 'folder' => 'INBOX'])->first();
                     $check1 = Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Sent Mail'])->first();
                     $trash_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Trash'])->first();
                     $draft_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Drafts'])->first();
                     $spam_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Spam'])->first();
-
+                  $h = 'h';
                     $inbox = $client->getFolderByName('INBOX');
                     $trash = $client->getFolderByName('Trash');
                     $draft = $client->getFolderByName('Drafts');
@@ -967,25 +967,28 @@ class MailboxController extends Controller
                         // Artisan::call('fetch:emails');
                         // return['Emails fetched'];
 
-                        // $inbox = $client->getFolderByName('INBOX');
-                        $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
-                        $totalMessages = $inbox->query()->all()->count();
-
+                        $totalMessages = $inbox->messages()->all()->count();
                         if ($totalMessages) {
 
                             UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
                                 'inbound_msg_count' => $totalMessages
                             ]);
                         }
+                        // $inbox = $client->getFolderByName('INBOX');
+                        $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")
+                        ->setFetchFlags(true)->setFetchBody(true)
+                        ->limit(30,1)->get() ?? [];
                       }catch(Exception $ex){
                         $inbox_messages = [];
                         continue;
                       }
+                      
                     }
                   }
-                    else{
-                      $inbox_messages = [];
-                    }
+                  else{
+                    $inbox_messages = [];
+                  }
+                  // return $inbox_messages;
 
                     $sent = $client->getFolderByName('Sent Mail');
                     if($sent){
@@ -1001,7 +1004,7 @@ class MailboxController extends Controller
                     }else{
                       try{
                         // $sent = $client->getFolderByName('Sent Mail');
-                        $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
+                        $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];
                       }catch(Exception $ex){
                         $sent_messages =[];
                         continue;
@@ -1021,7 +1024,7 @@ class MailboxController extends Controller
                     }
                       }else{
                         try{
-                        $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
+                        $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];
                       }catch(Exception $ex){
                         $draft_messages = [];
                         continue;
@@ -1040,7 +1043,7 @@ class MailboxController extends Controller
                       }
                         }else{
                           try{
-                          $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
+                          $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];
                         }catch(Exception $ex){
                           $trash_messages =[];
                           continue;
@@ -1060,7 +1063,7 @@ class MailboxController extends Controller
                       }
                         }else{
                           try{
-                          $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
+                          $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];
                         }catch(Exception $ex){
                           $spam_messages =[];
                           continue;
@@ -1069,8 +1072,8 @@ class MailboxController extends Controller
                       }else{
                         $spam_messages =[];
                       }
-
-
+                        // return ['inbox' => $inbox_messages, 'spam' => $spam_messages, 'draft' => $draft_messages, 'trash' => $trash_messages, 'sent' => $sent_messages];
+                      // return '5';
                         foreach ($inbox_messages as $n => $oMessage) {
                             // $reply[]=$oMessage->cc;
                             // $oMessage->setFlag(['Seen', 'Flagged']);  

@@ -753,7 +753,7 @@ class EmailOutboundController extends Controller
                
                 $this->response["status"] = true;
                 $this->response["message"] = __('strings.update_success');
-                $this->response['data'] = EmailOutbound::where(['id' => $id])->first();
+                $this->response['data'] =EmailsSetting::where('id', $id)->with(['emailInbound','emailOutbound'])->first();
                 return response()->json($this->response);
     
             } else {
