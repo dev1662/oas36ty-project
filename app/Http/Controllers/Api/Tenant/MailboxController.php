@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use PhpParser\Node\Stmt\Return_;
 use Webklex\PHPIMAP\ClientManager;
+use Webklex\PHPIMAP\Support\Masks\MessageMask;
 
 class MailboxController extends Controller
 {
@@ -938,11 +939,22 @@ class MailboxController extends Controller
                     $draft_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Drafts'])->first();
                     $spam_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Spam'])->first();
                   $h = 'h';
+                  // return $client->getFolders();
                     $inbox = $client->getFolderByName('INBOX');
                     $trash = $client->getFolderByName('Trash');
                     $draft = $client->getFolderByName('Drafts');
                     $spam = $client->getFolderByName('Spam');
+                    $all_mail = $client->getFolderByName('All Mail');
+
                     // $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->get();
+                    // $aMessage = $client->($client->getFolder('INBOX'));
+                    // $client->setDefaultMessageMask(MessageMask::class);
+                    // return $messages = $all_mail->query()->from('noreply@digest.groww.in')->get();
+                    
+                    // return $messages = $all_mail->query()->from('jos@internshala.com')->getFetchFlags();
+
+
+
                     if($inbox){
                     if ($check) {
                       try{
@@ -955,7 +967,9 @@ class MailboxController extends Controller
                             ]);
                         }
 
-                        $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")->limit(20,1)->get() ?? []; //$inbox->query()->get();
+                        $inbox_messages = $inbox->messages()->all()
+                        ->setFetchFlags(true)->setFetchBody(true)
+                        ->setFetchOrder("desc")->leaveUnread()->limit(20,1)->get() ?? []; //$inbox->query()->get();
                         // $inbox_messages = $inbox->messages()->all()->limit(20, $request->page)->get();//$inbox->query()->get();
                       }catch(Exception $e){
                         $inbox_messages = [];
