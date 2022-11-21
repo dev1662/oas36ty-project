@@ -1083,6 +1083,7 @@ class MailboxController extends Controller
                             $to_email = $oMessage->to ?? '';
                             $references = str_replace('<','',$oMessage->references) ?? '';
                             $references = str_replace('>',',', $references) ?? '';
+                            $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
 
@@ -1113,20 +1114,19 @@ class MailboxController extends Controller
                             // $check_email = "";
                             // return $check_email;
                             if (!$check_email) {
-                              //  return "h";
+                              // return [$references[0]];
                               $is_parent = null;
                               if($in_reply_to){
                               // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
 
-                              $check_parent = Mailbox::where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])
-                              ->where(function($query) use ($in_reply_to){
-                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
-                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
-                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                              $check_parent = Mailbox::where(['to_email'=>$data->mail_username, 'folder'=>'INBOX'])
+                              ->where(function($query) use ($in_reply_to,$references){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('message_id','LIKE','%'.$references[0].'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')->orWhere('references','LIKE','%'.$references[0].'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$references[0].'%');
                                    })->first();
-
-                              if(!empty($check_parent)){
-                                $is_parent = 0;
+                                   if(!empty($check_parent)){
+                                     $is_parent = 0;
                               $update =  Mailbox::where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])
                                 ->where('is_parent',1)
                               ->where(function($query) use ($in_reply_to){
@@ -1139,21 +1139,21 @@ class MailboxController extends Controller
                                   Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
                                 }
                               }
-                              }else{
-                                $is_parent = 1;
-                              }
+                            }else{
+                              $is_parent = 1;
                             }
-                              $details_of_email = [
-                                'subject' => $subject ?? "",
-                                'from_name' => $from_name ?? "",
-                                'from_email' => $from_email ?? "",
-                                'message_id' =>  $message_id ?? "",
-                                'to_email' => $data->mail_username ?? "", //$header_info[$n]->to[0]->mailbox. '@'. $header_info[$n]->to[0]->host,
-                                // 'message' => preg_replace('/[^A-Za-z0-9\-]/', ' ', $message[$n]) ?? ""
-                                "message" => $message ?? "",
-                                'date' =>  $date ?? "",
-                                'u_date' => strtotime($date),
-                                'folder' => $inbox->name,
+                          }
+                          $details_of_email = [
+                            'subject' => $subject ?? "",
+                            'from_name' => $from_name ?? "",
+                            'from_email' => $from_email ?? "",
+                            'message_id' =>  $message_id ?? "",
+                            'to_email' => $data->mail_username ?? "", //$header_info[$n]->to[0]->mailbox. '@'. $header_info[$n]->to[0]->host,
+                            // 'message' => preg_replace('/[^A-Za-z0-9\-]/', ' ', $message[$n]) ?? ""
+                            "message" => $message ?? "",
+                            'date' =>  $date ?? "",
+                            'u_date' => strtotime($date),
+                            'folder' => $inbox->name,
                                 'references'=> $references ?? '',
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'attachments'=> $attachments ?? 0,
@@ -1163,6 +1163,7 @@ class MailboxController extends Controller
                               ];
                               // return $details_of_email[$n];
                               //  return $attachments;
+                              return [$details_of_email, 'parent checking'];
                               try {
                                 Mailbox::create($details_of_email);
                                 
@@ -1187,6 +1188,7 @@ class MailboxController extends Controller
                             
                             $references = str_replace('<','',$oMessage->references) ?? '';
                             $references = str_replace('>',',', $references) ?? '';
+                            $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                             if($oMessage->hasTextBody()){
@@ -1211,10 +1213,10 @@ class MailboxController extends Controller
                               // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
 
                               $check_parent = Mailbox::where(['from_email'=>$from_email, 'folder'=>$sent->name])
-                              ->where(function($query) use ($in_reply_to){
-                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
-                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
-                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                              ->where(function($query) use ($in_reply_to,$references){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('message_id','LIKE','%'.$references[0].'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')->orWhere('references','LIKE','%'.$references[0].'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$references[0].'%');
                                    })->first();
 
                               if(!empty($check_parent)){
@@ -1279,7 +1281,7 @@ class MailboxController extends Controller
                             $date = $oMessage->date ?? '';
                             $references = str_replace('<','',$oMessage->references) ?? '';
                             $references = str_replace('>',',', $references) ?? '';
-
+                            $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                             if($oMessage->hasTextBody()){
@@ -1303,10 +1305,10 @@ class MailboxController extends Controller
                               // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
 
                               $check_parent =  Mailbox::where(['from_email'=>$from_email, 'folder'=>$draft->name])
-                              ->where(function($query) use ($in_reply_to){
-                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
-                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
-                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                              ->where(function($query) use ($in_reply_to,$references){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('message_id','LIKE','%'.$references[0].'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')->orWhere('references','LIKE','%'.$references[0].'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$references[0].'%');
                                    })->first();
 
                               if(!empty($check_parent)){
@@ -1370,6 +1372,7 @@ class MailboxController extends Controller
                             $date = $oMessage->date ?? '';
                             $references = str_replace('<','',$oMessage->references) ?? '';
                             $references = str_replace('>',',', $references) ?? '';
+                            $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                             if($oMessage->hasTextBody()){
@@ -1394,10 +1397,10 @@ class MailboxController extends Controller
                               // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
 
                               $check_parent =  Mailbox::where(['to_email' => $to_email, 'folder'=>$spam->name])
-                              ->where(function($query) use ($in_reply_to){
-                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
-                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
-                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                              ->where(function($query) use ($in_reply_to,$references){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('message_id','LIKE','%'.$references[0].'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')->orWhere('references','LIKE','%'.$references[0].'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$references[0].'%');
                                    })->first();
 
                               if(!empty($check_parent)){
@@ -1462,6 +1465,7 @@ class MailboxController extends Controller
                             $date = $oMessage->date ?? '';
                             $references = str_replace('<','',$oMessage->references) ?? '';
                             $references = str_replace('>',',', $references) ?? '';
+                            $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                             if($oMessage->hasTextBody()){
@@ -1489,10 +1493,10 @@ class MailboxController extends Controller
                                 $query->where(['to_email' => $to_email])
                                 ->orWhere('from_email',$from_email);
                               })
-                              ->where(function($query) use ($in_reply_to){
-                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')
-                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')
-                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%');
+                              ->where(function($query) use ($in_reply_to,$references){
+                                $query->where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('message_id','LIKE','%'.$references[0].'%')
+                                ->orWhere('references', 'LIKE', '%'.$in_reply_to.'%')->orWhere('references','LIKE','%'.$references[0].'%')
+                                ->orWhere('in_reply_to', 'LIKE', '%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$references[0].'%');
                                    })->first();
 
                               if(!empty($check_parent)){
