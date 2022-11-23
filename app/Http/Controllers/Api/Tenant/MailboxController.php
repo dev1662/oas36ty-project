@@ -11,6 +11,7 @@ use App\Models\EmailOutbound;
 use App\Models\EmailsSetting;
 use App\Models\Mailbox;
 use App\Models\UserEmail;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Client\ResponseSequence;
 use Illuminate\Http\Request;
@@ -649,12 +650,14 @@ class MailboxController extends Controller
      *     ),
      * )
      */
-    private function getFileName($image, $namePrefix)
+    private function getFileName($image, $name, $index)
     {
         list($type, $file) = explode(';', $image);
         list(, $extension) = explode('/', $type);
         list(, $file) = explode(',', $file);
-        $result['name'] = 'oas36ty'.$namePrefix . '.' . $extension;
+        // $result['name'] = 'oas36ty'.now()->timestamp . '.' . $extension;
+        $result['name'] = str_replace(' ', '',explode('.', $name)[0]). now()->timestamp.'.'. $extension;
+        // $result['data'] = ;
         $result['file'] = $file;
         return $result;
     }
@@ -671,26 +674,32 @@ class MailboxController extends Controller
         // ];
         // return $attach;
         $attach = [];
+        $f = [];
         if($request->data['attach']){
 
             $base64String = $request->data['attach'];
             // $base64String= "base64 string";
             // $attach = [];
-            foreach($base64String as  $file){
+            // return $base64String;
+            foreach($base64String as $in => $file){
 
+              // $f[$in] = $file;
                 // $image = $request->image; // the base64 image you want to upload
-                $slug = time().$user->id; //name prefix
-                $avatar[] = $this->getFileName($file, $slug);
+
+                $slug = time(); //name prefix
+                $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
+
+              // return [$avatar['file'], $avatar['name']];
                 // $original_name = explode(' ', $avatar['name']);
                 // return $original_name;
-                // Storage::disk('s3')->put('email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
+                Storage::disk('s3')->put('email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
                 
-                // $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
-                // $attach[] = $url ?? '';
+                $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
+                $attach[] = $url ?? '';
             }
+            // return $avatar;
         }
 
-        return $avatar;
 
         $outbound_id= $request->data['from']['id'];
         $centralUser =  CentralUser::where('email', json_decode($request->header('currrent'))->email)->first();
@@ -738,15 +747,15 @@ class MailboxController extends Controller
     }
 }
         // return Config::get('mail');
-        $message =  $request->data['message'];
-        $subject = $request->data['subject'];
+        $message =  $request->data['message'] ?? '';
+        $subject = $request->data['subject'] ?? '';
         // return $subject;
         // $message $
 
         $status = [];
         foreach($request->data['to'] as $email){
             $data_arr= [
-              'message' => $message, 'subject' => $subject, 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach'=> $attach
+              'message' => $message ?? '', 'subject' => $subject ?? '', 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach'=> $attach
             ];
             // return $data_arr;
             $status = $this->SendEmailDriven($data_arr);
@@ -834,7 +843,7 @@ class MailboxController extends Controller
         $email_data['email'] = $data_arr['email'];
         $email_data['email_subject'] = $data_arr['subject'];
         $email_data['email_template'] = "emails.auth.hello";
-        $email_data['template_data'] = ['body' => $data_arr['message']];
+        $email_data['template_data'] = ['body' => $data_arr['message'], 'files' => $data_arr['attach']];
         $email_data['attach'] = $data_arr['attach'];
         // return $email_data;
          $check = $this->send_email_sms($email_data, []);
