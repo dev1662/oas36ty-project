@@ -877,23 +877,33 @@ class UserController extends Controller
             // $user = $tenant->run(function ($tenant) use ($oldCentralUser, $request) {
                 if($request->emails){
 
+            
+                    UserEmail::where(['user_id' => $id])->forceDelete();
+                
                 
                 foreach($request->emails as $all_email){
-                   $exists_user_emails =  UserEmail::where(['user_id' => $id, 'emails_setting_id' => $all_email['id']])->get();
+                   $exists_user_emails =  UserEmail::where(['user_id' => $id, 'emails_setting_id' => $all_email['id']])->first();
 
-                    if(count($exists_user_emails) > 1){
-                        $this->response['status'] = true;
-                        $this->response["message"] = 'Emails are already assigned choose another email';
-                        return response()->json($this->response,200);
-                    }else{
-                        // $email_of_user = User::where('id', $id)->first()
+                   if(!$exists_user_emails){
                         UserEmail::create([
                            'user_id' => $id,
                            'emails_setting_id' => $all_email['id']
                            
-                       ]);
+                       ]);     
+                   }
+                    // if(count($exists_user_emails) >= 1){
+                    //     $this->response['status'] = true;
+                    //     $this->response["message"] = 'Emails are already assigned choose another email';
+                    //     return response()->json($this->response,200);
+                    // }else{
+                    //     // $email_of_user = User::where('id', $id)->first()
+                    //     UserEmail::create([
+                    //        'user_id' => $id,
+                    //        'emails_setting_id' => $all_email['id']
+                           
+                    //    ]);
                         
-                    }
+                    // }
                     
                 }
             }
