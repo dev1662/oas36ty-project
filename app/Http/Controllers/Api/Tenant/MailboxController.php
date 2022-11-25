@@ -813,9 +813,9 @@ class MailboxController extends Controller
         ## sending email
         $email_data['email_cc'] = $data_arr['email_cc'];
         $email_data['email_bcc'] = $data_arr['email_bcc'];
-        $email_data['message_id'] = $data_arr['message_id'];
-        $email_data['references'] = $data_arr['references'];
-        $email_data['email_replyTo'] = $data_arr['email_replyTo'];
+        $email_data['message_id'] = $data_arr['message_id'] ?? '';
+        $email_data['references'] = $data_arr['references'] ?? '';
+        $email_data['email_replyTo'] = $data_arr['email_replyTo'] ?? '';
 
         $email_data['email'] = $data_arr['email'];
         $email_data['email_subject'] = $data_arr['subject'];
