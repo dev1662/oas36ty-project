@@ -97,6 +97,8 @@ Route::middleware([
             Route::post('/find-emails',[EmailMasterController::class,'show']);
             Route::match(['put', 'patch'],'update-email/{id}', [EmailMasterController::class, 'update']);
             Route::post('/apps/email/emails', [MailboxController::class, 'fetchEmails']);
+            Route::post('/apps/email/reply_to_all', [MailboxController::class, 'reply_to_all']);
+
             // Route::post('/apps/email/sent', [MailboxController::class, 'fetch_sent_emails']);
             
             Route::post('/apps/email/update-emails', [MailboxController::class, 'updateEmails']);

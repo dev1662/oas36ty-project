@@ -661,37 +661,25 @@ class MailboxController extends Controller
         $result['file'] = $file;
         return $result;
     }
+
+
     public function sendEmail(Request $request)
     {
         // return $request->all();
         $user = $request->user();
         $bcc=  $request->data['bcc'] ?? '';
         $cc=  $request->data['cc'] ?? '';
-        //  $attach = $request->data['attach'] ?? '';
-        //  [
-        //     public_path('/files/rbn.jpeg'),
-        //     public_path('/files/frnt.txt'),
-        // ];
-        // return $attach;
+       
         $attach = [];
         $f = [];
         if($request->data['attach']){
 
             $base64String = $request->data['attach'];
-            // $base64String= "base64 string";
-            // $attach = [];
-            // return $base64String;
+            
             foreach($base64String as $in => $file){
-
-              // $f[$in] = $file;
-                // $image = $request->image; // the base64 image you want to upload
-
                 $slug = time(); //name prefix
                 $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
 
-              // return [$avatar['file'], $avatar['name']];
-                // $original_name = explode(' ', $avatar['name']);
-                // return $original_name;
                 Storage::disk('s3')->put('email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
                 
                 $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
@@ -707,26 +695,14 @@ class MailboxController extends Controller
         $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
         tenancy()->initialize($tenant);
       $user_setting  = UserEmail::where(['user_id'=> json_decode($request->header('currrent'))->id, 'emails_setting_id' => $outbound_id])->get();
-    //   $details_outbound = [];
-    //   foreach ($user_setting as $index => $user_emails) {
+ 
         if($user_setting){
 
             $details_outbound = EmailsSetting::where(['id'=> $outbound_id, 'outBound_status' => 'tick'])->first();
         
-        // if($details_outbound){
-        //     break;
-        // }else{
-        //     continue;
-        // }
-    //   }
       if($details_outbound){
 
           $mailsetting = EmailOutbound::where(['id'=>$details_outbound->id])->first();
-        
-        // echo"<pre>";
-        // print_r($mailsetting);
-        // die;
-       // $mailboxsetting = EmailInbound::where(['status'=>'active'])->first();
        
         if($mailsetting){
             $data = [
@@ -737,34 +713,25 @@ class MailboxController extends Controller
                 'username'          => $mailsetting->mail_username,
                 'password'          => $mailsetting->mail_password,
                 'from'              => [
-                    // 'address'=>$mailsetting->mail_from,
                     'name'   => 'Oas36ty'
                 ]
             ];
             Config::set('mail',$data);
-            // return config('mail');
-        }
-    }
-}
-        // return Config::get('mail');
+           
+                    }
+                }
+            }
         $message =  $request->data['message'] ?? '';
         $subject = $request->data['subject'] ?? '';
-        // return $subject;
-        // $message $
-
+      
         $status = [];
         foreach($request->data['to'] as $email){
             $data_arr= [
               'message' => $message ?? '', 'subject' => $subject ?? '', 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach'=> $attach
             ];
-            // return $data_arr;
+         
             $status = $this->SendEmailDriven($data_arr);
-        //   $status =  mailto:mail::to('devoas36ty@gmail.com')->send(new MailBoxSendMail($message, $subject));
-        //      config(['mail.mailers.smtp.username' => 'mailto:robin@gmail.com']);
-        //      config(['mail.mailers.smtp.password' => 'mailto:robin@gmail.com']);
-        //      config(['mail.mailers.smtp.username' => 'mailto:robin@gmail.com']);
-
-        //     //  return config('mail.mailers.smtp.username');
+      
             
         }
         return $status;
@@ -792,6 +759,8 @@ class MailboxController extends Controller
                     $data['email_cc'] = array_key_exists('email_cc', $email_data)  ? $email_data['email_cc'] : '';
                     $data['email_bcc'] = array_key_exists('email_bcc', $email_data)  ? $email_data['email_bcc'] : '';
                     $data['email_replyTo'] = array_key_exists('email_replyTo', $email_data)  ? $email_data['email_replyTo'] : '';
+                    $data['message_id'] = array_key_exists('message_id', $email_data)  ? $email_data['message_id'] : '';
+                    $data['references'] = array_key_exists('references', $email_data)  ? $email_data['references'] : '';
                     // $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
                     // return $data;
 
@@ -808,8 +777,12 @@ class MailboxController extends Controller
                         if($data['email_bcc']){
 
                             $message->bcc($data['email_bcc']);
-                        }
+                        }    
                         if($data['email_replyTo']){
+                          $references = $data['references'] . '<' . $data['message_id'] . '>';
+                          $message->getHeaders()->addTextHeader('In-Reply-To', $data['message_id']);
+                          $message->getHeaders()->addTextHeader('References', $references);
+                          $message->getHeaders()->addTextHeader('Message-ID', $data['message_id']);
 
                             $message->replyTo($data['email_replyTo']);
                         }
@@ -819,6 +792,7 @@ class MailboxController extends Controller
                                 $message->attach($file);
                             }
                         }
+
                         // $message ->replyTo($data['email_replyTo']) ?? '';
                         // $message->attach($data['email_attach']) ?? '';
                     });
@@ -839,6 +813,9 @@ class MailboxController extends Controller
         ## sending email
         $email_data['email_cc'] = $data_arr['email_cc'];
         $email_data['email_bcc'] = $data_arr['email_bcc'];
+        $email_data['message_id'] = $data_arr['message_id'];
+        $email_data['references'] = $data_arr['references'];
+        $email_data['email_replyTo'] = $data_arr['email_replyTo'];
 
         $email_data['email'] = $data_arr['email'];
         $email_data['email_subject'] = $data_arr['subject'];
@@ -1128,12 +1105,35 @@ class MailboxController extends Controller
                             //     $message =$oMessage->getBodies();
                             //     // return "getbody ". $message;
                             //   }
+                            $attach_files = [];
                            $message = $oMessage->getHTMLBody();
                            if(!$message){
                             $message = $oMessage->getHTMLBody(true);
                             $message = $message;
                            }
                             $attachments = $oMessage->getAttachments()->count();
+                            $attachments_file = $oMessage->getAttachments();
+                            if($attachments_file){
+                              foreach($attachments_file as $key => $attach){
+                                // $attach_files[$key] = $attach_file->name ?? '';
+
+                                $masked = $attach->setMask(AttachmentMask::class);
+                                $temp = [];
+                                $temp['mask'] = $masked->mask();
+                                $temp['image_url'] = $temp['mask']->getImageSrc();
+                                $temp['attachment_name'] = $temp['mask']->getName();
+                                $temp['disposition'] = $temp['mask']->getDisposition();
+                                $temp['size'] = $temp['mask']->getSize();
+                              //array_push()
+                              $attach_files[$key] = $temp;
+
+                              }
+                              // return ['files',$attachments_file];
+                            //   $oMessage->getAttachments()->each(function ($oAttachment) use ($oMessage) {
+                            //     file_put_contents(storage_path('attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name), $oAttachment->content);
+                            //     // $attach_files[] =['file',$oAttachment];
+                            // });
+                            }
                             //  return $oMessage->getXFailedRecipients();
                             // return $oMessage;
                             // return $oMessage->getBodies();
@@ -1193,7 +1193,7 @@ class MailboxController extends Controller
                               //  return $attachments;
                               // return [$details_of_email, 'parent checking'];
                               try {
-                                Mailbox::create($details_of_email);
+                                // Mailbox::create($details_of_email);
                                 // $reply[] = $details_of_email;
                                 
                               } catch (Exception $ex) {
@@ -1203,7 +1203,8 @@ class MailboxController extends Controller
                             }
                           }
                           //  return [$insert];
-                          //  return ['nothing to happened'];
+                           return $attach_files;
+                           
                           foreach ($sent_messages as $n => $oMessage) {
                             
                             $attachments = $oMessage->getAttachments()->count() ?? '';
@@ -1597,8 +1598,86 @@ class MailboxController extends Controller
         }
         
         }
-    
-        
-    
       }
-}
+
+public function reply_to_all(Request $request){
+                // return $request->all();
+                $user = $request->user();
+                $bcc=  $request->data['bcc'] ?? '';
+                $cc=  $request->data['cc'] ?? '';
+                $message_id=  $request->data['message_id'] ?? '';
+                $references=  $request->data['references'] ?? '';
+                $email_replyTo=  $request->data['email_replyTo'] ?? '';
+
+                $attach = [];
+                $f = [];
+                if($request->data['attach']){
+
+                    $base64String = $request->data['attach'];
+                    
+                    foreach($base64String as $in => $file){
+                        $slug = time(); //name prefix
+                        $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
+
+                        Storage::disk('s3')->put('email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
+                        
+                        $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
+                        $attach[] = $url ?? '';
+                    }
+                    // return $avatar;
+                }
+
+
+                $outbound_id= $request->data['from']['id'];
+                $centralUser =  CentralUser::where('email', json_decode($request->header('currrent'))->email)->first();
+
+                $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
+                tenancy()->initialize($tenant);
+                $user_setting  = UserEmail::where(['user_id'=> json_decode($request->header('currrent'))->id, 'emails_setting_id' => $outbound_id])->get();
+
+                if($user_setting){
+
+                    $details_outbound = EmailsSetting::where(['id'=> $outbound_id, 'outBound_status' => 'tick'])->first();
+                
+                if($details_outbound){
+
+                  $mailsetting = EmailOutbound::where(['id'=>$details_outbound->id])->first();
+
+                if($mailsetting){
+                    $data = [
+                        'driver'            => $mailsetting->mail_transport,
+                        'host'              => $mailsetting->mail_host,
+                        'port'              => $mailsetting->mail_port,
+                        'encryption'        => $mailsetting->mail_encryption,
+                        'username'          => $mailsetting->mail_username,
+                        'password'          => $mailsetting->mail_password,
+                        'from'              => [
+                            'name'   => 'Oas36ty'
+                        ]
+                    ];
+                    Config::set('mail',$data);
+                    
+                            }
+                        }
+                    }
+                $message =  $request->data['message'] ?? '';
+                $subject = $request->data['subject'] ?? '';
+
+                $status = [];
+                foreach($request->data['to'] as $email){
+                    $data_arr= [
+                      'message' => $message ?? '', 'subject' => $subject ?? '', 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach'=> $attach ,'email_replyTo' =>$email_replyTo, 'message_id'=>$message_id, 'references' =>$references
+                    ];
+                  
+                    $status = $this->SendEmailDriven($data_arr);
+
+                    
+                }
+                return $status;
+        }
+      
+      
+      
+      
+      
+      }
