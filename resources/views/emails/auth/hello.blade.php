@@ -9,16 +9,16 @@
 <div>
     {{-- {{$template_data['files']}}
      --}}
-     <?php 
+ 
      
-     if($template_data['files']){
-        foreach ($template_data['files'] as $key => $file) {
-            echo '<br>'.'<a  href="'.$file.'" download>
-                <img src="'.$file.'" alt="W3Schools" width="104" height="142">
+     @if($template_data['files'])
+        @foreach ($template_data['files'] as $key => $file) 
+        
+            <br><a  href="{{$file}}" download>
+                <img src="{{$file}}" alt="W3Schools" width="104" height="142">
 
-                </a>';
-        }
-     }
-     ?>
+                </a>
+                @endforeach
+      @endif
     {{-- <a href=""></a> --}}
 </div>
