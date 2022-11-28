@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\Category;
+use App\Models\CategoryUser;
 use Illuminate\Support\Facades\Config;
 use PDO;
 
@@ -72,7 +73,12 @@ class CategoryController extends Controller
         $dbname = strtolower($dbname);
         // return $dbname;
         $this->switchingDB($dbname);
-        $categories = Category::select('id', 'name','type')->with('audits')->orderBy('id', 'DESC')->get();
+        $categories = Category::select('id', 'name','due_date','type')->with([
+            'audits',
+            'users' => function ($q) {
+                $q->select('users.id', 'name','avatar');
+            },
+            ])->orderBy('id', 'DESC')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -139,6 +145,7 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\Category,name',
         ]);
@@ -148,9 +155,16 @@ class CategoryController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-
+        // return $request->all();
         $category = new Category($request->all());
         $category->save();
+        foreach ($request->users as $user) {
+            
+            $category_user = new CategoryUser();
+            $category_user->user_id = $user['id'];
+            $category_user->category_id = $category->id;
+            $category_user->save();
+        }
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
@@ -222,7 +236,7 @@ class CategoryController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $category = Category::select('id', 'name')->find($id);
+        $category = Category::select('id', 'name', 'due_date')->find($id);
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
@@ -314,8 +328,42 @@ class CategoryController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $category->fill($request->only(['name']));
+        $category->fill($request->only(['name', 'due_date']));
         $category->update();
+        $checkNewUser = CategoryUser::where(['category_id' => $id])->get();
+        // }
+        $user_values = [];
+        foreach ($checkNewUser as $newUser) {
+
+            $user_values[] =  $newUser->user_id;
+        }
+        // insert newly added data
+        // return "insert";
+        foreach ($request->users as $input_users) {
+            // return "forloop";
+            if (!in_array($input_users['id'], $user_values)) {
+                $new_categoryUser = new CategoryUser();
+                $new_categoryUser->category_id = $id;
+                $new_categoryUser->user_id = $input_users['id'];
+                $new_categoryUser->save();
+            }
+        }
+
+        // delete added user values
+        // return "h";
+        foreach ($user_values as $user_row) {
+            $actual_array = [];
+            foreach ($request->users as $use) {
+                $actual_array[] = $use['id'];
+            }
+
+            // return $user_row;
+            if (!in_array($user_row, $actual_array)) {
+                // return "user not present";
+                // TaskUser::where(['user_id' => $user_row])->delete();
+                CategoryUser::where(['user_id' => $user_row])->forceDelete();
+            }
+        }
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
