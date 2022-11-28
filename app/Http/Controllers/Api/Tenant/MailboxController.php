@@ -745,22 +745,29 @@ class MailboxController extends Controller
 
         try {
             if (!empty($email_data) && array_key_exists('email', $email_data)) {
-                $email = $email_data['email'];
+                $email = $email_data['email'] ?? '';
                 if ($email) {
-                    $files = $email_data['attach'];
-                    $data = [];
-                    $email_template = array_key_exists('email_template', $email_data)  ? $email_data['email_template'] : '';
-                    $data['email'] = $email;
-                    $data['template_data'] = array_key_exists('template_data', $email_data)  ? $email_data['template_data'] : '';
-                    $data['email_subject'] = array_key_exists('email_subject', $email_data)  ? $email_data['email_subject'] : 'EMail from Oas36ty';
-                    $data['email_from'] = array_key_exists('email_from', $email_data) ? $email_data['email_from'] : 'robinoas36ty@gmail.com';
-
-                    $data['email_from_name'] = array_key_exists('email_from_name', $email_data) ? $email_data['email_from_name'] : 'Oas36ty';
-                    $data['email_cc'] = array_key_exists('email_cc', $email_data)  ? $email_data['email_cc'] : '';
-                    $data['email_bcc'] = array_key_exists('email_bcc', $email_data)  ? $email_data['email_bcc'] : '';
-                    $data['email_replyTo'] = array_key_exists('email_replyTo', $email_data)  ? $email_data['email_replyTo'] : '';
-                    $data['message_id'] = array_key_exists('message_id', $email_data)  ? $email_data['message_id'] : '';
-                    $data['references'] = array_key_exists('references', $email_data)  ? $email_data['references'] : '';
+                  $files = $email_data['attach'];
+                  $email_replyTo = $email_data['email_replyTo'] ?? '';
+                  // return $email_replyTo[0]['email'];
+                  $data = [];
+                  $email_template = array_key_exists('email_template', $email_data)  ? $email_data['email_template'] : '';
+                  $data['email'] = $email;
+                  $data['template_data'] = array_key_exists('template_data', $email_data)  ? $email_data['template_data'] : '';
+                  $data['email_subject'] = array_key_exists('email_subject', $email_data)  ? $email_data['email_subject'] : 'EMail from Oas36ty';
+                  $data['email_from'] = array_key_exists('email_from', $email_data) ? $email_data['email_from'] : 'robinoas36ty@gmail.com';
+                  
+                  $data['email_from_name'] = array_key_exists('email_from_name', $email_data) ? $email_data['email_from_name'] : 'Oas36ty';
+                  $data['email_cc'] = array_key_exists('email_cc', $email_data)  ? $email_data['email_cc'] : '';
+                  $data['email_bcc'] = array_key_exists('email_bcc', $email_data)  ? $email_data['email_bcc'] : '';
+                  if($email_replyTo){
+                  $data['email_replyTo'] = array_key_exists('email_replyTo', $email_data)  ?   $email_replyTo[0]['email'] : '';
+                  $data['message_id'] = array_key_exists('message_id', $email_data)  ? $email_data['message_id'] : '';
+                  $data['references'] = array_key_exists('references', $email_data)  ? $email_data['references'] : '';
+                  $data['email'] = array_key_exists('email_replyTo', $email_data)  ?   $email_replyTo[0]['email'] : '';
+                }else{
+                  $data['email_replyTo'] = '';
+                }
                     // $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
 
                       Mail::send($email_template, $data, function ($message) use ($data, $files ) {
