@@ -21,10 +21,15 @@ class Category extends Model implements Auditable
      * @var array
      */
     protected $fillable = [
-        'name', 'type'
+        'name','due_date', 'type'
     ];
     public function task()
     {
         return $this->hasMany(Task::class);
     }
+    public function users()
+    {
+        return $this->belongsToMany(User::class, CategoryUser::class, 'category_id', 'user_id');
+    }
 }
+

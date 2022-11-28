@@ -762,9 +762,9 @@ class MailboxController extends Controller
                     $data['message_id'] = array_key_exists('message_id', $email_data)  ? $email_data['message_id'] : '';
                     $data['references'] = array_key_exists('references', $email_data)  ? $email_data['references'] : '';
                     // $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
-                    // return $data;
+                    return $data;
 
-                    //return $data;
+                    // return $data['email_replyTo'][0]['email'];
 
                     Mail::send($email_template, $data, function ($message) use ($data, $files ) {
                         $message->from($data['email_from'], $data['email_from_name']);
@@ -778,14 +778,14 @@ class MailboxController extends Controller
 
                             $message->bcc($data['email_bcc']);
                         }    
-                        if($data['email_replyTo']){
-                          $references = $data['references'] . '<' . $data['message_id'] . '>';
-                          $message->getHeaders()->addTextHeader('In-Reply-To', $data['message_id']);
-                          $message->getHeaders()->addTextHeader('References', $references);
-                          $message->getHeaders()->addTextHeader('Message-ID', $data['message_id']);
+                        // if($data['email_replyTo']){
+                        //   $references = $data['references'] . '<' . $data['message_id'] . '>';
+                        //   $message->getHeaders()->addTextHeader('In-Reply-To', $data['message_id']);
+                        //   $message->getHeaders()->addTextHeader('References', $references);
+                        //   $message->getHeaders()->addTextHeader('Message-ID', $data['message_id']);
 
-                            $message->replyTo($data['email_replyTo']);
-                        }
+                        //     $message->replyTo($data['email_replyTo'][0]['email']);
+                        // }
                         if($files){
 
                             foreach ($files as $file){
@@ -823,7 +823,7 @@ class MailboxController extends Controller
         $email_data['template_data'] = ['body' => $data_arr['message'], 'files' => $data_arr['attach']];
         $email_data['attach'] = $data_arr['attach'];
         // return $email_data;
-         $check = $this->send_email_sms($email_data, []);
+          $check = $this->send_email_sms($email_data, []);
         if ($check) {
             $this->response['status'] = true;
             $this->response['status_code'] = 200;
@@ -1078,7 +1078,53 @@ class MailboxController extends Controller
                         foreach ($inbox_messages as $n => $oMessage) {
                             // $reply[]=$oMessage->cc;
                             // $oMessage->setFlag(['Seen', 'Flagged']);  
-                            // $oMessage->peek();       
+                            // $oMessage->peek();     
+                            $currentThread = null;
+                            $threads = $oMessage->thread($client->getFolder('Sent Mail'), $currentThread, $client->getFolder('INBOX'));  
+                            $thread_html = [];
+                            // foreach ($threads as $key => $thread) {
+
+                            //   $reply = $thread->in_reply_to == '' ? null : $thread->in_reply_to;
+                            //   if($reply != null){
+                            //     $message ='';
+                            //     $subject = $thread->subject ?? '';
+                            //     $from_email = $thread->sender[0]->mail ?? '';
+                            //     $from_name = $thread->sender ?? '';
+                            //     $message_id = $thread->message_id ?? '';
+                            //     $to_email = $thread->to ?? '';
+                            //     $references = str_replace('<','',$thread->references) ?? '';
+                            //     $references = str_replace('>',',', $references) ?? '';
+                            //     $references = explode(',',$references);
+                            //     $in_reply_to  = str_replace('<','',$thread->in_reply_to) ?? '';
+                            //     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+                            //     $original_ref1 = $thread->references;
+                            //     $original_ref = $original_ref1[0] ?? '';
+                            //     $u_date = $thread->t ?? '';
+                            //     $date = $thread->date ?? '';
+                              
+                            //     $details_of_email2[] = [
+                            //       'subject' => $subject ?? "",
+                            //       'from_name' => $from_name ?? "",
+                            //       'from_email' => $from_email ?? "",
+                            //       'message_id' =>  $message_id ?? "",
+                            //       'to_email' => $data->mail_username ?? "", //$header_info[$n]->to[0]->mailbox. '@'. $header_info[$n]->to[0]->host,
+                            //       // 'message' => preg_replace('/[^A-Za-z0-9\-]/', ' ', $message[$n]) ?? ""
+                            //       "message" => $message ?? "",
+                            //       'date' =>  $date ?? "",
+                            //       'u_date' => strtotime($date),
+                            //       'folder' => $inbox->name,
+                            //       'references'=> $original_ref ?? '',
+                            //           'in_reply_to' => $in_reply_to ?? '',
+                            //           // 'attachments'=> $attachments ?? 0,
+                            //           // 'is_parent'=> $is_parent ?? 1
+                            //           //    'recent' => $header->recent,
+                                      
+                            //         ];
+                                    
+                            //   // return response()->json($thread->subject);
+                            // }
+                          // }
+                          
                             $message ='';
                             $subject = $oMessage->subject ?? '';
                             $from_email = $oMessage->sender[0]->mail ?? '';
@@ -1193,7 +1239,7 @@ class MailboxController extends Controller
                               //  return $attachments;
                               // return [$details_of_email, 'parent checking'];
                               try {
-                                // Mailbox::create($details_of_email);
+                                Mailbox::create($details_of_email);
                                 // $reply[] = $details_of_email;
                                 
                               } catch (Exception $ex) {
@@ -1202,9 +1248,11 @@ class MailboxController extends Controller
                               }
                             }
                           }
+                          // return $details_of_email2;
+
                           //  return [$insert];
-                           return $attach_files;
-                           
+                          //  return $attach_files;
+                          //  return $thread_html;
                           foreach ($sent_messages as $n => $oMessage) {
                             
                             $attachments = $oMessage->getAttachments()->count() ?? '';
