@@ -762,7 +762,6 @@ class MailboxController extends Controller
                     $data['message_id'] = array_key_exists('message_id', $email_data)  ? $email_data['message_id'] : '';
                     $data['references'] = array_key_exists('references', $email_data)  ? $email_data['references'] : '';
                     // $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
-                    // return $data;
 
                       Mail::send($email_template, $data, function ($message) use ($data, $files ) {
                         $message->from($data['email_from'], $data['email_from_name']);
@@ -776,14 +775,14 @@ class MailboxController extends Controller
 
                             $message->bcc($data['email_bcc']);
                         }    
-                        // if($data['email_replyTo']){
-                        //   $references = $data['references'] . '<' . $data['message_id'] . '>';
-                        //   $message->getHeaders()->addTextHeader('In-Reply-To', $data['message_id']);
-                        //   $message->getHeaders()->addTextHeader('References', $references);
-                        //   $message->getHeaders()->addTextHeader('Message-ID', $data['message_id']);
+                        if($data['email_replyTo']){
+                          $references = $data['references'] . '<' . $data['message_id'] . '>';
+                          $message->getHeaders()->addTextHeader('In-Reply-To', $data['message_id']);
+                          $message->getHeaders()->addTextHeader('References', $references);
+                          // $message->getHeaders()->addTextHeader('Message-ID', $data['message_id']);
 
-                        //     $message->replyTo($data['email_replyTo'][0]['email']);
-                        // }
+                            $message->replyTo($data['email_from']);
+                        }
                         if($files){
 
                             foreach ($files as $file){
@@ -1250,7 +1249,7 @@ class MailboxController extends Controller
 
                           //  return [$insert];
                           //  return $attach_files;
-                          //  return $thread_html;
+                           
                           foreach ($sent_messages as $n => $oMessage) {
                             
                             $attachments = $oMessage->getAttachments()->count() ?? '';
