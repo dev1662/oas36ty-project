@@ -770,7 +770,6 @@ class MailboxController extends Controller
                 }
                     // $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
 
-                    // Mail::send($email_template, $data, function ($message) use ($data, $files ) {
                       Mail::send($email_template, $data, function ($message) use ($data, $files ) {
                         $message->from($data['email_from'], $data['email_from_name']);
                         $message->to($data['email']);
