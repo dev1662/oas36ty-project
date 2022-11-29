@@ -959,8 +959,7 @@ class MailboxController extends Controller
                         }
 
                         $inbox_messages = $inbox->messages()->all()
-                        ->setFetchFlags(true)->setFetchBody(true)
-                        ->setFetchOrder("desc")->leaveUnread()->limit(20,1)->get() ?? []; //$inbox->query()->get();
+                        ->setFetchOrder("desc")->limit(20,1)->get() ?? []; //$inbox->query()->get();
                         // $inbox_messages = $inbox->messages()->all()->limit(20, $request->page)->get();//$inbox->query()->get();
                       }catch(Exception $e){
                         $inbox_messages = [];
@@ -981,7 +980,6 @@ class MailboxController extends Controller
                         }
                         // $inbox = $client->getFolderByName('INBOX');
                         $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")
-                        ->setFetchFlags(true)->setFetchBody(true)
                         ->limit(30,1)->get() ?? [];
                       }catch(Exception $ex){
                         $inbox_messages = [];
@@ -1083,9 +1081,9 @@ class MailboxController extends Controller
                             // $reply[]=$oMessage->cc;
                             // $oMessage->setFlag(['Seen', 'Flagged']);  
                             // $oMessage->peek();     
-                            $currentThread = null;
-                            $threads = $oMessage->thread($client->getFolder('Sent Mail'), $currentThread, $client->getFolder('INBOX'));  
-                            $thread_html = [];
+                            // $currentThread = null;
+                            // $threads = $oMessage->thread($client->getFolder('Sent Mail'), $currentThread, $client->getFolder('INBOX'));  
+                            // $thread_html = [];
                             // foreach ($threads as $key => $thread) {
 
                             //   $reply = $thread->in_reply_to == '' ? null : $thread->in_reply_to;
