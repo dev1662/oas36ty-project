@@ -750,7 +750,8 @@ class MailboxController extends Controller
         $status = [];
         foreach($request->data['to'] as $email){
             $data_arr= [
-              'message' => $message ?? '', 'subject' => $subject ?? '', 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach'=> $attach
+              'message' => $message ?? '', 'subject' => $subject ?? '', 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach'=> $attach,
+              'email_from' => $request->data['from']['email']
             ];
          
             $status = $this->SendEmailDriven($data_arr);
@@ -787,10 +788,12 @@ class MailboxController extends Controller
                   $data['email_replyTo'] = array_key_exists('email_replyTo', $email_data)  ?   $email_replyTo[0]['email'] : '';
                   $data['message_id'] = array_key_exists('message_id', $email_data)  ? $email_data['message_id'] : '';
                   $data['references'] = array_key_exists('references', $email_data)  ? $email_data['references'] : '';
-                  $data['email'] = array_key_exists('email_replyTo', $email_data)  ?   $email_replyTo[0]['email'] : '';
+                  // $data['email'] = $email  ?? '';
                 }else{
                   $data['email_replyTo'] = '';
                 }
+              // return $data;
+
                     // $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
 
                       Mail::send($email_template, $data, function ($message) use ($data, $files ) {
@@ -811,7 +814,7 @@ class MailboxController extends Controller
                           $message->getHeaders()->addTextHeader('References', $references);
                           // $message->getHeaders()->addTextHeader('Message-ID', $data['message_id']);
 
-                            $message->replyTo($data['email_from']);
+                            $message->replyTo($data['email_replyTo']);
                         }
                         if($files){
 
@@ -843,6 +846,7 @@ class MailboxController extends Controller
         $email_data['message_id'] = $data_arr['message_id'] ?? '';
         $email_data['references'] = $data_arr['references'] ?? '';
         $email_data['email_replyTo'] = $data_arr['email_replyTo'] ?? '';
+        $email_data['email_from'] = $data_arr['email_from'] ?? '';
 
         $email_data['email'] = $data_arr['email'];
         $email_data['email_subject'] = $data_arr['subject'];
@@ -1196,7 +1200,7 @@ class MailboxController extends Controller
                                 $temp['mask'] = $masked->mask();
                                 $temp['image_url'] = $temp['mask']->getImageSrc();
                                 $temp['attachment_name'] = $temp['mask']->getName();
-                                $temp['disposition'] = $temp['mask']->getDisposition();
+                                // $temp['disposition'] = $temp['mask']->getDisposition();
                                 $temp['size'] = $temp['mask']->getSize();
                               //array_push()
                               $attach_files[$key] = $temp;
@@ -1746,7 +1750,8 @@ public function reply_to_all(Request $request){
                 $status = [];
                 foreach($request->data['to'] as $email){
                     $data_arr= [
-                      'message' => $message ?? '', 'subject' => $subject ?? '', 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach'=> $attach ,'email_replyTo' =>$email_replyTo, 'message_id'=>$message_id, 'references' =>$references
+                      'message' => $message ?? '', 'subject' => $subject ?? '', 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach'=> $attach ,'email_replyTo' =>$email_replyTo, 'message_id'=>$message_id, 'references' =>$references,
+                      'email_from' => $request->data['from']['email']
                     ];
                   
                     $status = $this->SendEmailDriven($data_arr);
