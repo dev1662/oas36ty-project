@@ -239,14 +239,29 @@ class MailboxController extends Controller
                 foreach($results as $key=> $res){
                         
                     // $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
-                    $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])
-                    ->where('message_id','!=',$res['message_id'])
-                    ->where(function($query) use ($res){
-                        $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
-                        if(!empty($res['in_reply_to'])){
-                            $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
-                        }
-                           })->get();
+                    // $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])
+                    // ->where('message_id','!=',$res['message_id'])
+                    // ->where(function($query) use ($res){
+                    //     $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                    //     if(!empty($res['in_reply_to'])){
+                    //         $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                    //     }
+                    //        })->get();
+                    $eamils_arr = Mailbox::
+                        whereIn('folder',['INBOX','Sent Mail'])
+                        ->where('message_id','!=',$res['message_id'])
+                        ->where(function($query) use ($res){
+                            $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
+                            if(!empty($res['in_reply_to'])){
+                                $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%')
+                                ->orWhere('message_id', 'LIKE', '%'.$res['in_reply_to'].'%');
+                            }
+                               })
+                       ->where(function($query) use($username){
+                         $query->where(['from_email'=> $username->mail_username])
+                         ->orWhere(['to_email' => $username->mail_username]);
+                        })
+                        ->orderBy('u_date','desc')->get();
 
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
@@ -337,20 +352,28 @@ class MailboxController extends Controller
                     $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX' ])->orderBy('u_date', 'desc')->where('is_parent',1)->offset($offset)->limit(20)->get();
+                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX' ])->orderBy('u_date', 'desc')->where('is_parent',1)->offset($offset)->limit(40)->get();
 
                     foreach($results as $key=> $res){
                         $eamils_arr = [];
                         // if(!empty($res['in_reply_to'])){
-                        $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])
+                        $eamils_arr = Mailbox::
+                        whereIn('folder',['INBOX','Sent Mail'])
                         ->where('message_id','!=',$res['message_id'])
                         ->where(function($query) use ($res){
                             $query->orWhere('references', 'LIKE', '%'.$res['message_id'].'%');
                             if(!empty($res['in_reply_to'])){
-                                $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
+                                $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%')
+                                ->orWhere('message_id', 'LIKE', '%'.$res['in_reply_to'].'%');
                             }
-                               })->get();
+                               })
+                       ->where(function($query) use($username){
+                         $query->where(['to_email' => $username->mail_username])
+                         ->orWhere(['from_email'=> $username->mail_username]);
+                        })
+                               ->orderBy('u_date','desc')->get();
                             // }    
+                            // return $eamils_arr;
                         if(count($eamils_arr)>0){
                             $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                         }else{
@@ -998,7 +1021,7 @@ class MailboxController extends Controller
                     if($check1){
                       try{
                        
-                      $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(5,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
+                      $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(20,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
                     }catch(Exception $ex){
                       $sent_messages = [];
                       continue;
@@ -1142,6 +1165,9 @@ class MailboxController extends Controller
                             $original_ref = $original_ref1[0] ?? '';
                             $u_date = $oMessage->t ?? '';
                             $date = $oMessage->date ?? '';
+                            // $reply_toaddress =  $oMessage->reply_toaddress ?? '';
+                            // $rep_add = explode('<',$reply_toaddress) ?? '';
+                            // $repadd[]= str_replace('>','',$rep_add[1] ?? $rep_add[0]) ??  $reply_toaddress;//explode('<',$reply_toaddress[0]);
                             // if($oMessage->hasHTMLBody()){
                             //     // return "htmlbody";
                             //     $message = $oMessage->getHTMLBody(true);
@@ -1250,7 +1276,7 @@ class MailboxController extends Controller
                               }
                             }
                           }
-                          // return $details_of_email2;
+                          // return $repadd;
 
                           //  return [$insert];
                           //  return $attach_files;
@@ -1271,6 +1297,10 @@ class MailboxController extends Controller
                             $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
+
+                            // $reply_toaddress =  $oMessage->reply_toaddress ?? '';
+                            // $rep_add = explode('<',$reply_toaddress) ?? '';
+                            // $repadd[]= str_replace('>','',$rep_add[1] ?? $rep_add[0]) ??  $reply_toaddress;//explode('<',$reply_toaddress[0]);
 
                             $original_ref1 = $oMessage->references;
                             $original_ref = $original_ref1[0] ?? '';
@@ -1350,7 +1380,7 @@ class MailboxController extends Controller
                               }
                             }
                           }
-                  
+                          // return $repadd;
                   
                           foreach ($draft_messages as $n => $oMessage) {
                             
