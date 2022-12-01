@@ -286,10 +286,12 @@ class MailboxController extends Controller
                         }
                            })->get();
                     if(count($eamils_arr)>0){
+                      
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
                         $result[]= ['parent'=>$res];
                     }
+
                 }
             }
             if($req->folder == 'spam'){
@@ -375,6 +377,14 @@ class MailboxController extends Controller
                             // }    
                             // return $eamils_arr;
                         if(count($eamils_arr)>0){
+                          // if($res['ccaddress']){
+
+                          //   return $res['ccaddress'];
+                          // }
+                          // if($eamils_arr['ccaddress']){
+  
+                            // return $eamils_arr;
+                          // }
                             $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                         }else{
                             $result[]= ['parent'=>$res];
@@ -1172,10 +1182,11 @@ class MailboxController extends Controller
 
                             $ccaddress = $oMessage->cc ?? '';
                             $bccaddress = $oMessage->bcc ?? '';
-                            // if($ccaddress || $bccaddress){
-                            //   // return $ccaddress;
-                            // $bcc_cc[] = ['cc'=>$ccaddress ?? '', 'bcc'=>$bccaddress ?? ''] ;//['cc'=>explode(',',$ccaddress) ?? '', 'bcc'=>explode(',',$bccaddress) ?? '' ];
-                            // }
+                            if($ccaddress || $bccaddress){
+                              // return $ccaddress;
+                            //$bcc_cc[] = ['cc'=>$ccaddress ?? '', 'bcc'=>$bccaddress ?? ''] ;
+                            $bcc_cc[] = ['cc'=>explode('<',$ccaddress) ?? '', 'bcc'=>explode('<',$bccaddress) ?? '' ];
+                            }
                             $attach_files = [];
                            $message = $oMessage->getHTMLBody();
                            if(!$message){
@@ -1275,7 +1286,7 @@ class MailboxController extends Controller
                               }
                             }
                           }
-                          // return $bcc_cc;
+                          return $bcc_cc;
 
                           //  return [$insert];
                           //  return $attach_files;

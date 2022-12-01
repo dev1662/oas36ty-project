@@ -439,7 +439,7 @@ class CategoryController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-
+        CategoryUser::where('category_id', $id)->forceDelete(); 
         $category = Category::find($id);
         if(!$category){
             $this->response["message"] = __('strings.destroy_failed');
