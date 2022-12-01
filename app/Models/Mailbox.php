@@ -28,7 +28,9 @@ class Mailbox extends Model implements Auditable
         'folder',
         'references',
         'in_reply_to',
-        'is_parent'
+        'is_parent',
+        'bccaddress',
+        'ccaddress'
     ];
     
 }

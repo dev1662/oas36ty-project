@@ -1007,7 +1007,7 @@ class MailboxController extends Controller
                         }
                         // $inbox = $client->getFolderByName('INBOX');
                         $inbox_messages = $inbox->messages()->all()->setFetchOrder("desc")
-                        ->limit(30,1)->get() ?? [];
+                        ->limit(100,1)->get() ?? [];
                       }catch(Exception $ex){
                         $inbox_messages = [];
                         continue;
@@ -1034,7 +1034,7 @@ class MailboxController extends Controller
                     }else{
                       try{
                         // $sent = $client->getFolderByName('Sent Mail');
-                        $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];
+                        $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                       }catch(Exception $ex){
                         $sent_messages =[];
                         continue;
@@ -1054,7 +1054,7 @@ class MailboxController extends Controller
                     }
                       }else{
                         try{
-                        $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];
+                        $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                       }catch(Exception $ex){
                         $draft_messages = [];
                         continue;
@@ -1073,7 +1073,7 @@ class MailboxController extends Controller
                       }
                         }else{
                           try{
-                          $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];
+                          $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                         }catch(Exception $ex){
                           $trash_messages =[];
                           continue;
@@ -1093,7 +1093,7 @@ class MailboxController extends Controller
                       }
                         }else{
                           try{
-                          $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];
+                          $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                         }catch(Exception $ex){
                           $spam_messages =[];
                           continue;
@@ -1169,20 +1169,13 @@ class MailboxController extends Controller
                             $original_ref = $original_ref1[0] ?? '';
                             $u_date = $oMessage->t ?? '';
                             $date = $oMessage->date ?? '';
-                            // $reply_toaddress =  $oMessage->reply_toaddress ?? '';
-                            // $rep_add = explode('<',$reply_toaddress) ?? '';
-                            // $repadd[]= str_replace('>','',$rep_add[1] ?? $rep_add[0]) ??  $reply_toaddress;//explode('<',$reply_toaddress[0]);
-                            // if($oMessage->hasHTMLBody()){
-                            //     // return "htmlbody";
-                            //     $message = $oMessage->getHTMLBody(true);
-                            //   }
-                            //    elseif($oMessage->hasTextBody()){
-                            //       // return "textbody";
-                            //         $message =$oMessage->getTextBody();
-                            //       }else{
-                            //     $message =$oMessage->getBodies();
-                            //     // return "getbody ". $message;
-                            //   }
+
+                            $ccaddress = $oMessage->cc ?? '';
+                            $bccaddress = $oMessage->bcc ?? '';
+                            // if($ccaddress || $bccaddress){
+                            //   // return $ccaddress;
+                            // $bcc_cc[] = ['cc'=>$ccaddress ?? '', 'bcc'=>$bccaddress ?? ''] ;//['cc'=>explode(',',$ccaddress) ?? '', 'bcc'=>explode(',',$bccaddress) ?? '' ];
+                            // }
                             $attach_files = [];
                            $message = $oMessage->getHTMLBody();
                            if(!$message){
@@ -1263,7 +1256,9 @@ class MailboxController extends Controller
                             'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'attachments'=> $attachments ?? 0,
-                                'is_parent'=> $is_parent ?? 1
+                                'is_parent'=> $is_parent ?? 1,
+                                'ccaddress' =>$ccaddress ?? '',
+                                'bccaddress' => $bccaddress ?? ''
                                 //    'recent' => $header->recent,
                                 
                               ];
@@ -1280,7 +1275,7 @@ class MailboxController extends Controller
                               }
                             }
                           }
-                          // return $repadd;
+                          // return $bcc_cc;
 
                           //  return [$insert];
                           //  return $attach_files;
