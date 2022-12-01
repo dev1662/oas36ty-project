@@ -773,19 +773,19 @@ class MailboxController extends Controller
                 if ($email) {
                   $files = $email_data['attach'];
                   $email_replyTo = $email_data['email_replyTo'] ?? '';
-                  // return $email_replyTo[0]['email'];
+                  // return $email_replyTo ?? '';
                   $data = [];
                   $email_template = array_key_exists('email_template', $email_data)  ? $email_data['email_template'] : '';
                   $data['email'] = $email;
                   $data['template_data'] = array_key_exists('template_data', $email_data)  ? $email_data['template_data'] : '';
                   $data['email_subject'] = array_key_exists('email_subject', $email_data)  ? $email_data['email_subject'] : 'EMail from Oas36ty';
-                  $data['email_from'] = array_key_exists('email_from', $email_data) ? $email_data['email_from'] : 'robinoas36ty@gmail.com';
+                  $data['email_from'] = array_key_exists('email_from', $email_data) ? $email_data['email_from'] : 'info@gmail.com';
                   
                   $data['email_from_name'] = array_key_exists('email_from_name', $email_data) ? $email_data['email_from_name'] : 'Oas36ty';
                   $data['email_cc'] = array_key_exists('email_cc', $email_data)  ? $email_data['email_cc'] : '';
                   $data['email_bcc'] = array_key_exists('email_bcc', $email_data)  ? $email_data['email_bcc'] : '';
                   if($email_replyTo){
-                  $data['email_replyTo'] = array_key_exists('email_replyTo', $email_data)  ?   $email_replyTo[0]['email'] : '';
+                  $data['email_replyTo'] = array_key_exists('email_replyTo', $email_data)  ?   $email_replyTo[0] : '';
                   $data['message_id'] = array_key_exists('message_id', $email_data)  ? $email_data['message_id'] : '';
                   $data['references'] = array_key_exists('references', $email_data)  ? $email_data['references'] : '';
                   // $data['email'] = $email  ?? '';
@@ -814,7 +814,7 @@ class MailboxController extends Controller
                           $message->getHeaders()->addTextHeader('References', $references);
                           // $message->getHeaders()->addTextHeader('Message-ID', $data['message_id']);
 
-                            $message->replyTo($data['email_replyTo']);
+                            $message->replyTo($data['email_from']);
                         }
                         if($files){
 
