@@ -15,12 +15,12 @@ class AddCcAndBccMailbox extends Migration
     {
         if(!(Schema::hasColumn('mailbox','ccaddress'))){
             Schema::table('mailbox', function(Blueprint $table){
-                $table->longText('ccaddress');
+                $table->longText('ccaddress')->nullable();
             });
         }
         if(!(Schema::hasColumn('mailbox','bccaddress'))){
             Schema::table('mailbox', function(Blueprint $table){
-                $table->longText('bccaddress');
+                $table->longText('bccaddress')->nullable();
             });
         }
     }

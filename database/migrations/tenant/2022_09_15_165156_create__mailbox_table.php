@@ -31,10 +31,11 @@ class CreateMailboxTable extends Migration
             $table->string('label')->nullable();
             $table->boolean('isStarred')->default(false);
             $table->enum('type',['primary','promotions','social'])->default("primary");
+            $table->longText('ccaddress')->nullable();
+            $table->longText('bccaddress')->nullable();
             $table->string('date')->nullable();
             $table->string('u_date')->nullable();
             $table->string('folder')->nullable();
-            
             $table->timestamps();
         });
     }
