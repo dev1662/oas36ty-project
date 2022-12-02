@@ -23,6 +23,11 @@ class AddCcAndBccMailbox extends Migration
                 $table->longText('bccaddress')->nullable();
             });
         }
+        if(!(Schema::hasColumn('mailbox','to_replyEmails'))){
+            Schema::table('mailbox', function(Blueprint $table){
+                $table->longText('to_replyEmails')->nullable();
+            });
+        }
     }
 
     /**
