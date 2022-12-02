@@ -427,7 +427,7 @@ class CategoryController extends Controller
      *     ),
      * )
      */
-
+// commnet for testing
     public function destroy($id)
     {
         $validator = Validator::make(['category_id' => $id], [
