@@ -703,23 +703,9 @@ class MailboxController extends Controller
         $bcc=  $request->data['bcc'] ?? '';
         $cc=  $request->data['cc'] ?? '';
        
-        $attach = [];
+        $attach = $request->data['attach_url'];
         $f = [];
-        if($request->data['attach']){
-
-            $base64String = $request->data['attach'];
-            
-            foreach($base64String as $in => $file){
-                $slug = time(); //name prefix
-                $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
-
-                Storage::disk('s3')->put('email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
-                
-                $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
-                $attach[] = $url ?? '';
-            }
-            // return $avatar;
-        }
+       
 
 
         $outbound_id= $request->data['from']['id'];
@@ -1769,6 +1755,77 @@ public function reply_to_all(Request $request){
       
       
       
-      
+  public function deleteS3File(Request $request) {
+    try{
+          $file_path = $request->data['attach_url'];
+          if(Storage::disk('s3')->exists($file_path)) {
+             $check = Storage::disk('s3')->delete($file_path);
+             if ($check) {
+              $this->response['status'] = true;
+              $this->response['status_code'] = 200;
+              $this->response['message'] = "Attachment deleted successfully" ;
+              // return response()->json($this->response);
+          } else {
+              $this->response['status'] = true;
+              $this->response['status_code'] = 201;
+              $this->response['message'] = "Something went wrong" ;
+              
+          }
+          }else{
+            $this->response['status'] = true;
+            $this->response['status_code'] = 201;
+            $this->response['message'] = "Something went wrong" ;
+          }
+  
+          return true;
+      }catch(Exception $ex){
+        $this->response['status'] = false;
+        $this->response['status_code'] = 500;
+        $this->response['data']= $ex;
+        $this->response['message'] = "Something went wrong" ;
+      }
+      return response()->json($this->response);
+    }
+
+  public function addAttachS3File(Request $request){
+    try{
+        if($request->data['attach']){
+
+          $base64String = $request->data['attach'];
+          
+          foreach($base64String as $in => $file){
+              $slug = time(); //name prefix
+              $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
+
+              Storage::disk('s3')->put('email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
+              
+              $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
+              $attach[] = ['url'=>$url ?? '','fileName'=>$file['name'] ?? ''];
+          }
+         
+          if ($attach) {
+            $this->response['status'] = true;
+            $this->response['status_code'] = 200;
+            $this->response['data']= $attach;
+            $this->response['message'] = "Attachments uploaded successfully" ;
+            // return response()->json($this->response);
+        } else {
+            $this->response['status'] = true;
+            $this->response['status_code'] = 201;
+            $this->response['data']= $attach;
+            $this->response['message'] = "Something went wrong" ;
+            
+        }
+      }
+
+      }catch(Exception $ex){
+        // return $ex;
+        $this->response['status'] = false;
+        $this->response['status_code'] = 500;
+        $this->response['data']= $ex;
+        $this->response['message'] = "Something went wrong" ;
+      }
+      return response()->json($this->response);
+      }
       
       }
