@@ -1286,7 +1286,7 @@ class MailboxController extends Controller
                               }
                             }
                           }
-                          return $bcc_cc;
+                          // return $bcc_cc;
 
                           //  return [$insert];
                           //  return $attach_files;
