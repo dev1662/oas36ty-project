@@ -294,6 +294,8 @@ class FetchEmails extends Command
                                     $original_ref = $original_ref1[0] ?? '';
                                     $u_date = $oMessage->t ?? '';
                                     $date = $oMessage->date ?? '';
+                                    $ccaddress = $oMessage->cc ?? '';
+                                    $bccaddress = $oMessage->bcc ?? '';
                                     // if($oMessage->hasHTMLBody()){
                                     //     // return "htmlbody";
                                     //     $message = $oMessage->getHTMLBody(true);
@@ -363,7 +365,10 @@ class FetchEmails extends Command
                                         'references'=> $original_ref ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
                                         'attachments'=> $attachments ?? 0,
-                                        'is_parent'=> $is_parent ?? 1
+                                        'is_parent'=> $is_parent ?? 1,
+                                        'ccaddress' =>$ccaddress ?? '',
+                                        'bccaddress' => $bccaddress ?? '',
+                                        'to_replyEmails'=>$to_email ?? ''
                                         //    'recent' => $header->recent,
                                         
                                       ];
@@ -406,6 +411,8 @@ class FetchEmails extends Command
 
                                     $original_ref1 = $oMessage->references;
                                     $original_ref = $original_ref1[0] ?? '';
+                                    $ccaddress = $oMessage->cc ?? '';
+                                    $bccaddress = $oMessage->bcc ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -468,7 +475,10 @@ class FetchEmails extends Command
 
                                         'references'=> $original_ref ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
-                                        'is_parent' =>$is_parent ?? 1
+                                        'is_parent'=> $is_parent ?? 1,
+                                        'ccaddress' =>$ccaddress ?? '',
+                                        'bccaddress' => $bccaddress ?? '',
+                                        'to_replyEmails'=>$to_email ?? ''
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -502,6 +512,9 @@ class FetchEmails extends Command
 
                                     $original_ref1 = $oMessage->references;
                                     $original_ref = $original_ref1[0] ?? '';
+                                    $ccaddress = $oMessage->cc ?? '';
+                                    $bccaddress = $oMessage->bcc ?? '';
+
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -563,7 +576,10 @@ class FetchEmails extends Command
                                         'references'=> $original_ref ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
                                         'folder' => $draft->name,
-                                        'is_parent' => $is_parent ?? 1
+                                        'is_parent'=> $is_parent ?? 1,
+                                        'ccaddress' =>$ccaddress ?? '',
+                                        'bccaddress' => $bccaddress ?? '',
+                                        'to_replyEmails'=>$to_email ?? ''
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -596,6 +612,9 @@ class FetchEmails extends Command
 
                                     $original_ref1 = $oMessage->references;
                                     $original_ref = $original_ref1[0] ?? '';
+                                    $ccaddress = $oMessage->cc ?? '';
+                                    $bccaddress = $oMessage->bcc ?? '';
+
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -691,6 +710,8 @@ class FetchEmails extends Command
                                     $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                                     $original_ref1 = $oMessage->references;
                                     $original_ref = $original_ref1[0] ?? '';
+                                    $ccaddress = $oMessage->cc ?? '';
+                                    $bccaddress = $oMessage->bcc ?? '';
                                     if($oMessage->hasTextBody()){
                                       $message =$oMessage->getTextBody();
                                     }
@@ -756,7 +777,10 @@ class FetchEmails extends Command
                                         'references'=> $original_ref ?? '',
                                         'in_reply_to' => $in_reply_to ?? '',
                                         'folder' => $trash->name,
-                                        'is_parent' => $is_parent ?? 1
+                                        'is_parent'=> $is_parent ?? 1,
+                                        'ccaddress' =>$ccaddress ?? '',
+                                        'bccaddress' => $bccaddress ?? '',
+                                        'to_replyEmails'=>$to_email ?? ''
                                         //    'recent' => $header->recent,
                           
                                       ];

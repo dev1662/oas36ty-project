@@ -30,7 +30,8 @@ class Mailbox extends Model implements Auditable
         'in_reply_to',
         'is_parent',
         'bccaddress',
-        'ccaddress'
+        'ccaddress',
+        'to_replyEmails'
     ];
     
 }
