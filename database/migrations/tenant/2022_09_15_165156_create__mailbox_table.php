@@ -26,14 +26,15 @@ class CreateMailboxTable extends Migration
             $table->longText('references')->nullable();
             $table->string('in_reply_to')->nullable();
             $table->boolean('is_parent')->default(null);
-
+            
             $table->string('label')->nullable();
             $table->boolean('isStarred')->default(false);
             $table->enum('type',['primary','promotions','social'])->default("primary");
+            $table->longText('ccaddress')->nullable();
+            $table->longText('bccaddress')->nullable();
             $table->string('date')->nullable();
             $table->string('u_date')->nullable();
             $table->string('folder')->nullable();
-            
             $table->timestamps();
         });
     }
