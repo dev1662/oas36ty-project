@@ -1168,11 +1168,11 @@ class MailboxController extends Controller
 
                             $ccaddress = $oMessage->cc ?? '';
                             $bccaddress = $oMessage->bcc ?? '';
-                            if($ccaddress || $bccaddress){
-                              // return $ccaddress;
-                            //$bcc_cc[] = ['cc'=>$ccaddress ?? '', 'bcc'=>$bccaddress ?? ''] ;
-                            $bcc_cc[] = ['cc'=>explode('<',$ccaddress) ?? '', 'bcc'=>explode('<',$bccaddress) ?? '' ];
-                            }
+                            // if($ccaddress || $bccaddress){
+                            //   // return $ccaddress;
+                            // //$bcc_cc[] = ['cc'=>$ccaddress ?? '', 'bcc'=>$bccaddress ?? ''] ;
+                            // // $bcc_cc[] = ['cc'=>explode('<',$ccaddress) ?? '', 'bcc'=>explode('<',$bccaddress) ?? '' ];
+                            // }
                             $attach_files = [];
                            $message = $oMessage->getHTMLBody();
                            if(!$message){
@@ -1255,7 +1255,8 @@ class MailboxController extends Controller
                                 'attachments'=> $attachments ?? 0,
                                 'is_parent'=> $is_parent ?? 1,
                                 'ccaddress' =>$ccaddress ?? '',
-                                'bccaddress' => $bccaddress ?? ''
+                                'bccaddress' => $bccaddress ?? '',
+                                'to_replyEmails'=>$to_email ?? ''
                                 //    'recent' => $header->recent,
                                 
                               ];
@@ -1293,7 +1294,8 @@ class MailboxController extends Controller
                             $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
-
+                            $ccaddress = $oMessage->cc ?? '';
+                            $bccaddress = $oMessage->bcc ?? '';
                             // $reply_toaddress =  $oMessage->reply_toaddress ?? '';
                             // $rep_add = explode('<',$reply_toaddress) ?? '';
                             // $repadd[]= str_replace('>','',$rep_add[1] ?? $rep_add[0]) ??  $reply_toaddress;//explode('<',$reply_toaddress[0]);
@@ -1362,7 +1364,11 @@ class MailboxController extends Controller
 
                                 'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to ?? '',
-                                'is_parent' =>$is_parent ?? 1
+                                'is_parent' =>$is_parent ?? 1,
+                                'ccaddress' =>$ccaddress ?? '',
+                                'bccaddress' => $bccaddress ?? '',
+                                'to_replyEmails'=>$to_email ?? ''
+
                                 //    'recent' => $header->recent,
                   
                               ];
@@ -1396,6 +1402,9 @@ class MailboxController extends Controller
 
                             $original_ref1 = $oMessage->references;
                             $original_ref = $original_ref1[0] ?? '';
+                            $ccaddress = $oMessage->cc ?? '';
+                            $bccaddress = $oMessage->bcc ?? '';
+
                             if($oMessage->hasTextBody()){
                               $message =$oMessage->getTextBody();
                             }
@@ -1457,7 +1466,11 @@ class MailboxController extends Controller
                                 'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'folder' => $draft->name,
-                                'is_parent' => $is_parent ?? 1
+                                'is_parent' => $is_parent ?? 1,
+                                'ccaddress' =>$ccaddress ?? '',
+                                'bccaddress' => $bccaddress ?? '',
+                                'to_replyEmails'=>$to_email ?? ''
+
                                 //    'recent' => $header->recent,
                   
                               ];
@@ -1489,6 +1502,9 @@ class MailboxController extends Controller
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                             $original_ref1 = $oMessage->references;
                             $original_ref = $original_ref1[0] ?? '';
+                            $ccaddress = $oMessage->cc ?? '';
+                            $bccaddress = $oMessage->bcc ?? '';
+
                             if($oMessage->hasTextBody()){
                               $message =$oMessage->getTextBody();
                             }
@@ -1550,7 +1566,11 @@ class MailboxController extends Controller
                                 'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to[0] ?? '',
                                 'folder' => $spam->name,
-                                'is_parent' => $is_parent ?? 1
+                                'is_parent' => $is_parent ?? 1,
+                                'ccaddress' =>$ccaddress ?? '',
+                                'bccaddress' => $bccaddress ?? '',
+                                'to_replyEmails'=>$to_email ?? ''
+
                                 //    'recent' => $header->recent,
                   
                               ];
@@ -1584,6 +1604,9 @@ class MailboxController extends Controller
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                             $original_ref1 = $oMessage->references;
                             $original_ref = $original_ref1[0] ?? '';
+                            $ccaddress = $oMessage->cc ?? '';
+                            $bccaddress = $oMessage->bcc ?? '';
+
                             if($oMessage->hasTextBody()){
                               $message =$oMessage->getTextBody();
                             }
@@ -1649,7 +1672,11 @@ class MailboxController extends Controller
                                 'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'folder' => $trash->name,
-                                'is_parent' => $is_parent ?? 1
+                                'is_parent' => $is_parent ?? 1,
+                                'ccaddress' =>$ccaddress ?? '',
+                                'bccaddress' => $bccaddress ?? '',
+                                'to_replyEmails'=>$to_email ?? ''
+
                                 //    'recent' => $header->recent,
                   
                               ];
