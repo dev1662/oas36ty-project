@@ -79,7 +79,7 @@ Route::middleware([
 
             Route::apiResource('tasks.users', TaskUserController::class);
             Route::apiResource('tasks.comments', TaskCommentController::class);
-// Route::get('/tasks/1/comments/assigned_users',[TaskCommentController::class, 'usersAssigned']);
+// Route::get('/tasks/1/comments/assigned_users',[TaskCommentController::class, 'usersAsfsigned']);
 
             Route::apiResource('to-dos', ToDoController::class);
             Route::apiResource('Companys', CompanyController::class);
@@ -102,6 +102,8 @@ Route::middleware([
             // Route::post('/apps/email/sent', [MailboxController::class, 'fetch_sent_emails']);
             
             Route::post('/apps/email/update-emails', [MailboxController::class, 'updateEmails']);
+            Route::post('/apps/email/add-atach', [MailboxController::class, 'addAttachS3File']);
+            Route::post('/apps/email/delete-attach', [MailboxController::class, 'deleteS3File']);
 
             Route::apiResource('email-outbound', EmailOutboundController::class);
             Route::apiResource('email-inbound', EmailInboundController::class);
