@@ -1155,7 +1155,7 @@ class MailboxController extends Controller
                             $from_email = $oMessage->sender[0]->mail ?? '';
                             $from_name = $oMessage->sender ?? '';
                             $message_id = $oMessage->message_id ?? '';
-                            $to_email = $oMessage->to ?? '';
+                            $to_email = $oMessage->to ?? null;
                             $references = str_replace('<','',$oMessage->references) ?? '';
                             $references = str_replace('>',',', $references) ?? '';
                             $references = explode(',',$references);
@@ -1166,8 +1166,8 @@ class MailboxController extends Controller
                             $u_date = $oMessage->t ?? '';
                             $date = $oMessage->date ?? '';
 
-                            $ccaddress = $oMessage->cc ?? '';
-                            $bccaddress = $oMessage->bcc ?? '';
+                            $ccaddress = $oMessage->cc ?? null;
+                            $bccaddress = $oMessage->bcc ?? null;
                             // if($ccaddress || $bccaddress){
                             //   // return $ccaddress;
                             // //$bcc_cc[] = ['cc'=>$ccaddress ?? '', 'bcc'=>$bccaddress ?? ''] ;
@@ -1254,9 +1254,9 @@ class MailboxController extends Controller
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'attachments'=> $attachments ?? 0,
                                 'is_parent'=> $is_parent ?? 1,
-                                'ccaddress' =>$ccaddress ?? '',
-                                'bccaddress' => $bccaddress ?? '',
-                                'to_replyEmails'=>$to_email ?? ''
+                                'ccaddress' =>$ccaddress ?? null,
+                                'bccaddress' => $bccaddress ?? null,
+                                'to_replyEmails'=>$to_email ?? null
                                 //    'recent' => $header->recent,
                                 
                               ];
@@ -1285,7 +1285,7 @@ class MailboxController extends Controller
                             $from_email = $oMessage->sender[0]->mail ?? '';
                             $from_name = $oMessage->sender ?? '';
                             $message_id = $oMessage->message_id ?? '';
-                            $to_email = $oMessage->to ?? '';
+                            $to_email = $oMessage->to ?? null;
                             $u_date = $oMessage->t ?? '';
                             $date = $oMessage->date ?? '';
                             
@@ -1294,8 +1294,8 @@ class MailboxController extends Controller
                             $references = explode(',',$references);
                             $in_reply_to  = str_replace('<','',$oMessage->in_reply_to) ?? '';
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
-                            $ccaddress = $oMessage->cc ?? '';
-                            $bccaddress = $oMessage->bcc ?? '';
+                            $ccaddress = $oMessage->cc ?? null;
+                            $bccaddress = $oMessage->bcc ?? null;
                             // $reply_toaddress =  $oMessage->reply_toaddress ?? '';
                             // $rep_add = explode('<',$reply_toaddress) ?? '';
                             // $repadd[]= str_replace('>','',$rep_add[1] ?? $rep_add[0]) ??  $reply_toaddress;//explode('<',$reply_toaddress[0]);
@@ -1365,9 +1365,9 @@ class MailboxController extends Controller
                                 'references'=> $original_ref ?? '',
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'is_parent' =>$is_parent ?? 1,
-                                'ccaddress' =>$ccaddress ?? '',
-                                'bccaddress' => $bccaddress ?? '',
-                                'to_replyEmails'=>$to_email ?? ''
+                                'ccaddress' =>$ccaddress ?? null,
+                                'bccaddress' => $bccaddress ?? null,
+                                'to_replyEmails'=>$to_email ?? null
 
                                 //    'recent' => $header->recent,
                   
@@ -1391,7 +1391,7 @@ class MailboxController extends Controller
                             $from_email = $oMessage->sender[0]->mail ?? '';
                             $from_name = $oMessage->sender ?? '';
                             $message_id = $oMessage->message_id ?? '';
-                            $to_email = $oMessage->to ?? '';
+                            $to_email = $oMessage->to ?? null;
                             $u_date = $oMessage->t ?? '';
                             $date = $oMessage->date ?? '';
                             $references = str_replace('<','',$oMessage->references) ?? '';
@@ -1402,8 +1402,8 @@ class MailboxController extends Controller
 
                             $original_ref1 = $oMessage->references;
                             $original_ref = $original_ref1[0] ?? '';
-                            $ccaddress = $oMessage->cc ?? '';
-                            $bccaddress = $oMessage->bcc ?? '';
+                            $ccaddress = $oMessage->cc ?? null;
+                            $bccaddress = $oMessage->bcc ?? null;
 
                             if($oMessage->hasTextBody()){
                               $message =$oMessage->getTextBody();
@@ -1467,9 +1467,9 @@ class MailboxController extends Controller
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'folder' => $draft->name,
                                 'is_parent' => $is_parent ?? 1,
-                                'ccaddress' =>$ccaddress ?? '',
-                                'bccaddress' => $bccaddress ?? '',
-                                'to_replyEmails'=>$to_email ?? ''
+                                'ccaddress' =>$ccaddress ?? null,
+                                'bccaddress' => $bccaddress ?? null,
+                                'to_replyEmails'=>$to_email ?? null
 
                                 //    'recent' => $header->recent,
                   
@@ -1492,7 +1492,7 @@ class MailboxController extends Controller
                             $from_email = $oMessage->sender[0]->mail ?? '';
                             $from_name = $oMessage->sender ?? '';
                             $message_id = $oMessage->message_id ?? '';
-                            $to_email = $oMessage->to ?? '';
+                            $to_email = $oMessage->to ?? null;
                             $u_date = $oMessage->t ?? '';
                             $date = $oMessage->date ?? '';
                             $references = str_replace('<','',$oMessage->references) ?? '';
@@ -1502,8 +1502,8 @@ class MailboxController extends Controller
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                             $original_ref1 = $oMessage->references;
                             $original_ref = $original_ref1[0] ?? '';
-                            $ccaddress = $oMessage->cc ?? '';
-                            $bccaddress = $oMessage->bcc ?? '';
+                            $ccaddress = $oMessage->cc ?? null;
+                            $bccaddress = $oMessage->bcc ?? null;
 
                             if($oMessage->hasTextBody()){
                               $message =$oMessage->getTextBody();
@@ -1567,9 +1567,9 @@ class MailboxController extends Controller
                                 'in_reply_to' => $in_reply_to[0] ?? '',
                                 'folder' => $spam->name,
                                 'is_parent' => $is_parent ?? 1,
-                                'ccaddress' =>$ccaddress ?? '',
-                                'bccaddress' => $bccaddress ?? '',
-                                'to_replyEmails'=>$to_email ?? ''
+                                'ccaddress' =>$ccaddress ?? null,
+                                'bccaddress' => $bccaddress ?? null,
+                                'to_replyEmails'=>$to_email ?? null
 
                                 //    'recent' => $header->recent,
                   
@@ -1593,7 +1593,7 @@ class MailboxController extends Controller
                             $from_email = $oMessage->sender[0]->mail ?? '';
                             $from_name = $oMessage->sender ?? '';
                             $message_id = $oMessage->message_id ?? '';
-                            $to_email = $oMessage->to ?? '';
+                            $to_email = $oMessage->to ?? null;
                             $u_date = $oMessage->t ?? '';
                             
                             $date = $oMessage->date ?? '';
@@ -1604,8 +1604,8 @@ class MailboxController extends Controller
                             $in_reply_to = str_replace('>','',$in_reply_to) ?? '';
                             $original_ref1 = $oMessage->references;
                             $original_ref = $original_ref1[0] ?? '';
-                            $ccaddress = $oMessage->cc ?? '';
-                            $bccaddress = $oMessage->bcc ?? '';
+                            $ccaddress = $oMessage->cc ?? null;
+                            $bccaddress = $oMessage->bcc ?? null;
 
                             if($oMessage->hasTextBody()){
                               $message =$oMessage->getTextBody();
@@ -1673,9 +1673,9 @@ class MailboxController extends Controller
                                 'in_reply_to' => $in_reply_to ?? '',
                                 'folder' => $trash->name,
                                 'is_parent' => $is_parent ?? 1,
-                                'ccaddress' =>$ccaddress ?? '',
-                                'bccaddress' => $bccaddress ?? '',
-                                'to_replyEmails'=>$to_email ?? ''
+                                'ccaddress' =>$ccaddress ?? null,
+                                'bccaddress' => $bccaddress ?? null,
+                                'to_replyEmails'=>$to_email ?? null
 
                                 //    'recent' => $header->recent,
                   
