@@ -102,7 +102,7 @@ Route::middleware([
             // Route::post('/apps/email/sent', [MailboxController::class, 'fetch_sent_emails']);
             
             Route::post('/apps/email/update-emails', [MailboxController::class, 'updateEmails']);
-            Route::post('/apps/email/add-atach', [MailboxController::class, 'addAttachS3File']);
+            Route::post('/apps/email/add-attach', [MailboxController::class, 'addAttachS3File']);
             Route::post('/apps/email/delete-attach', [MailboxController::class, 'deleteS3File']);
 
             Route::apiResource('email-outbound', EmailOutboundController::class);
