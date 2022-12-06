@@ -195,6 +195,15 @@ class FetchEmails extends Command
                             if($sent){
                             if($check1){
                               try{
+
+                                $totalMessages = $sent->query()->all()->count();
+
+                                if ($totalMessages) {
+
+                                    UserEmail::where(['user_id' => $user->id, 'emails_setting_id' => $data->id])->update([
+                                        'sent_msg_count' => $totalMessages
+                                    ]);
+                                }
                                
                               $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
                             }catch(Exception $ex){
@@ -204,6 +213,15 @@ class FetchEmails extends Command
                             
                             }else{
                               try{
+
+                                $totalMessages = $sent->query()->all()->count();
+
+                                if ($totalMessages) {
+
+                                    UserEmail::where(['user_id' => $user->id, 'emails_setting_id' => $data->id])->update([
+                                        'sent_msg_count' => $totalMessages
+                                    ]);
+                                }
                                 // $sent = $client->getFolderByName('Sent Mail');
                                 $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->get() ?? [];
                               }catch(Exception $ex){
@@ -218,6 +236,15 @@ class FetchEmails extends Command
                             if($draft){
                               if($draft_check){
                                 try{
+                                  $totalMessages = $draft->query()->all()->count();
+
+                                  if ($totalMessages) {
+  
+                                      UserEmail::where(['user_id' => $user->id, 'emails_setting_id' => $data->id])->update([
+                                          'draft_msg_count' => $totalMessages
+                                      ]);
+                                  }
+
                               $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
                             }catch(Exception $ex){
                               $draft_messages = [];
@@ -225,6 +252,15 @@ class FetchEmails extends Command
                             }
                               }else{
                                 try{
+                                  $totalMessages = $draft->query()->all()->count();
+
+                                  if ($totalMessages) {
+  
+                                      UserEmail::where(['user_id' => $user->id, 'emails_setting_id' => $data->id])->update([
+                                          'draft_msg_count' => $totalMessages
+                                      ]);
+                                  }
+
                                 $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->get() ?? [];
                               }catch(Exception $ex){
                                 $draft_messages = [];
@@ -237,6 +273,15 @@ class FetchEmails extends Command
                               if($trash){
                               if($trash_check){
                                 try{
+                                  $totalMessages = $trash->query()->all()->count();
+
+                                  if ($totalMessages) {
+  
+                                      UserEmail::where(['user_id' => $user->id, 'emails_setting_id' => $data->id])->update([
+                                          'trash_msg_count' => $totalMessages
+                                      ]);
+                                  }
+
                                 $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
                               }catch(Exception $ex){
                                 $trash_messages =[];
@@ -244,6 +289,15 @@ class FetchEmails extends Command
                               }
                                 }else{
                                   try{
+                                    $totalMessages = $trash->query()->all()->count();
+
+                                    if ($totalMessages) {
+    
+                                        UserEmail::where(['user_id' => $user->id, 'emails_setting_id' => $data->id])->update([
+                                            'trash_msg_count' => $totalMessages
+                                        ]);
+                                    }
+
                                   $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->get() ?? [];
                                 }catch(Exception $ex){
                                   $trash_messages =[];
@@ -257,6 +311,15 @@ class FetchEmails extends Command
                               if($spam){
                               if($spam_check){
                                 try{
+                                  $totalMessages = $spam->query()->all()->count();
+
+                                  if ($totalMessages) {
+  
+                                      UserEmail::where(['user_id' => $user->id, 'emails_setting_id' => $data->id])->update([
+                                          'spam_msg_count' => $totalMessages
+                                      ]);
+                                  }
+
                                 $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(10,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
                               }catch(Exception $ex){
                                 $spam_messages =[];
@@ -264,6 +327,15 @@ class FetchEmails extends Command
                               }
                                 }else{
                                   try{
+                                    $totalMessages = $spam->query()->all()->count();
+
+                                    if ($totalMessages) {
+    
+                                        UserEmail::where(['user_id' => $user->id, 'emails_setting_id' => $data->id])->update([
+                                            'spam_msg_count' => $totalMessages
+                                        ]);
+                                    }
+
                                   $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->get() ?? [];
                                 }catch(Exception $ex){
                                   $spam_messages =[];

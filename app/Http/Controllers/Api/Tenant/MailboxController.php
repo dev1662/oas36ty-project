@@ -269,6 +269,8 @@ class MailboxController extends Controller
                         $result[]= ['parent'=>$res];
                     }
                 }
+                $total_count =  ['count' => UserEmail::select('sent_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
+                $total_count = $total_count['count']->sent_msg_count;
 
             }
             if($req->folder == 'draft'){
@@ -293,6 +295,9 @@ class MailboxController extends Controller
                     }
 
                 }
+                $total_count =  ['count' => UserEmail::select('draft_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
+                $total_count = $total_count['count']->draft_msg_count;
+
             }
             if($req->folder == 'spam'){
 
@@ -323,6 +328,9 @@ class MailboxController extends Controller
                     //     $result[]= ['parent'=>$res];
                     // }
                 }
+                $total_count =  ['count' => UserEmail::select('spam_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
+                $total_count = $total_count['count']->spam_msg_count;
+
             }
             if($req->folder == 'trash'){
                 $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
@@ -347,6 +355,8 @@ class MailboxController extends Controller
                         $result[]= ['parent'=>$res];
                     }
                 }
+                $total_count =  ['count' => UserEmail::select('trash_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
+               $total_count = $total_count['count']->trash_msg_count;
             }
             if(!$req->folder){
                 if($req->q){
@@ -354,7 +364,7 @@ class MailboxController extends Controller
                     $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX' ])->orderBy('u_date', 'desc')->where('is_parent',1)->offset($offset)->limit(40)->get();
+                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX' ])->orderBy('u_date', 'desc')->where('is_parent',1)->offset($offset)->limit(50)->get();
 
                     foreach($results as $key=> $res){
                         $eamils_arr = [];
@@ -393,14 +403,25 @@ class MailboxController extends Controller
                     }
                     
                 }
+                $total_count =  ['count' => UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
+               $total_count = $total_count['count']->inbound_msg_count;
+
             }
             if($req->folder == 'starred'){
+
                 $results = Mailbox::where(['isStarred' => 1])->where('is_parent',1)
                 ->where(function($query) use ($username){
                     $query->where(['to_email' => $username->mail_username ])
                     ->orWhere(['from_email' => $username->mail_username]);
                 })
                 ->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
+
+                $starred_count = Mailbox::where(['isStarred' => 1])->where('is_parent',1)
+                ->where(function($query) use ($username){
+                    $query->where(['to_email' => $username->mail_username ])
+                    ->orWhere(['from_email' => $username->mail_username]);
+                })
+                ->count();
                 foreach($results as $key=> $res){
                         
                     // $eamils_arr = Mailbox::where('references','LIKE','%'.$res['message_id'].'%')->where(['to_email' => $username->mail_username, 'isStarred' => 1])->get();
@@ -418,15 +439,16 @@ class MailboxController extends Controller
                         $result[]= ['parent'=>$res];
                     }
                 }
-
+                $total_count = $starred_count;
             }
+
             // if($req->folder == 'starred'){
             //     $result[$index] = Mailbox::where(['to_email' => $username->mail_username, 'isStarred' => 1])->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
 
             // }
             // $total_count[$index] =  Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->get();
 
-            $total_count =  ['count' => UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
+            // $total_count =  ['count' => UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
         }
     }
         //   return $total_count;
@@ -438,7 +460,7 @@ class MailboxController extends Controller
         }
         if ($total_count) {
            
-            $count_of_msg = $total_count['count']->inbound_msg_count;
+            $count_of_msg = $total_count;
         } else {
             $count_of_msg = 0;
         }
@@ -1020,6 +1042,13 @@ class MailboxController extends Controller
                     if($sent){
                     if($check1){
                       try{
+                        $totalMessages = $sent->messages()->all()->count();
+                        if ($totalMessages) {
+
+                            UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
+                                'sent_msg_count' => $totalMessages
+                            ]);
+                        }
                        
                       $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(20,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
                     }catch(Exception $ex){
@@ -1030,6 +1059,14 @@ class MailboxController extends Controller
                     }else{
                       try{
                         // $sent = $client->getFolderByName('Sent Mail');
+                        $totalMessages = $sent->messages()->all()->count();
+                        if ($totalMessages) {
+
+                            UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
+                                'sent_msg_count' => $totalMessages
+                            ]);
+                        }
+
                         $sent_messages = $sent->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                       }catch(Exception $ex){
                         $sent_messages =[];
@@ -1043,13 +1080,29 @@ class MailboxController extends Controller
                     if($draft){
                       if($draft_check){
                         try{
-                      $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(5,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
+                          $totalMessages = $draft->messages()->all()->count();
+                          if ($totalMessages) {
+  
+                              UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
+                                  'draft_msg_count' => $totalMessages
+                              ]);
+                          }
+
+                      $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(20,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
                     }catch(Exception $ex){
                       $draft_messages = [];
                       continue;
                     }
                       }else{
                         try{
+                          $totalMessages = $draft->messages()->all()->count();
+                          if ($totalMessages) {
+  
+                              UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
+                                  'draft_msg_count' => $totalMessages
+                              ]);
+                          }
+
                         $draft_messages = $draft->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                       }catch(Exception $ex){
                         $draft_messages = [];
@@ -1062,6 +1115,14 @@ class MailboxController extends Controller
                       if($trash){
                       if($trash_check){
                         try{
+                          $totalMessages = $trash->messages()->all()->count();
+                          if ($totalMessages) {
+  
+                              UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
+                                  'trash_msg_count' => $totalMessages
+                              ]);
+                          }
+
                         $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(5,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
                       }catch(Exception $ex){
                         $trash_messages =[];
@@ -1069,6 +1130,14 @@ class MailboxController extends Controller
                       }
                         }else{
                           try{
+                            $totalMessages = $trash->messages()->all()->count();
+                            if ($totalMessages) {
+    
+                                UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
+                                    'trash_msg_count' => $totalMessages
+                                ]);
+                            }
+
                           $trash_messages = $trash->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                         }catch(Exception $ex){
                           $trash_messages =[];
@@ -1082,6 +1151,14 @@ class MailboxController extends Controller
                       if($spam){
                       if($spam_check){
                         try{
+
+                          $totalMessages = $spam->messages()->all()->count();
+                          if ($totalMessages) {
+  
+                              UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
+                                  'spam_msg_count' => $totalMessages
+                              ]);
+                          }
                         $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(5,1)->get() ?? [];//$sent->messages()->all()->limit(20, $request->page)->get();
                       }catch(Exception $ex){
                         $spam_messages =[];
@@ -1089,6 +1166,14 @@ class MailboxController extends Controller
                       }
                         }else{
                           try{
+                            $totalMessages = $spam->messages()->all()->count();
+                            if ($totalMessages) {
+    
+                                UserEmail::where(['user_id' => $user_id, 'emails_setting_id' => $data->id])->update([
+                                    'spam_msg_count' => $totalMessages
+                                ]);
+                            }
+
                           $spam_messages = $spam->messages()->all()->setFetchOrder("desc")->limit(100,1)->get() ?? [];
                         }catch(Exception $ex){
                           $spam_messages =[];

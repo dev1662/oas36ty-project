@@ -18,7 +18,11 @@ class UserEmail extends Model implements Auditable
     public $fillable = [
         'user_id',
         'emails_setting_id',
-        'inbound_msg_count'
+        'inbound_msg_count',
+        'sent_msg_count',
+        'trash_msg_count',
+        'spam_msg_count',
+        'draft_msg_count'
     ];
 
     public function users(){
