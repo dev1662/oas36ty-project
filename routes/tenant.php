@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\DB;
 
 Route::middleware([
     'api',
+    'throttle',
     InitializeTenancyByRequestData::class,
     // PreventAccessFromCentralDomains::class,
 ])->group(function () {
