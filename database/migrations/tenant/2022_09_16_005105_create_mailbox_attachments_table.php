@@ -17,11 +17,13 @@ class CreateMailboxAttachmentsTable extends Migration
         Schema::create('mailbox_attachments', function (Blueprint $table) {
             $table->id();
             $table->string('mailbox_id')->nullable();
-            $table->string('attachment')->nullable();
+            $table->string('attachment_url')->nullable();
+            $table->string('attachment_name')->nullable();
+            $table->string('folder')->nullable();
             $table->timestamps();
         });
     }
-    }
+}
 
     /**
      * Reverse the migrations.

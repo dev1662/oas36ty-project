@@ -10,6 +10,7 @@ use App\Models\EmailInbound;
 use App\Models\EmailOutbound;
 use App\Models\EmailsSetting;
 use App\Models\Mailbox;
+use App\Models\MailboxAttachment;
 use App\Models\UserEmail;
 use Carbon\Carbon;
 use Exception;
@@ -364,7 +365,7 @@ class MailboxController extends Controller
                     $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX' ])->orderBy('u_date', 'desc')->where('is_parent',1)->offset($offset)->limit(50)->get();
+                    $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX' ])->orderBy('u_date', 'desc')->where('is_parent',1)->offset($offset)->limit(50)->with('attachments_file')->get();
 
                     foreach($results as $key=> $res){
                         $eamils_arr = [];
@@ -382,7 +383,7 @@ class MailboxController extends Controller
                        ->where(function($query) use($username){
                          $query->where(['to_email' => $username->mail_username])
                          ->orWhere(['from_email'=> $username->mail_username]);
-                        })
+                        })->with('attachments_file')
                                ->orderBy('u_date','desc')->get();
                             // }    
                             // return $eamils_arr;
@@ -1265,28 +1266,7 @@ class MailboxController extends Controller
                             $message = $message;
                            }
                             $attachments = $oMessage->getAttachments()->count();
-                            $attachments_file = $oMessage->getAttachments();
-                            if($attachments_file){
-                              foreach($attachments_file as $key => $attach){
-                                // $attach_files[$key] = $attach_file->name ?? '';
-
-                                $masked = $attach->setMask(AttachmentMask::class);
-                                $temp = [];
-                                $temp['mask'] = $masked->mask();
-                                $temp['image_url'] = $temp['mask']->getImageSrc();
-                                $temp['attachment_name'] = $temp['mask']->getName();
-                                // $temp['disposition'] = $temp['mask']->getDisposition();
-                                $temp['size'] = $temp['mask']->getSize();
-                              //array_push()
-                              $attach_files[$key] = $temp;
-
-                              }
-                              // return ['files',$attachments_file];
-                            //   $oMessage->getAttachments()->each(function ($oAttachment) use ($oMessage) {
-                            //     file_put_contents(storage_path('attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name), $oAttachment->content);
-                            //     // $attach_files[] =['file',$oAttachment];
-                            // });
-                            }
+                           
                             //  return $oMessage->getXFailedRecipients();
                             // return $oMessage;
                             // return $oMessage->getBodies();
@@ -1295,6 +1275,11 @@ class MailboxController extends Controller
                             // $check_email = "";
                             // return $check_email;
                             if (!$check_email) {
+
+                              //--------------------------------------- Download Attachments of messages ----------------------------
+                              $attachments_file = $oMessage->getAttachments();
+                             
+
                               // return [$references[0]];
                               $is_parent = null;
                               if($in_reply_to){
@@ -1349,7 +1334,57 @@ class MailboxController extends Controller
                               //  return $attachments;
                               // return [$details_of_email, 'parent checking'];
                               try {
-                                Mailbox::create($details_of_email);
+                               $insert_file = Mailbox::create($details_of_email);
+
+
+                                if($attachments_file){
+                                  foreach($attachments_file as $key => $attach){
+                                    // $attach_files[$key] = $attach_file->name ?? '';
+    
+                                    $masked = $attach->setMask(AttachmentMask::class);
+                                    $temp = [];
+                                    $temp['mask'] = $masked->mask();
+    
+                                    $filebase64 = $temp['mask']->getImageSrc();
+                                    // $filebase64 = str_replace('"','',$filebase64);
+                                    // $filebase64 = explode('base64,',$filebase64);
+                                    $temp['file'] = $filebase64;
+                                    $temp['name'] = $temp['mask']->getName();
+                                    // $temp['disposition'] = $temp['mask']->getDisposition();
+                                    $temp['size'] = $temp['mask']->getSize();
+                                  //array_push()
+    
+                                  $avatar = $this->getFileName($temp['file'], trim($temp['name']), null);
+                                  try{
+                                    
+                                    Storage::disk('s3')->put('inbox-email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
+                                    
+                                    $url = Storage::disk('s3')->url('inbox-email-files/' . $avatar['name']);
+                                    
+                                    $insert_arr = [
+                                      'mailbox_id' => $insert_file->id ?? '',
+                                      'attachment_url' => $url ?? '',
+                                      'attachment_name' => $temp['name'] ?? '',
+                                      'folder' => $inbox->name ?? ''
+                                    ];
+                                    $check = MailboxAttachment::create($insert_arr);
+  
+                                  if(!$check){
+                                    continue;
+                                  }
+                                  
+                                }catch(Exception $e){
+                                  continue;
+                                }
+                                  
+    
+                                  }
+                                // return ['files',$attachments_file];
+                                //   $oMessage->getAttachments()->each(function ($oAttachment) use ($oMessage) {
+                                //     file_put_contents(storage_path('attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name), $oAttachment->content);
+                                //     // $attach_files[] =['file',$oAttachment];
+                                // });
+                                }
                                 // $reply[] = $details_of_email;
                                 
                               } catch (Exception $ex) {

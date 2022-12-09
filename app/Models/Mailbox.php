@@ -33,5 +33,10 @@ class Mailbox extends Model implements Auditable
         'ccaddress',
         'to_replyEmails'
     ];
+
+    public function attachments_file()
+    {
+        return $this->hasMany(MailboxAttachment::class);
+       }
     
 }
