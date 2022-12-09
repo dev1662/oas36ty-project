@@ -16,6 +16,8 @@ use App\Models\User;
 
 use App\Mail\JoiningInvitation as JoiningInvitationMail;
 use App\Models\Branch;
+use App\Models\Category;
+use App\Models\CategoryUser;
 use App\Models\EmailsSetting;
 use App\Models\Mailbox;
 use App\Models\UserEmail;
@@ -46,7 +48,7 @@ class UserController extends Controller
     //     //     "user_emails" => $users_emails,
     //     //     "user" => $centralUser
     //     //     // "email_settings" => EmailsSetting::with(['emailInbound','emailOutbound'])->get(),
-            
+
     //     // ];
     //     // $tenant = $request->header('X-Tenant');
     //     // $this->switchingDB('oas36ty_org_'.$tenant);
@@ -57,18 +59,18 @@ class UserController extends Controller
     //         'mail_username' => "jakeraubin@gmail.com",
     //         'mail_password' => "yfkfaxbeignwfebw",
     //         'mail_port' => 993,
-            
+
     //     ];
-        
+
     //     $host = '{'.$data['mail_host'].':'.$data['mail_port'].'/'.$data['mail_transport'].'/'.$data['mail_encryption'].'}';
     //     // return $host;
     //     // / Your gmail credentials /
     //     $user = $data['mail_username'];
     //     $password = $data['mail_password'];
-        
+
     //     // / Establish a IMAP connection /
     //     $conn = imap_open($host, $user, $password)
-        
+
     //     or die('unable to connect Gmail: ' . imap_last_error());
     //     $mails = imap_search($conn, 'ALL');
     //     // / loop through each email id mails are available. /
@@ -77,11 +79,11 @@ class UserController extends Controller
     //         // / For each email /
     //         foreach ($mails as $email_number) {
     //             $headers = imap_fetch_overview($conn, $email_number, 0);
-        
+
     //             // $structure = imap_fetchstructure($conn, $email_number);
-        
+
     //             // $attachments = array();
-        
+
     //             // /* if any attachments found... */
     //             // if(isset($structure->parts) && count($structure->parts)) 
     //             // {
@@ -93,7 +95,7 @@ class UserController extends Controller
     //             //             'name' => '',
     //             //             'attachment' => ''
     //             //         );
-        
+
     //             //         if($structure->parts[$i]->ifdparameters) 
     //             //         {
     //             //             foreach($structure->parts[$i]->dparameters as $object) 
@@ -105,7 +107,7 @@ class UserController extends Controller
     //             //                 }
     //             //             }
     //             //         }
-        
+
     //             //         if($structure->parts[$i]->ifparameters) 
     //             //         {
     //             //             foreach($structure->parts[$i]->parameters as $object) 
@@ -117,11 +119,11 @@ class UserController extends Controller
     //             //                 }
     //             //             }
     //             //         }
-        
+
     //             //         if($attachments[$i]['is_attachment']) 
     //             //         {
     //             //             $attachments[$i]['attachment'] = imap_fetchbody($conn, $email_number, $i+1);
-        
+
     //             //             /* 3 = BASE64 encoding */
     //             //             if($structure->parts[$i]->encoding == 3) 
     //             //             { 
@@ -136,7 +138,7 @@ class UserController extends Controller
     //             //     }
     //             // }
     //             // Log::info($attachments);
-        
+
     //             // Log::info($headers);
     //             $message = imap_fetchbody($conn, $email_number, '1');
     //             $subMessage = substr($message, 0, 150);
@@ -153,31 +155,31 @@ class UserController extends Controller
     //                     'message' => $finalMessage,
     //                     'date' => $header->date,
     //                     'u_date' => $header->udate,
-        
+
     //                 ];
-                    
+
     //                $insert= Mailbox::create($details_of_email[$index]);
-                   
+
     //             }
-                
+
     //             // return;
     //         }// End foreach
     //         if($insert){
     //             return "success";
     //         }
-        
+
     //     }//endif
-        
-  
+
+
     //     imap_close($conn);
-        
+
 
     //     // $request_email = json_decode($request->header('currrent'))->email;
     //     // $centralUser = CentralUser::where('email', $request_email)->first();
     //     // $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
     //     // tenancy()->initialize($tenant);
     //     // return $request_email;die;
-       
+
     //         // Artisan::call('queue:listen');
     // }
     public function get_emails_to_assign(Request $request)
@@ -282,21 +284,21 @@ class UserController extends Controller
         // $path = 'http://localhost/oas36ty/local_api/storage/tenant'.$request->header('X-Tenant').'/';
 
         // return $path;
-        $users_emails =UserEmail::with([
-            'users' => function($q) use($search){
+        $users_emails = UserEmail::with([
+            'users' => function ($q) use ($search) {
                 $q->select('id', 'name', 'avatar', 'email', 'status')
-                // ->where(function ($q) use ($search) {
-                //     if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
-                // })
-                // ->latest()
+                    // ->where(function ($q) use ($search) {
+                    //     if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
+                    // })
+                    // ->latest()
                 ;
             },
-            'EmailsSetting' => function($q) use($user){
+            'EmailsSetting' => function ($q) use ($user) {
                 $q->select('id', 'email', 'inbound_status', 'outbound_status');
             }
         ])->get();
-        
-       $users =  User::select('id', 'name', 'avatar', 'email', 'status')->where(function ($q) use ($search) {
+
+        $users =  User::select('id', 'name', 'avatar', 'email', 'status')->where(function ($q) use ($search) {
             if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
         })->latest()->get();
 
@@ -304,11 +306,11 @@ class UserController extends Controller
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
         $this->response["data"] =
-         [
-            "users" => $users,
-            "user_emails" => $users_emails
-        //  "path" => $path
-        ];
+            [
+                "users" => $users,
+                "user_emails" => $users_emails
+                //  "path" => $path
+            ];
         // $request_email = json_decode($request->header('currrent'))->email;
 
         // $email_master = EmailsSetting::where('email', $request_email)->with(['emailInbound', 'emailOutbound'])->first();
@@ -319,7 +321,7 @@ class UserController extends Controller
         //     'mail_username' => $email_master->emailInbound->mail_username,
         //     'mail_password' => $email_master->emailInbound->mail_password,
         //     'mail_port' => $email_master->emailInbound->mail_port,
-            
+
         // ];
 
         //  $data = [
@@ -329,12 +331,12 @@ class UserController extends Controller
         //     'mail_username' => " jakeraubin@gmail.com",
         //     'mail_password' => "yfkfaxbeignwfebw",
         //     'mail_port' => 993,
-            
+
         // ];
         // $job= TestQueueRecieveEmail::dispatchAfterResponse($data);
         // Log::info($job);
         // dispatch(new TestQueueRecieveEmail($data))->afterResponse();
-            // Artisan::call('queue:listen');
+        // Artisan::call('queue:listen');
         return response()->json($this->response);
     }
 
@@ -423,6 +425,7 @@ class UserController extends Controller
         $result = [];
         $count = CentralUser::where('email', $request->email)->get();
         //   return sizeof( $count);
+    
         if (sizeof($count) > 0) {
             // return "no";
             $centralUser = tenancy()->central(function ($tenant) use ($request) {
@@ -446,6 +449,49 @@ class UserController extends Controller
             $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
+
+            if ($request->emails) {
+
+
+                UserEmail::where(['user_id' => $user->id])->forceDelete();
+    
+    
+                foreach ($request->emails as $all_email) {
+                    $exists_user_emails =  UserEmail::where(['user_id' => $user->id, 'emails_setting_id' => $all_email['id']])->first();
+    
+                    if (!$exists_user_emails) {
+                        UserEmail::create([
+                            'user_id' => $user->id,
+                            'emails_setting_id' => $all_email['id']
+    
+                        ]);
+                    }
+                    // if(count($exists_user_emails) >= 1){
+                    //     $this->response['status'] = true;
+                    //     $this->response["message"] = 'Emails are already assigned choose another email';
+                    //     return response()->json($this->response,200);
+                    // }else{
+                    //     // $email_of_user = User::where('id', $id)->first()
+                    //     UserEmail::create([
+                    //        'user_id' => $id,
+                    //        'emails_setting_id' => $all_email['id']
+    
+                    //    ]);
+    
+                    // }
+    
+                }
+            }
+
+            if($request->category){
+                foreach ($request->category as $key => $categories) {
+                    // $check = CategoryUser::where()
+                  $cat_user = CategoryUser::create([
+                    'user_id' => $user['id'],
+                    'category_id' => $categories['id']
+                  ]);
+                }
+            }
             // return $user;
             tenancy()->central(function ($tenant) use ($centralUser) {
                 $organization = $tenant->organization()->first();
@@ -453,7 +499,7 @@ class UserController extends Controller
                     'tenant_id' => $organization->tenant_id,
                     'email' => $centralUser->email,
                 ];
-                $url = env('BASE_URL').'/accept-invitation?token=' . Crypt::encryptString(json_encode($token));
+                $url = env('BASE_URL') . '/accept-invitation?token=' . Crypt::encryptString(json_encode($token));
 
 
                 Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
@@ -486,6 +532,48 @@ class UserController extends Controller
             $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
+            if ($request->emails) {
+
+
+                UserEmail::where(['user_id' => $user->id])->forceDelete();
+    
+    
+                foreach ($request->emails as $all_email) {
+                    $exists_user_emails =  UserEmail::where(['user_id' => $user->id, 'emails_setting_id' => $all_email['id']])->first();
+    
+                    if (!$exists_user_emails) {
+                        UserEmail::create([
+                            'user_id' => $user->id,
+                            'emails_setting_id' => $all_email['id']
+    
+                        ]);
+                    }
+                    // if(count($exists_user_emails) >= 1){
+                    //     $this->response['status'] = true;
+                    //     $this->response["message"] = 'Emails are already assigned choose another email';
+                    //     return response()->json($this->response,200);
+                    // }else{
+                    //     // $email_of_user = User::where('id', $id)->first()
+                    //     UserEmail::create([
+                    //        'user_id' => $id,
+                    //        'emails_setting_id' => $all_email['id']
+    
+                    //    ]);
+    
+                    // }
+    
+                }
+            }
+
+            if($request->category){
+                foreach ($request->category as $key => $categories) {
+                    // $check = CategoryUser::where()
+                  $cat_user = CategoryUser::create([
+                    'user_id' => $user['id'],
+                    'category_id' => $categories['id']
+                  ]);
+                }
+            }
 
             // Joining Invitation Mail from Organization. -> Join / Decline
             tenancy()->central(function ($tenant) use ($centralUser) {
@@ -495,7 +583,7 @@ class UserController extends Controller
                     'email' => $centralUser->email,
                 ];
 
-                $url = env('BASE_URL').'/invitation?token=' . Crypt::encryptString(json_encode($token));
+                $url = env('BASE_URL') . '/invitation?token=' . Crypt::encryptString(json_encode($token));
 
                 Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
             });
@@ -685,7 +773,6 @@ class UserController extends Controller
         $this->response['message'] = 'user Fetched';
         $this->response['data'] = $user;
         return response()->json($this->response);
-
     }
 
     /**
@@ -767,17 +854,17 @@ class UserController extends Controller
      * )
      */
     private function getFileName($image, $namePrefix)
-{
-    list($type, $file) = explode(';', $image);
-    list(, $extension) = explode('/', $type);
-    list(, $file) = explode(',', $file);
-    $result['name'] = $namePrefix . '.' . $extension;
-    $result['file'] = $file;
-    return $result;
-}
+    {
+        list($type, $file) = explode(';', $image);
+        list(, $extension) = explode('/', $type);
+        list(, $file) = explode(',', $file);
+        $result['name'] = $namePrefix . '.' . $extension;
+        $result['file'] = $file;
+        return $result;
+    }
     public function update(Request $request, $id)
     {
-       $user = $request->user();
+        $user = $request->user();
 
 
         $validator = Validator::make(['user_id' => $id] + $request->all(), [
@@ -794,10 +881,10 @@ class UserController extends Controller
         }
 
         $tenantName = $request->header('X-Tenant');
-        $tenantName = config('tenancy.database.prefix').strtolower($tenantName);
+        $tenantName = config('tenancy.database.prefix') . strtolower($tenantName);
 
         // return $request->image;
-        
+
         // $path = tenant_asset($stored);
         $member = User::find($id);
         // if ($member->status == User::STATUS_PENDING) {
@@ -809,26 +896,26 @@ class UserController extends Controller
         $oldCentralUser = tenancy()->central(function ($tenant) use ($member) {
             return CentralUser::where(['email' => $member->email])->first();
         });
-      
+
         $oldCentralUserTenantsCount = tenancy()->central(function ($tenant) use ($oldCentralUser) {
             return $oldCentralUser->tenants()->count();
         });
-        if($request->input('image')){
+        if ($request->input('image')) {
 
             $base64String = $request->input('image');
             // $base64String= "base64 string";
-            
+
             // $image = $request->image; // the base64 image you want to upload
-            $slug = time().$user->id; //name prefix
+            $slug = time() . $user->id; //name prefix
             $avatar = $this->getFileName($base64String, $slug);
             Storage::disk('s3')->put('user-images/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
             $url = Storage::disk('s3')->url('user-images/' . $avatar['name']);
         }
 
-// $p = Storage::disk('s3')->put('' . $imageName, $image, 'public'); 
+        // $p = Storage::disk('s3')->put('' . $imageName, $image, 'public'); 
 
-// $image_url = Storage::disk()->url($imageName);
-        
+        // $image_url = Storage::disk()->url($imageName);
+
         // $imgdata = base64_decode($base64File);
         // $mime = getImageP
 
@@ -836,7 +923,7 @@ class UserController extends Controller
         // $image_type_aux = explode("image/", $image_parts[0]);
         // $image_type = $image_type_aux[1];
         // $image_base64 = base64_decode($image_parts[1]);
-        
+
         // $this->uploadFile();
         // $path = "user-images/";
         //  $request->request->add(['image' => $base64File]);
@@ -852,7 +939,7 @@ class UserController extends Controller
         // // file_put_contents($tmpFilePath, $fileData);
         // // this just to help us get file info.
         // $tmpFile = new FileFile($tmpFilePath);
-        
+
         // $file = new UploadedFile(
         //     // $tmpFile->getPathname(),
         //     $tmpFile->getFilename(),
@@ -862,69 +949,73 @@ class UserController extends Controller
         // );
         // return $file;
         // if ($oldCentralUserTenantsCount == 1) {
-            $member->name = $request->name;
-            if($request->input('image')){
+        $member->name = $request->name;
+        if ($request->input('image')) {
 
-                $member->avatar = $url;
+            $member->avatar = $url;
             // }
             // $member->avatar = $imageName;
-            
+
         }
         $member->update();
         // $tenant = $oldCentralUser->tenants()->find($tenantName);
         // return $id;
         $this->switchingDB($tenantName);
-            // $user = $tenant->run(function ($tenant) use ($oldCentralUser, $request) {
-                if($request->emails){
+        // $user = $tenant->run(function ($tenant) use ($oldCentralUser, $request) {
+        if ($request->emails) {
 
-            
-                    UserEmail::where(['user_id' => $id])->forceDelete();
-                
-                
-                foreach($request->emails as $all_email){
-                   $exists_user_emails =  UserEmail::where(['user_id' => $id, 'emails_setting_id' => $all_email['id']])->first();
 
-                   if(!$exists_user_emails){
-                        UserEmail::create([
-                           'user_id' => $id,
-                           'emails_setting_id' => $all_email['id']
-                           
-                       ]);     
-                   }
-                    // if(count($exists_user_emails) >= 1){
-                    //     $this->response['status'] = true;
-                    //     $this->response["message"] = 'Emails are already assigned choose another email';
-                    //     return response()->json($this->response,200);
-                    // }else{
-                    //     // $email_of_user = User::where('id', $id)->first()
-                    //     UserEmail::create([
-                    //        'user_id' => $id,
-                    //        'emails_setting_id' => $all_email['id']
-                           
-                    //    ]);
-                        
-                    // }
-                    
+            UserEmail::where(['user_id' => $id])->forceDelete();
+
+
+            foreach ($request->emails as $all_email) {
+                $exists_user_emails =  UserEmail::where(['user_id' => $id, 'emails_setting_id' => $all_email['id']])->first();
+
+                if (!$exists_user_emails) {
+                    UserEmail::create([
+                        'user_id' => $id,
+                        'emails_setting_id' => $all_email['id']
+
+                    ]);
                 }
-            }
-            // });
- //else {
-      
+                // if(count($exists_user_emails) >= 1){
+                //     $this->response['status'] = true;
+                //     $this->response["message"] = 'Emails are already assigned choose another email';
+                //     return response()->json($this->response,200);
+                // }else{
+                //     // $email_of_user = User::where('id', $id)->first()
+                //     UserEmail::create([
+                //        'user_id' => $id,
+                //        'emails_setting_id' => $all_email['id']
 
-            
-            // if ($oldCentralUserTenantsCount == 1) {
-            //     tenancy()->central(function ($tenant) use ($oldCentralUser) {
-            //         $oldCentralUser->delete();
-            //     });
-            // }
+                //    ]);
+
+                // }
+
+            }
+        }
+
+
+
+
+        // });
+        //else {
+
+
+
+        // if ($oldCentralUserTenantsCount == 1) {
+        //     tenancy()->central(function ($tenant) use ($oldCentralUser) {
+        //         $oldCentralUser->delete();
+        //     });
+        // }
         //}
 
         $this->response["status"] = true;
         $this->response["message"] = [
             'msg' => __('strings.update_success'),
-    
+
         ];
-   
+
         return response()->json($this->response);
     }
 
@@ -999,30 +1090,30 @@ class UserController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        
+
         $member = User::find($id);
         // return  $member->global_id;
-       $delete_tenant_user =  DB::connection('mysql')->table('tenant_users')->where('global_user_id', $member->global_id);
+        $delete_tenant_user =  DB::connection('mysql')->table('tenant_users')->where('global_user_id', $member->global_id);
         $delete_user = DB::connection('mysql')->table('users')->where('global_id', $member->global_id);
-       if($delete_tenant_user->delete() && $delete_user->delete()){
+        if ($delete_tenant_user->delete() && $delete_user->delete()) {
 
-           // if ($member->status != User::STATUS_PENDING && $member->status != User::STATUS_DECLINED ) {
-               //     $this->response["message"] = __('strings.destroy_failed');
-               //     return response()->json($this->response, Response::HTTP_FORBIDDEN);
-               // }
-               if ($member->forceDelete()) {
-                   $this->response["status"] = true;
-                   $this->response["message"] = __('strings.destroy_success');
-                   return response()->json($this->response);
-                }
-                
-                $this->response["message"] = __('strings.destroy_failed');
+            // if ($member->status != User::STATUS_PENDING && $member->status != User::STATUS_DECLINED ) {
+            //     $this->response["message"] = __('strings.destroy_failed');
+            //     return response()->json($this->response, Response::HTTP_FORBIDDEN);
+            // }
+            if ($member->forceDelete()) {
+                $this->response["status"] = true;
+                $this->response["message"] = __('strings.destroy_success');
                 return response()->json($this->response);
             }
-            $this->response["message"] = 'Tenant user deletion failed';
-                return response()->json($this->response);
+
+            $this->response["message"] = __('strings.destroy_failed');
+            return response()->json($this->response);
+        }
+        $this->response["message"] = 'Tenant user deletion failed';
+        return response()->json($this->response);
     }
-            
+
 
     /**
      *
