@@ -717,7 +717,17 @@ class MailboxController extends Controller
         $result['file'] = $file;
         return $result;
     }
-
+    private function getFileName2($image, $name, $index)
+    {
+        list($type, $file) = explode(';', $image);
+        list(, $extension) = explode('/', $type);
+        list(, $file) = explode(',', $file);
+        // $result['name'] = 'oas36ty'.now()->timestamp . '.' . $extension;
+        $result['name'] = now()->timestamp.$name ;//str_replace(' ', '',explode('.', $name)[0]). now()->timestamp.'.'. $extension;
+        // $result['data'] = ;
+        $result['file'] = $file;
+        return $result;
+    }
 
     public function sendEmail(Request $request)
     {
@@ -1353,8 +1363,8 @@ class MailboxController extends Controller
                                     // $temp['disposition'] = $temp['mask']->getDisposition();
                                     $temp['size'] = $temp['mask']->getSize();
                                   //array_push()
-    
-                                  $avatar = $this->getFileName($temp['file'], trim($temp['name']), null);
+                                    if($temp){
+                                  $avatar = $this->getFileName2($temp['file'], trim($temp['name']), null);
                                   try{
                                     
                                     Storage::disk('s3')->put('inbox-email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
@@ -1379,11 +1389,8 @@ class MailboxController extends Controller
                                   
     
                                   }
-                                // return ['files',$attachments_file];
-                                //   $oMessage->getAttachments()->each(function ($oAttachment) use ($oMessage) {
-                                //     file_put_contents(storage_path('attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name), $oAttachment->content);
-                                //     // $attach_files[] =['file',$oAttachment];
-                                // });
+                                }
+                             
                                 }
                                 // $reply[] = $details_of_email;
                                 

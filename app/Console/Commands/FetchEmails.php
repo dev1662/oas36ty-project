@@ -6,6 +6,7 @@ use App\Http\Resources\TenantResource;
 use App\Models\CentralUser;
 use App\Models\EmailInbound;
 use App\Models\Mailbox;
+use App\Models\MailboxAttachment;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\UserEmail;
@@ -14,6 +15,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use PDO;
 use Webklex\PHPIMAP\ClientManager;
 
@@ -394,6 +396,10 @@ class FetchEmails extends Command
                                     // return $check_email;
                                     if (!$check_email) {
                                       //  return "h";
+
+                                       //--------------------------------------- Download Attachments of messages ----------------------------
+                                     $attachments_file = $oMessage->getAttachments();
+
                                       $is_parent = null;
                                       if($in_reply_to){
                                       // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
@@ -447,7 +453,56 @@ class FetchEmails extends Command
                                       // return $details_of_email[$n];
                                       //  return $attachments;
                                       try {
-                                        if(Mailbox::create($details_of_email)){
+                               if($insert_file = Mailbox::create($details_of_email)){
+                                          
+                                if($attachments_file){
+                                  foreach($attachments_file as $key => $attach){
+                                    // $attach_files[$key] = $attach_file->name ?? '';
+    
+                                    $masked = $attach->setMask(AttachmentMask::class);
+                                    $temp = [];
+                                    $temp['mask'] = $masked->mask();
+    
+                                    $filebase64 = $temp['mask']->getImageSrc();
+                                    // $filebase64 = str_replace('"','',$filebase64);
+                                    // $filebase64 = explode('base64,',$filebase64);
+                                    // $temp['file'] 
+                                    $file = $filebase64;
+                                    // $temp['name'] 
+                                    $name = $temp['mask']->getName();
+                                    // $temp['disposition'] = $temp['mask']->getDisposition();
+                                    $temp['size'] = $temp['mask']->getSize();
+                                  //array_push()
+                                    if($file && $name)
+                                  {
+                                  $avatar = $this->getFileName($file, trim($name), null);
+                                  try{
+                                    
+                                    Storage::disk('s3')->put('inbox-email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
+                                    
+                                    $url = Storage::disk('s3')->url('inbox-email-files/' . $avatar['name']);
+                                    
+                                    $insert_arr = [
+                                      'mailbox_id' => $insert_file->id ?? '',
+                                      'attachment_url' => $url ?? '',
+                                      'attachment_name' => $name ?? '',
+                                      'folder' => $inbox->name ?? ''
+                                    ];
+                                    $check = MailboxAttachment::create($insert_arr);
+  
+                                  if(!$check){
+                                    continue;
+                                  }
+                                  
+                                }catch(Exception $e){
+                                  continue;
+                                }
+                                  }
+                                  
+    
+                                  }
+                             
+                                }
                                           $code_inbox = 200;
                                         }
                                         
@@ -877,4 +932,17 @@ class FetchEmails extends Command
             }
         });
     }
+
+    private function getFileName($image, $name, $index)
+    {
+        list($type, $file) = explode(';', $image);
+        list(, $extension) = explode('/', $type);
+        list(, $file) = explode(',', $file);
+        // $result['name'] = 'oas36ty'.now()->timestamp . '.' . $extension;
+        $result['name'] = now()->timestamp.$name ;//str_replace(' ', '',explode('.', $name)[0]). now()->timestamp.'.'. $extension;
+        // $result['data'] = ;
+        $result['file'] = $file;
+        return $result;
+    }
+
 }
