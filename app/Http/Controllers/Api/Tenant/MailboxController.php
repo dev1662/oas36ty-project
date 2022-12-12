@@ -234,7 +234,7 @@ class MailboxController extends Controller
                     $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->with('attachments_file')->get();
 
                 }
                 foreach($results as $key=> $res){
@@ -261,8 +261,8 @@ class MailboxController extends Controller
                        ->where(function($query) use($username){
                          $query->where(['from_email'=> $username->mail_username])
                          ->orWhere(['to_email' => $username->mail_username]);
-                        })
-                        ->orderBy('u_date','desc')->get();
+                        })->with('attachments_file')
+                        ->orderBy('u_date')->get();
 
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
@@ -384,7 +384,7 @@ class MailboxController extends Controller
                          $query->where(['to_email' => $username->mail_username])
                          ->orWhere(['from_email'=> $username->mail_username]);
                         })->with('attachments_file')
-                               ->orderBy('u_date','desc')->get();
+                               ->orderBy('u_date')->get();
                             // }    
                             // return $eamils_arr;
                         if(count($eamils_arr)>0){
