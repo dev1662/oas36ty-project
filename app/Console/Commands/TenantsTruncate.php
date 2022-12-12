@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Mailbox;
+use App\Models\MailboxAttachment;
 use App\Models\Tenant;
 use Illuminate\Console\Command;
 
@@ -42,6 +43,7 @@ class TenantsTruncate extends Command
         $tenants = Tenant::select('id')->get();
         tenancy()->runForMultiple($tenants, function ($tenants) {
             Mailbox::query()->truncate();
+            MailboxAttachment::query()->truncate();
         });
     }
 }
