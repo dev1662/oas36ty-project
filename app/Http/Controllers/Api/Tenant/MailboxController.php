@@ -415,7 +415,7 @@ class MailboxController extends Controller
                     $query->where(['to_email' => $username->mail_username ])
                     ->orWhere(['from_email' => $username->mail_username]);
                 })
-                ->orderBy('u_date', 'desc')->offset($offset)->limit(10)->get();
+                ->orderBy('u_date', 'desc')->offset($offset)->limit(10)->with('attachments_file')->get();
 
                 $starred_count = Mailbox::where(['isStarred' => 1])->where('is_parent',1)
                 ->where(function($query) use ($username){
@@ -433,7 +433,7 @@ class MailboxController extends Controller
                         if(!empty($res['in_reply_to'])){
                             $query->orWhere('in_reply_to', 'LIKE', '%'.$res['in_reply_to'].'%');
                         }
-                           })->get();
+                           })->with('attachments_file')->get();
                     if(count($eamils_arr)>0){
                         $result[] = ['parent'=>$res,'childs'=>$eamils_arr];
                     }else{
