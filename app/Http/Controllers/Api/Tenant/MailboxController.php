@@ -234,7 +234,7 @@ class MailboxController extends Controller
                     $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->where('subject', 'LIKE', '%'.$req->q.'%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
                 }
                 if(!$req->q){
-                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->with('attachments_file')->get();
+                    $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
 
                 }
                 foreach($results as $key=> $res){
@@ -1406,7 +1406,9 @@ class MailboxController extends Controller
                           //  return $attach_files;
                            
                           foreach ($sent_messages as $n => $oMessage) {
-                            
+                            // $attachments_file2 = $oMessage->getAttachments();
+                            // $attach3[] = $attachments_file2[0] ?? '';
+
                             $attachments = $oMessage->getAttachments()->count() ?? '';
                             $subject = $oMessage->subject ?? '';
                             $from_email = $oMessage->sender[0]->mail ?? '';
@@ -1445,7 +1447,9 @@ class MailboxController extends Controller
                             // return $check_email;
                             if (!$check_email) {
                               //  return "h";
-                  
+                              $attachments_file =[];
+                              $attachments_file = $oMessage->getAttachments();
+
                               $is_parent = null;
                               if($in_reply_to){
                               // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
@@ -1502,14 +1506,62 @@ class MailboxController extends Controller
                               // return $details_of_email[$n];
                               //  return $attachments;
                               try {
-                                $insert = Mailbox::create($details_of_email);
+                                $insert_file = [];
+                                $insert_file = Mailbox::create($details_of_email);
+
+                                if($attachments_file){
+                                  foreach($attachments_file as $key => $attach){
+                                    // $attach_files[$key] = $attach_file->name ?? '';
+    
+                                    $masked = $attach->setMask(AttachmentMask::class);
+                                    $temp = [];
+                                    $temp['mask'] = $masked->mask();
+                                    $filebase64 = $temp['mask']->getImageSrc();
+                                    // $filebase64 = str_replace('"','',$filebase64);
+                                    // $filebase64 = explode('base64,',$filebase64);
+                                    $temp['file'] = $filebase64;
+                                    $temp['name'] = $temp['mask']->getName();
+                                    // $temp['disposition'] = $temp['mask']->getDisposition();
+                                    $temp['size'] = $temp['mask']->getSize();
+                                    //array_push()
+                                    if($temp){
+                                      $avatar = $this->getFileName2($temp['file'], trim($temp['name']), null);
+                                      try{
+                                        
+                                    Storage::disk('s3')->put('inbox-email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
+                                    
+                                    $url = Storage::disk('s3')->url('inbox-email-files/' . $avatar['name']);
+                                    
+                                    $insert_arr = [
+                                      'mailbox_id' => $insert_file->id ?? '',
+                                      'attachment_url' => $url ?? '',
+                                      'attachment_name' => $temp['name'] ?? '',
+                                      'folder' => $sent->name ?? ''
+                                    ];
+                                    $check = MailboxAttachment::create($insert_arr);
+                                    // return $check;
+  
+                                  if(!$check){
+                                    continue;
+                                  }
+                                  
+                                }catch(Exception $e){
+                                  continue;
+                                }
+                                  
+    
+                                  }
+                                }
+                             
+                                }
                               
                               } catch (Exception $ex) {
                                 continue;
                               }
                             }
                           }
-                          // return $repadd;
+
+                          // return $attach3;
                   
                           foreach ($draft_messages as $n => $oMessage) {
                             
