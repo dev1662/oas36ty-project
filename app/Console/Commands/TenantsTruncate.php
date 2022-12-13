@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Mailbox;
 use App\Models\MailboxAttachment;
 use App\Models\Tenant;
+use App\Models\UserEmail;
 use Illuminate\Console\Command;
 
 class TenantsTruncate extends Command
@@ -44,6 +45,7 @@ class TenantsTruncate extends Command
         tenancy()->runForMultiple($tenants, function ($tenants) {
             Mailbox::query()->truncate();
             MailboxAttachment::query()->truncate();
+            UserEmail::where('id','!=',null)->update(['inbound_msg_count'=> 0, 'sent_msg_count'=> 0, 'trash_msg_count'=> 0, 'spam_msg_count'=> 0, 'draft_msg_count'=> 0]);
         });
     }
 }
