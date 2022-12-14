@@ -382,8 +382,9 @@ class ContactPersonController extends Controller
             $phone = $request->phone;
            }
            else{
-            $this->response['message'] = 'Something went wrong with mobile';
-            return response($this->response, 422);
+            $phone = '';
+            // $this->response['message'] = 'Something went wrong with mobile';
+            // return response($this->response, 422);
            }
         // $email = array_merge($request->default_email, $request->additional_email);
         // $phone = array_merge($request->default_phone, $request->additional_phone);
@@ -392,11 +393,11 @@ class ContactPersonController extends Controller
             $this->response["message"] = 'Email field is required';
             return response()->json($this->response);
         }
-        if(count($phone) == 0){
-            $this->response["status"] = false;
-            $this->response["message"] = 'Phone field is required';
-            return response()->json($this->response);
-        }
+        // if(count($phone) == 0){
+        //     $this->response["status"] = false;
+        //     $this->response["message"] = 'Phone field is required';
+        //     return response()->json($this->response);
+        // }
         // $this->response["status"] = true;
         // $this->response["message"] = __('strings.store_success');
         // return response()->json($this->response);
@@ -450,7 +451,7 @@ class ContactPersonController extends Controller
                 $contactPersonPhone->phone = $phone[$i];
                 $contactPersonPhone->save();
             }
-        }else{
+        }else if($phone){
         $contactPersonPhone = new ContactPersonPhone();
 
             $contactPersonPhone->contact_person_id = $id;
