@@ -382,7 +382,7 @@ class ContactPersonController extends Controller
             $phone = $request->phone;
            }
            else{
-            $phone = '';
+            $phone = [];
             // $this->response['message'] = 'Something went wrong with mobile';
             // return response($this->response, 422);
            }
