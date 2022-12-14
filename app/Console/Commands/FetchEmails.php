@@ -514,11 +514,9 @@ class FetchEmails extends Command
                                   }
                                   if($code_inbox == 200){
                                     $this->info('Messages Fetched');
-
                                   }
                                   $code_inbox = 0;
-                                  //  return [$insert];
-                                  //  return $reply;
+                                 
                                   foreach ($sent_messages as $n => $oMessage) {
                                     
                                     $attachments = $oMessage->getAttachments()->count() ?? '';
@@ -555,6 +553,10 @@ class FetchEmails extends Command
                                     // $check_email = "";
                                     // return $check_email;
                                     if (!$check_email) {
+                                     
+                                      $attachments_file =[];
+                                      $attachments_file = $oMessage->getAttachments();
+        
                                       //  return "h";
                           
                                       $is_parent = null;
@@ -612,7 +614,55 @@ class FetchEmails extends Command
                                       // return $details_of_email[$n];
                                       //  return $attachments;
                                       try {
-                                        $insert = Mailbox::create($details_of_email);
+                                        $insert_file = [];
+                                        $insert_file = Mailbox::create($details_of_email);
+                                        
+                                        if($attachments_file){
+                                          foreach($attachments_file as $key => $attach){
+                                            // $attach_files[$key] = $attach_file->name ?? '';
+                                            
+                                            $masked = $attach->setMask(AttachmentMask::class);
+                                            $temp = [];
+                                            $temp['mask'] = $masked->mask();
+                                            $filebase64 = $temp['mask']->getImageSrc();
+                                            // $filebase64 = str_replace('"','',$filebase64);
+                                            // $filebase64 = explode('base64,',$filebase64);
+                                            $temp['file'] = $filebase64;
+                                            $temp['name'] = $temp['mask']->getName();
+                                            // $temp['disposition'] = $temp['mask']->getDisposition();
+                                            $temp['size'] = $temp['mask']->getSize();
+                                            //array_push()
+                                            if($temp){
+                                              $avatar = $this->getFileName2($temp['file'], trim($temp['name']), null);
+                                              try{
+                                              
+                                            Storage::disk('s3')->put('inbox-email-files/' . $avatar['name'] ,  base64_decode($avatar['file']), 'public');
+                                            
+                                            $url = Storage::disk('s3')->url('inbox-email-files/' . $avatar['name']);
+                                            
+                                            $insert_arr = [
+                                              'mailbox_id' => $insert_file->id ?? '',
+                                              'attachment_url' => $url ?? '',
+                                              'attachment_name' => $temp['name'] ?? '',
+                                              'folder' => $sent->name ?? ''
+                                            ];
+                                            $check = MailboxAttachment::create($insert_arr);
+                                            // return $check;
+                                            // $this->info($check->folder);
+          
+                                          if(!$check){
+                                            continue;
+                                          }
+                                          
+                                        }catch(Exception $e){
+                                          continue;
+                                        }
+                                          
+            
+                                          }
+                                        }
+                                     
+                                        }
                                       
                                       } catch (Exception $ex) {
                                         continue;
@@ -620,7 +670,7 @@ class FetchEmails extends Command
                                     }
                                   }
                           
-                          
+                              
                                   foreach ($draft_messages as $n => $oMessage) {
                                     
                                     $attachments = $oMessage->getAttachments()->count() ?? '';
@@ -944,5 +994,18 @@ class FetchEmails extends Command
         $result['file'] = $file;
         return $result;
     }
+
+    private function getFileName2($image, $name, $index)
+    {
+        list($type, $file) = explode(';', $image);
+        list(, $extension) = explode('/', $type);
+        list(, $file) = explode(',', $file);
+        // $result['name'] = 'oas36ty'.now()->timestamp . '.' . $extension;
+        $result['name'] = now()->timestamp.$name ;//str_replace(' ', '',explode('.', $name)[0]). now()->timestamp.'.'. $extension;
+        // $result['data'] = ;
+        $result['file'] = $file;
+        return $result;
+    }
+
 
 }
