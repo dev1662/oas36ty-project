@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Console\Commands;
 
 use App\Http\Resources\TenantResource;
@@ -73,6 +72,8 @@ class FetchEmails extends Command
      */
     public function handle()
     {
+      ini_set('max_execution_time', 0);
+      
         $tenants = Tenant::select('id')->get();
         tenancy()->runForMultiple($tenants, function ($tenants) {
             $users = User::select('id')->get();
