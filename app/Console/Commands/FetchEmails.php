@@ -73,7 +73,9 @@ class FetchEmails extends Command
     public function handle()
     {
       ini_set('max_execution_time', 0);
-      
+      ini_set('request_terminate_timeout', 0);
+      ini_set('fastcgi_read_timeout', 0);
+
         $tenants = Tenant::select('id')->get();
         tenancy()->runForMultiple($tenants, function ($tenants) {
             $users = User::select('id')->get();
