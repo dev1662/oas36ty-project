@@ -91,7 +91,7 @@ class ToDoController extends Controller
             // return response()->json($this->response);
         $user = $request->user();
 
-        $toDos = $user->toDos()->select('id', 'task_id', 'title','to_do', 'status')->with([
+        $toDos = $user->toDos()->select('id', 'task_id','to_do', 'status')->with([
             'task' => function($q){
                 $q->select('id', 'type', 'subject', 'description');
             },
@@ -190,7 +190,6 @@ class ToDoController extends Controller
         $todo_array = [
             // 'user_id' => Auth::user()->id,
             'task_id' => $request->task_id,
-            'title' => $request->title,
             'to_do' => $request->to_do,
             // 'mention_users' => $request->mention_users
         ];
@@ -319,7 +318,7 @@ class ToDoController extends Controller
         }
         // return [$request->all(), $id, $request->user_ids];
 
-        $toDo->fill($request->only(['to_do', 'title','task_id', 'status']));
+        $toDo->fill($request->only(['to_do','task_id', 'status']));
         $toDo->update();
         if(!empty($request->mention_users)){
 
