@@ -78,6 +78,9 @@ Route::middleware([
             Route::apiResource('users', UserController::class);
             Route::get('contact-people/show_all', [ContactPersonController::class, 'showAll']);
 
+            Route::post('users/re-invite', [UserController::class, 'reInvite']);
+
+
             Route::apiResource('tasks.users', TaskUserController::class);
             Route::apiResource('tasks.comments', TaskCommentController::class);
 // Route::get('/tasks/1/comments/assigned_users',[TaskCommentController::class, 'usersAsfsigned']);
