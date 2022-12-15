@@ -30,6 +30,8 @@ return [
     'invitation_accept_failed' => 'Invitation accept failed!',
     'invitation_decline_success' => 'Invitation declined successfully!',
     'invitation_decline_failed' => 'Invitation decline failed!',
+    'reinvite_success' => 'Re-invited successfully!',
+
     
     'validation_failed' => 'Validation Error!',
     'something_wrong' => 'Something went wrong!',

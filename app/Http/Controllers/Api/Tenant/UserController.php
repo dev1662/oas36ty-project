@@ -1206,11 +1206,10 @@ class UserController extends Controller
 
     public function reInvite(Request $request)
     {
-        return User::find($request->id);
-
+        
         $validator = Validator::make($request->all(), [
             'id' => 'required',
-            'email' => 'required|email|max:64',
+            // 'email' => 'required|email|max:64',
             // 'token' => 'required'
         ]);
         if ($validator->fails()) {
@@ -1221,71 +1220,18 @@ class UserController extends Controller
         }
         // check if the main users table has email already
         // $base_url= 'https://app-office36ty.protracked.in';
+        
+        $check_user = User::find($request->id);
+        $centralUser = CentralUser::where('email', $check_user->email)->first();
 
-        $result = [];
-        $count = CentralUser::where('email', $request->email)->get();
-        //   return sizeof( $count);
-        if (sizeof($count) > 0) {
-            // return "no";
-            $centralUser = tenancy()->central(function ($tenant) use ($request) {
-                //   $centralUser = CentralUser::where('email', $request->email)->get();
-                // return $centralUser
-                $centralUser = CentralUser::firstOrCreate(
-                    [
-                        'email' => $request->email
-                    ],
-                    [
-                        'name' => $request->name,
-                        'status' => CentralUser::STATUS_PENDING,
-                    ]
-                );
-                $centralUser->tenants()->attach($tenant);
-                return $centralUser;
-            });
-            // return $centralUser;
-            $user = User::where('email', $centralUser->email)->first();
-            if ($request->name != $user->name)  $user->display_name = $request->name;
-            $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
-            $user->status = User::STATUS_PENDING;
-            $user->update();
-            // return $user;
-            tenancy()->central(function ($tenant) use ($centralUser) {
-                $organization = $tenant->organization()->first();
-                $token = [
-                    'tenant_id' => $organization->tenant_id,
-                    'email' => $centralUser->email,
-                ];
-                $url = env('BASE_URL').'/accept-invitation?token=' . Crypt::encryptString(json_encode($token));
-
-
-                Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
-            });
-            $result = User::select('id', 'name', 'email', 'status')->find($user->id);
-        }
-        // return "hb";
-
-        if (sizeof($count) === 0) {
+        if ($check_user && $centralUser) {
             // return "h";
+            CentralUser::where('email', $check_user->email)->update(['status' => CentralUser::STATUS_PENDING]);
+           $user = $check_user;
 
-            $centralUser = tenancy()->central(function ($tenant) use ($request) {
-                $centralUser = CentralUser::firstOrCreate(
-                    [
-                        'email' => $request->email
-                    ],
-                    [
-
-                        'name' => $request->name,
-
-                        'status' => CentralUser::STATUS_PENDING,
-                    ]
-                );
-                $centralUser->tenants()->attach($tenant);
-                return $centralUser;
-            });
-
-            $user = User::where('email', $centralUser->email)->first();
-            if ($request->name != $user->name)  $user->display_name = $request->name;
-            $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
+            // $user = User::where('email', $centralUser->email)->first();
+            if ($user->name)  $user->display_name = $user->name;
+            $user->avatar =  'https://ui-avatars.com/api/?name=' . $user->name;
             $user->status = User::STATUS_PENDING;
             $user->update();
 
@@ -1307,7 +1253,7 @@ class UserController extends Controller
         }
 
         $this->response["status"] = true;
-        $this->response["message"] = __('strings.store_success');
+        $this->response["message"] = __('strings.reinvite_success');
         $this->response["data"] = $result;
         return response()->json($this->response);
     }
