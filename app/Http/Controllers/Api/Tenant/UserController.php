@@ -1206,7 +1206,7 @@ class UserController extends Controller
 
     public function reInvite(Request $request)
     {
-        // return 'h';
+        return User::find($request->id);
 
         $validator = Validator::make($request->all(), [
             'id' => 'required',
