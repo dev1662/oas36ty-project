@@ -410,6 +410,7 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64',
+            'branch_id' => 'required',
             'email' => 'required|email|max:64|unique:App\Models\User,email',
             // 'token' => 'required'
         ]);
@@ -531,6 +532,9 @@ class UserController extends Controller
             if ($request->name != $user->name)  $user->display_name = $request->name;
             $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
+            if($request->branch_id){
+            $user->branch_id = $request->branch_id;
+            }
             $user->update();
             if ($request->emails) {
 
