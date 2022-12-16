@@ -410,7 +410,7 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64',
-            'branch_id' => 'required',
+            // 'branch_id' => 'required',
             'email' => 'required|email|max:64|unique:App\Models\User,email',
             // 'token' => 'required'
         ]);
@@ -532,8 +532,9 @@ class UserController extends Controller
             if ($request->name != $user->name)  $user->display_name = $request->name;
             $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
-            if($request->branch_id){
-            $user->branch_id = $request->branch_id;
+            $branch_id = $request->branch_id ?? 1; 
+            if($branch_id){
+            $user->branch_id = $request->branch_id ?? 1;
             }
             $user->update();
             if ($request->emails) {
@@ -1226,9 +1227,52 @@ class UserController extends Controller
         // $base_url= 'https://app-office36ty.protracked.in';
         
         $check_user = User::find($request->id);
+        $result = [];
+        $count = CentralUser::where(['email'=> $check_user->email, 'status'=>CentralUser::STATUS_ACTIVE])->get();
         $centralUser = CentralUser::where('email', $check_user->email)->first();
+        // return $centralUser1;
+        //   return sizeof( $count);
+    
+        if (sizeof($count) > 0) {
+            // return "no";
+            // $centralUser = tenancy()->central(function ($tenant) use ($check_user) {
+            //     //   $centralUser = CentralUser::where('email', $request->email)->get();
+            //     // return $centralUser
+            //     $centralUser = CentralUser::firstOrCreate(
+            //         [
+            //             'email' => $check_user->email
+            //         ],
+            //         [
+            //             'name' => $check_user->name,
+            //             'status' => CentralUser::STATUS_PENDING,
+            //         ]
+            //     );
+            //     $centralUser->tenants()->attach($tenant);
+            //     return $centralUser;
+            // });
+            // CentralUser::where('email', $check_user->email)->update(['status' => CentralUser::STATUS_PENDING]);
+            // return $centralUser;
+            $user = User::where('email', $centralUser->email)->first();
+            // if ($request->name != $user->name)  $user->display_name = $request->name;
+            $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
+            $user->status = User::STATUS_PENDING;
+            $user->update();
 
-        if ($check_user && $centralUser) {
+           
+            tenancy()->central(function ($tenant) use ($centralUser) {
+                $organization = $tenant->organization()->first();
+                $token = [
+                    'tenant_id' => $organization->tenant_id,
+                    'email' => $centralUser->email,
+                ];
+                $url = env('BASE_URL') . '/accept-invitation?token=' . Crypt::encryptString(json_encode($token));
+
+
+                Mail::to($centralUser->email)->send(new JoiningInvitationMail($centralUser, $organization, $url));
+            });
+            $result = User::select('id', 'name', 'email', 'status')->find($user->id);
+        }
+        else if ($check_user && $centralUser) {
             // return "h";
             CentralUser::where('email', $check_user->email)->update(['status' => CentralUser::STATUS_PENDING]);
            $user = $check_user;
