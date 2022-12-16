@@ -867,6 +867,9 @@ class UserController extends Controller
         $result['file'] = $file;
         return $result;
     }
+
+
+    
     public function update(Request $request, $id)
     {
         $user = $request->user();
@@ -955,6 +958,8 @@ class UserController extends Controller
         // return $file;
         // if ($oldCentralUserTenantsCount == 1) {
         $member->name = $request->name;
+        $member->branch_id = $request->branch_id ?? 1;
+
         if ($request->input('image')) {
 
             $member->avatar = $url;
