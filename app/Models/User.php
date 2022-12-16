@@ -60,6 +60,12 @@ class User extends Authenticatable implements Syncable
         'email_verified_at' => 'datetime',
     ];
 
+    public function branches()
+    {
+        return $this->hasOne(Branch::class, 'id', 'branch_id');
+    }
+ 
+
     public function getGlobalIdentifierKey()
     {
         return $this->getAttribute($this->getGlobalIdentifierKeyName());

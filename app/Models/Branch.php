@@ -28,5 +28,5 @@ class Branch extends Model implements Auditable
         return $this->hasMany(Task::class);
     }
 
-
+  
 }
