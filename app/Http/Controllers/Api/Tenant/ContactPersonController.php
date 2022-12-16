@@ -26,7 +26,7 @@ class ContactPersonController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
         // $result = ContactPerson::select('id','name','type')->get();
-        $result = ContactPerson::select('id','name','type')->orderBy('id', 'DESC')->get();
+        $result = ContactPerson::select('id','name','type')->with('emails')->orderBy('id', 'DESC')->get();
         // $result = array();
 
             $this->response["status"] = true;
@@ -460,6 +460,7 @@ class ContactPersonController extends Controller
         }
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
+        $this->response['data'] = ContactPerson::where('id', $contactPerson->id)->select('id','name','type')->with('emails')->orderBy('id', 'DESC')->first();
         return response()->json($this->response);
     }
 
