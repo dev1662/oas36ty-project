@@ -568,17 +568,18 @@ class MailboxController extends Controller
       //  return $req->dataToUpdate['isStarred'];
     //  return $req->emailIds;
     if(is_array($req->emailIds)){
+      // return $req->status;
       foreach ($req->emailIds as $id) {
-        $check_not_stared = Mailbox::where(['id' => $id, 'isStarred' => 0])->first();
-        $check_stared = Mailbox::where(['id' => $id, 'isStarred' => 1])->first();
+        // $check_not_stared = Mailbox::where(['id' => $id, 'isStarred' => 0])->first();
+        // $check_stared = Mailbox::where(['id' => $id, 'isStarred' => 1])->first();
 
-        if($check_not_stared){
+        if($req->status == 'add'){
 
           Mailbox::find($id)->update([
             'isStarred' => 1
           ]);
         }
-        if($check_stared){
+        if($req->status == 'remove'){
 
           Mailbox::find($id)->update([
             'isStarred' => 0
