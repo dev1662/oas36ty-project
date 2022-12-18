@@ -695,8 +695,10 @@ class ContactPersonController extends Controller
         $email = $request->email;
        }
        else{
+        // $email = [];
         $this->response['message'] = 'Something went wrong with email';
         return response($this->response, 422);
+
        }
        if($request->new_phone){
         $phone = array_merge($request->phone, $request->new_phone);
@@ -705,8 +707,9 @@ class ContactPersonController extends Controller
         $phone = $request->phone;
        }
        else{
-        $this->response['message'] = 'Something went wrong with mobile';
-        return response($this->response, 422);
+        $phone = [];
+        // $this->response['message'] = 'Something went wrong with mobile';
+        // return response($this->response, 422);
        }
 
     //    return [$email, $phone];
@@ -739,7 +742,7 @@ class ContactPersonController extends Controller
                     $contactPersonPhone->phone = $phone[$i];
                     $contactPersonPhone->save();
                 }
-            }else{
+            }else if($phone){
             $contactPersonPhone = new ContactPersonPhone();
     
                 $contactPersonPhone->contact_person_id = $id;
