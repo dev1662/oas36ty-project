@@ -235,7 +235,7 @@ class MailboxController extends Controller
                 }
                 if(!$req->q){
                     $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
-
+                   
                 }
                 foreach($results as $key=> $res){
                         
@@ -415,7 +415,7 @@ class MailboxController extends Controller
                     $query->where(['to_email' => $username->mail_username ])
                     ->orWhere(['from_email' => $username->mail_username]);
                 })
-                ->orderBy('u_date', 'desc')->offset($offset)->limit(10)->with('attachments_file')->get();
+                ->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
 
                 $starred_count = Mailbox::where(['isStarred' => 1])->where('is_parent',1)
                 ->where(function($query) use ($username){
@@ -475,9 +475,13 @@ class MailboxController extends Controller
         } else {
             $count_email =0;//count($result);
         }
+        $stared_emails = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'INBOX'])->where('is_parent',1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+        // $unstared_emails = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',0)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+
         $meta = [
             'emailsMeta' =>  $count_email,
             'email_count' => $count_of_msg,
+            'msg_stared' => count($stared_emails) > 0 ? 'all stared' : 'not all stared'
         ];
         $this->response['status'] = true;
         $this->response['message'] = 'data fetched';
@@ -562,7 +566,32 @@ class MailboxController extends Controller
     public function updateEmails(Request $req)
     {
       //  return $req->dataToUpdate['isStarred'];
-    //  return 
+    //  return $req->emailIds;
+    if(is_array($req->emailIds)){
+      foreach ($req->emailIds as $id) {
+        $check_not_stared = Mailbox::where(['id' => $id, 'isStarred' => 0])->first();
+        $check_stared = Mailbox::where(['id' => $id, 'isStarred' => 1])->first();
+
+        if($check_not_stared){
+
+          Mailbox::find($id)->update([
+            'isStarred' => 1
+          ]);
+        }
+        if($check_stared){
+
+          Mailbox::find($id)->update([
+            'isStarred' => 0
+          ]);
+        }
+      }
+      return $this->fetchEmails($req);
+      // return;
+      // $this->response['message'] = 'starred all mails';
+      // $this->response['status'] = true;
+      // $this->response['data'] = ;
+      
+    }
       if(array_key_exists('isStarred', $req->dataToUpdate) != 1){
         return;
       }
