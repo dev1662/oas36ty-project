@@ -223,6 +223,7 @@ class MailboxController extends Controller
         $result = [];
         //  return $inbound_array;
         $total_count = [];
+        $stared_emails = [];
         foreach ($inbound_array as $index => $username) {
             // return $username->mail_username;
             if($username != null){
@@ -235,6 +236,8 @@ class MailboxController extends Controller
                 }
                 if(!$req->q){
                     $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+        $stared_emails = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+
                    
                 }
                 foreach($results as $key=> $res){
@@ -277,6 +280,8 @@ class MailboxController extends Controller
             if($req->folder == 'draft'){
 
                 $results = Mailbox::where(['from_email' => $username->mail_username])->where('folder','=','Drafts')->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+        $stared_emails = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])->where('is_parent',1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+
                 foreach($results as $key=> $res){
                         
                     // $eamils_arr = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Drafts'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
@@ -303,6 +308,8 @@ class MailboxController extends Controller
             if($req->folder == 'spam'){
 
                 $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+        $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('is_parent',1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+
                 foreach($results as $key=> $res){
                         
                     // $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
@@ -335,6 +342,8 @@ class MailboxController extends Controller
             }
             if($req->folder == 'trash'){
                 $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('is_parent',1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+        $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('is_parent',1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+
                 // return $req->result;
                 foreach($results as $key=> $res){
                         
@@ -366,6 +375,7 @@ class MailboxController extends Controller
                 }
                 if(!$req->q){
                     $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX' ])->orderBy('u_date', 'desc')->where('is_parent',1)->offset($offset)->limit(50)->with('attachments_file')->get();
+                    $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('is_parent',1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
 
                     foreach($results as $key=> $res){
                         $eamils_arr = [];
@@ -475,7 +485,8 @@ class MailboxController extends Controller
         } else {
             $count_email =0;//count($result);
         }
-        $stared_emails = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'INBOX'])->where('is_parent',1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+        // return $username->mail_username;
+
         // $unstared_emails = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',0)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
 
         $meta = [
