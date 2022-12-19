@@ -1251,7 +1251,8 @@ return response()->json($this->response);
         $Company = Company::where(['id' => $request->company_id])->update($data);
         $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
         if($request->mailbox_id && $task_det){
-            Mailbox::where('id',$request->mailbox_id)->update(['task_lead_id' => $task_det->id]);
+            $lead_task_id = $task_det->type.'_'.$task_det->id;
+            Mailbox::where('id',$request->mailbox_id)->update(['task_lead_id' => $lead_task_id]);
         }
 
         $this->response["status"] = true;

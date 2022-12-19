@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateAddTaskIdColumnMailboxTable extends Migration
+class UpdateAddTaskId2ColumnMailboxTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,15 @@ class UpdateAddTaskIdColumnMailboxTable extends Migration
      */
     public function up()
     {
-        //task_lead_id
+        if((Schema::hasColumn('mailbox','task_lead_id'))){
+            Schema::table('mailbox', function(Blueprint $table){
+                $table->dropColumn('task_lead_id');
+            });
+        }
+
         if(!(Schema::hasColumn('mailbox','task_lead_id'))){
             Schema::table('mailbox', function(Blueprint $table){
-                $table->bigInteger('task_lead_id')->nullable();
+                $table->string('task_lead_id')->nullable();
             });
         }
     }
