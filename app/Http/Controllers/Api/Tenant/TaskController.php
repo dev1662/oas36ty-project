@@ -13,6 +13,7 @@ use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\ContactPerson;
+use App\Models\Mailbox;
 use App\Models\TaskComment;
 use App\Models\TaskUser;
 use App\Models\User;
@@ -1224,6 +1225,7 @@ return response()->json($this->response);
         $task->status_master_id = $request->status['id'] ?? 1;
         // return $request->users[$i];
         $task->save();
+      $task_det = $task; 
         if($request->users && count($request->users) > 0){
 
         
@@ -1248,7 +1250,9 @@ return response()->json($this->response);
         $Category = Category::where(['id' => $request->category_id])->update($data);
         $Company = Company::where(['id' => $request->company_id])->update($data);
         $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
-
+        if($request->mailbox_id && $task_det){
+            Mailbox::where('id',$request->mailbox_id)->update(['task_lead_id' => $task_det->id]);
+        }
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');

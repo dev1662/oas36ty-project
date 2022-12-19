@@ -31,7 +31,8 @@ class Mailbox extends Model implements Auditable
         'is_parent',
         'bccaddress',
         'ccaddress',
-        'to_replyEmails'
+        'to_replyEmails',
+        'task_lead_id'
     ];
 
     public function attachments_file()
