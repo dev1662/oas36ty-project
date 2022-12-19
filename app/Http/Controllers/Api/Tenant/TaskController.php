@@ -1350,10 +1350,13 @@ return response()->json($this->response);
                 $q->select('id', 'name');
             },
             'users' => function ($q) {
-                $q->select('users.id', 'name');
+                $q->select('users.id', 'name','avatar');
+            },
+            'comments' => function($q){
+                $q->select('id', 'comment', 'task_id', 'user_id');
             },
             'status_master',
-            'audits'
+            'audits',
         ])->find($id);
 
         $this->response["status"] = true;
