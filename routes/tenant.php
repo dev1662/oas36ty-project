@@ -106,8 +106,8 @@ Route::middleware([
             // Route::post('/apps/email/sent', [MailboxController::class, 'fetch_sent_emails']);
             
             Route::post('/apps/email/update-emails', [MailboxController::class, 'updateEmails']);
-            Route::post('/apps/email/add-attach', [MailboxController::class, 'addAttachS3File']);
-            Route::post('/apps/email/delete-attach', [MailboxController::class, 'deleteS3File']);
+            // Route::post('/apps/email/add-attach', [MailboxController::class, 'addAttachS3File']);
+            // Route::post('/apps/email/delete-attach', [MailboxController::class, 'deleteS3File']);
 
             Route::apiResource('email-outbound', EmailOutboundController::class);
             Route::apiResource('email-inbound', EmailInboundController::class);
@@ -150,6 +150,10 @@ Route::prefix('v1')->group(function(){
     Route::post('accept-invite', [UserController::class, 'AcceptInvite']);
     // existing user decline
     Route::post('decline-invite', [UserController::class, 'declineInvite']);
+
+    Route::post('/apps/email/add-attach', [MailboxController::class, 'addAttachS3File']);
+    Route::post('/apps/email/delete-attach', [MailboxController::class, 'deleteS3File']);
+
 });
 InitializeTenancyByRequestData::$onFail = function ($exception, $request, $next) {
     return response()->json(['message' => 'Invalid Client!'], 400);
