@@ -592,7 +592,7 @@ class MailboxController extends Controller
             'mailbox_id'=>$req->dataToUpdate['mailbox_id'],
             'is_read' => true
           ];
-          UserMailbox::where('id',$check->id)->update(['is_read'=>true]);
+          UserMailbox::create($data_arr);
         }
       }
     if(is_array($req->emailIds)){
