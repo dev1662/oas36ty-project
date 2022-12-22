@@ -581,9 +581,9 @@ class MailboxController extends Controller
       if($req->dataToUpdate['isRead'] && $req->dataToUpdate['mailbox_id']){
         $check = UserMailbox::where(['mailbox_id'=>$req->dataToUpdate['mailbox_id'],'user_id'=>$req->dataToUpdate['user_id']])->first();
         if($check){
-          if($check->is_read == true){
+          if($req->dataToUpdate['isRead'] == false){
             UserMailbox::where('id',$check->id)->update(['is_read'=>false]);
-          }else{
+          }else if($req->dataToUpdate['isRead'] == true){
             UserMailbox::where('id',$check->id)->update(['is_read'=>true]);
           }
         }else{
