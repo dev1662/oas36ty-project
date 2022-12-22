@@ -18,16 +18,21 @@ class UserMailbox extends Model
         'is_trash',
     ];
 
-    public function mailbox()
-    {
-        return $this->hasMany(Mailbox::class);
+    // public function mailbox()
+    // {
+    //     return $this->hasMany(Mailbox::class);
 
-    }
+    // }
 
     public function users()
     {
         return $this->hasMany(User::class);
 
+    }
+
+    public function mailbox()
+    {
+        return $this->belongsToMany(Mailbox::class);
     }
     
 }

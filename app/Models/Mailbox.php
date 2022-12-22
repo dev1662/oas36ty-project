@@ -39,5 +39,10 @@ class Mailbox extends Model implements Auditable
     {
         return $this->hasMany(MailboxAttachment::class);
        }
+
+       public function userMailbox()
+       {
+           return $this->hasOne(UserMailbox::class);
+          }
     
 }
