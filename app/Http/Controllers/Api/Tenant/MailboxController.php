@@ -12,6 +12,7 @@ use App\Models\EmailsSetting;
 use App\Models\Mailbox;
 use App\Models\MailboxAttachment;
 use App\Models\UserEmail;
+use App\Models\UserMailbox;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Client\ResponseSequence;
@@ -576,8 +577,24 @@ class MailboxController extends Controller
   
     public function updateEmails(Request $req)
     {
-      //  return $req->dataToUpdate['isStarred'];
-    //  return $req->emailIds;
+      //  return $req->dataToUpdate['isRead'];
+      if($req->dataToUpdate['isRead'] && $req->dataToUpdate['mailbox_id']){
+        $check = UserMailbox::where(['mailbox_id'=>$req->dataToUpdate['mailbox_id'],'user_id'=>$req->dataToUpdate['user_id']])->first();
+        if($check){
+          if($check->is_read == true){
+            UserMailbox::where('id',$check->id)->update(['is_read'=>false]);
+          }else{
+            UserMailbox::where('id',$check->id)->update(['is_read'=>true]);
+          }
+        }else{
+          $data_arr = [
+            'user_id'=>$req->dataToUpdate['user_id'],
+            'mailbox_id'=>$req->dataToUpdate['mailbox_id'],
+            'is_read' => true
+          ];
+          UserMailbox::where('id',$check->id)->update(['is_read'=>true]);
+        }
+      }
     if(is_array($req->emailIds)){
       // return $req->status;
       foreach ($req->emailIds as $id) {
