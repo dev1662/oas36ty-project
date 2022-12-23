@@ -583,6 +583,7 @@ class MailboxController extends Controller
     public function updateEmails(Request $req)
     {
       //  return $req->dataToUpdate['isRead'];
+      if($req->folder == 'inbox'){
       if($req->dataToUpdate['isRead'] && $req->dataToUpdate['mailbox_id']){
         $check = UserMailbox::where(['mailbox_id'=>$req->dataToUpdate['mailbox_id'],'user_id'=>$req->dataToUpdate['user_id']])->first();
         if($check){
@@ -600,6 +601,7 @@ class MailboxController extends Controller
           UserMailbox::create($data_arr);
         }
       }
+    }
     if(is_array($req->emailIds)){
       // return $req->status;
       foreach ($req->emailIds as $id) {
