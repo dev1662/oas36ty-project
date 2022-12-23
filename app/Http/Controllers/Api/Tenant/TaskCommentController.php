@@ -205,8 +205,8 @@ class TaskCommentController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $original_task_id = $_GET['task_id'];
-
+        $original_task_id = $taskID ?? 'undefined';//$_GET['task_id'];
+        // return $original_task_id;
         
 
 
@@ -312,11 +312,11 @@ class TaskCommentController extends Controller
      *     ),
      * )
      */
-    public function store(Request $request, $taskID)
+    public function store(Request $request)
     {
         $user = $request->user();
 
-        $validator = Validator::make(['task_id' => $_GET['task_id']] + $request->all(), [
+        $validator = Validator::make($request->all(), [
             'task_id' => 'required|exists:App\Models\Task,id',
             'comment' => 'required',
         ]);
