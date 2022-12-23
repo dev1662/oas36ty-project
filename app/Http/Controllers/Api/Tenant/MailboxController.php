@@ -1378,6 +1378,7 @@ class MailboxController extends Controller
                               if($update){
                                 if($update->u_date < strtotime($date)){
                                   Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                  UserMailbox::where('mailbox_id', $update->id)->update(['is_read'=>false]);
                                 }
                               }
                             }else{

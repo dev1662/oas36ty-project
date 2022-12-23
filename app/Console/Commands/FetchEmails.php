@@ -9,6 +9,7 @@ use App\Models\MailboxAttachment;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\UserEmail;
+use App\Models\UserMailbox;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
@@ -426,6 +427,7 @@ class FetchEmails extends Command
                                       if($update){
                                         if($update->u_date < strtotime($date)){
                                           Mailbox::where('id',$update->id)->update(['u_date'=>strtotime($date)]);
+                                          UserMailbox::where('mailbox_id', $update->id)->update(['is_read'=>false]);
                                         }
                                       }
                                       }else{
