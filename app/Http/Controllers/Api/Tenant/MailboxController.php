@@ -381,7 +381,7 @@ class MailboxController extends Controller
                   },
                     
                     ])->get();
-                    $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('is_parent',1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with(['attachments_file','userMailbox'])->get();
+                    $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('is_parent',1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->get();
 
                     foreach($results as $key=> $res){
                         $eamils_arr = [];
@@ -431,7 +431,10 @@ class MailboxController extends Controller
                     $query->where(['to_email' => $username->mail_username ])
                     ->orWhere(['from_email' => $username->mail_username]);
                 })
-                ->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+                ->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with(['attachments_file',
+                'userMailbox' => function ($q) use($user_id) {
+                  $q->where(['user_id'=>$user_id])->get();
+              }])->get();
 
                 $starred_count = Mailbox::where(['isStarred' => 1])->where('is_parent',1)
                 ->where(function($query) use ($username){
@@ -583,7 +586,7 @@ class MailboxController extends Controller
     public function updateEmails(Request $req)
     {
       //  return $req->dataToUpdate['isRead'];
-      if($req->folder == 'inbox'){
+      if($req->folder == 'inbox' || $req->folder == 'starred'){
       if($req->dataToUpdate['isRead'] && $req->dataToUpdate['mailbox_id']){
         $check = UserMailbox::where(['mailbox_id'=>$req->dataToUpdate['mailbox_id'],'user_id'=>$req->dataToUpdate['user_id']])->first();
         if($check){
