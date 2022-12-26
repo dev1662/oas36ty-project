@@ -368,13 +368,23 @@ class MailboxController extends Controller
             $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
           }
           if (!$req->q) {
-            $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->where('is_parent', 1)->offset($offset)->limit(50)->with([
+            $spam_trash_id = UserMailbox::select('mailbox_id')->where( function($query){ 
+             $query->where(['is_spam'=>1])->orWhere(['is_trash'=>1]);
+            })->where('user_id',$user_id)
+              ->get();
+              $spam_trash_ids = [];
+              foreach($spam_trash_id as $row){
+                $spam_trash_ids[] = $row->mailbox_id;
+              }
+            $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->where('is_parent', 1)->whereNotIn('id',$spam_trash_ids)->offset($offset)->limit(50)->with([
               'attachments_file',
               'userMailbox' => function ($q) use ($user_id) {
                 $q->where(['user_id' => $user_id])->get();
               },
 
             ])->get();
+            // return $results;
+
             $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('is_parent', 1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->get();
 
             foreach ($results as $key => $res) {
