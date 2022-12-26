@@ -491,11 +491,12 @@ class MailboxController extends Controller
     // return $username->mail_username;
 
     // $unstared_emails = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',0)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
-
+    // $user_mailbox =  DB::table('user_mailboxes')->join('mailbox', 'id','=','mailbox_id')->get(); //UserMailbox::with(['mailbox'])->get();
     $meta = [
       'emailsMeta' =>  $count_email,
       'email_count' => $count_of_msg,
-      'msg_stared' => count($stared_emails) > 0 ? 'all stared' : 'not all stared'
+      'msg_stared' => count($stared_emails) > 0 ? 'all stared' : 'not all stared',
+      // 'user_mailbox' => $user_mailbox
     ];
     $this->response['status'] = true;
     $this->response['message'] = 'data fetched';

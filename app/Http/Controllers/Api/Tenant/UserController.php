@@ -438,7 +438,7 @@ class UserController extends Controller
                     ],
                     [
                         'name' => $request->name,
-                        'status' => CentralUser::STATUS_PENDING,
+                        'status' => CentralUser::STATUS_ACTIVE,
                     ]
                 );
                 $centralUser->tenants()->attach($tenant);
