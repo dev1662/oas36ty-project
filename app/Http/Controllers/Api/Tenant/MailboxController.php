@@ -657,7 +657,6 @@ class MailboxController extends Controller
     }
   }
 
-
   /**
    *
    * @OA\post(
@@ -1341,6 +1340,7 @@ class MailboxController extends Controller
                 $message = $oMessage->getHTMLBody(true);
                 $message = $message;
               }
+              $plain_text_messages = $oMessage->getTextBody() ?? '';
               $attachments = $oMessage->getAttachments()->count();
 
               //  return $oMessage->getXFailedRecipients();
@@ -1403,7 +1403,8 @@ class MailboxController extends Controller
                   'is_parent' => $is_parent ?? 1,
                   'ccaddress' => $ccaddress ?? null,
                   'bccaddress' => $bccaddress ?? null,
-                  'to_replyEmails' => $to_email ?? null
+                  'to_replyEmails' => $to_email ?? null,
+                  'plainText_messages'=> $plain_text_messages ?? ''
                   //    'recent' => $header->recent,
 
                 ];
@@ -1500,6 +1501,7 @@ class MailboxController extends Controller
               if ($oMessage->hasHTMLBody()) {
                 $message = $oMessage->getHTMLBody(true);
               }
+              $plain_text_messages = $oMessage->getTextBody() ?? '';
 
 
               // return $oMessage->getHeader();
@@ -1561,7 +1563,9 @@ class MailboxController extends Controller
                   'is_parent' => $is_parent ?? 1,
                   'ccaddress' => $ccaddress ?? null,
                   'bccaddress' => $bccaddress ?? null,
-                  'to_replyEmails' => $to_email ?? null
+                  'to_replyEmails' => $to_email ?? null,
+                  'plainText_messages'=> $plain_text_messages ?? ''
+
 
                   //    'recent' => $header->recent,
 
@@ -1648,6 +1652,7 @@ class MailboxController extends Controller
               if ($oMessage->hasHTMLBody()) {
                 $message = $oMessage->getHTMLBody(true);
               }
+              $plain_text_messages = $oMessage->getTextBody() ?? '';
 
 
               // return $oMessage->getHeader();
@@ -1706,7 +1711,9 @@ class MailboxController extends Controller
                   'is_parent' => $is_parent ?? 1,
                   'ccaddress' => $ccaddress ?? null,
                   'bccaddress' => $bccaddress ?? null,
-                  'to_replyEmails' => $to_email ?? null
+                  'to_replyEmails' => $to_email ?? null,
+                  'plainText_messages'=> $plain_text_messages ?? ''
+
 
                   //    'recent' => $header->recent,
 
@@ -1747,6 +1754,7 @@ class MailboxController extends Controller
               if ($oMessage->hasHTMLBody()) {
                 $message = $oMessage->getHTMLBody(true);
               }
+              $plain_text_messages = $oMessage->getTextBody() ?? '';
 
 
               // return $oMessage->getHeader();
@@ -1805,7 +1813,9 @@ class MailboxController extends Controller
                   'is_parent' => $is_parent ?? 1,
                   'ccaddress' => $ccaddress ?? null,
                   'bccaddress' => $bccaddress ?? null,
-                  'to_replyEmails' => $to_email ?? null
+                  'to_replyEmails' => $to_email ?? null,
+                  'plainText_messages'=> $plain_text_messages ?? ''
+
 
                   //    'recent' => $header->recent,
 
@@ -1849,6 +1859,7 @@ class MailboxController extends Controller
                 $message = $oMessage->getHTMLBody(true);
               }
 
+              $plain_text_messages = $oMessage->getTextBody() ?? '';
 
               // return $oMessage->getHeader();
 
@@ -1910,7 +1921,9 @@ class MailboxController extends Controller
                   'is_parent' => $is_parent ?? 1,
                   'ccaddress' => $ccaddress ?? null,
                   'bccaddress' => $bccaddress ?? null,
-                  'to_replyEmails' => $to_email ?? null
+                  'to_replyEmails' => $to_email ?? null,
+                  'plainText_messages'=> $plain_text_messages ?? ''
+
 
                   //    'recent' => $header->recent,
 

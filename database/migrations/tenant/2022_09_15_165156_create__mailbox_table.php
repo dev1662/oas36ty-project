@@ -22,6 +22,7 @@ class CreateMailboxTable extends Migration
             $table->string('to_email')->nullable();
             $table->string('subject')->nullable();
             $table->longText('message')->nullable();
+            $table->longText('plainText_messages')->nullable();
             $table->string('attachments')->nullable();
             $table->longText('references')->nullable();
             $table->string('in_reply_to')->nullable();
