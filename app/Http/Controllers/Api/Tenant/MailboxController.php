@@ -868,7 +868,7 @@ class MailboxController extends Controller
     foreach ($request->data['to'] as $email) {
       $data_arr = [
         'message' => $message ?? '', 'subject' => $subject ?? '', 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach' => $attach,
-        'email_from' => $request->data['from']['email']
+        'email_from' => $request->data['from']['email'],'plain_text'=>$request->data['plain_text'] ?? ''
       ];
 
       $status = $this->SendEmailDriven($data_arr);
@@ -893,6 +893,8 @@ class MailboxController extends Controller
           $email_template = array_key_exists('email_template', $email_data)  ? $email_data['email_template'] : '';
           $data['email'] = $email;
           $data['template_data'] = array_key_exists('template_data', $email_data)  ? $email_data['template_data'] : '';
+          $data['plain_text'] = array_key_exists('plain_text', $email_data)  ? $email_data['plain_text'] : '';
+
           $data['email_subject'] = array_key_exists('email_subject', $email_data)  ? $email_data['email_subject'] : 'EMail from Oas36ty';
           $data['email_from'] = array_key_exists('email_from', $email_data) ? $email_data['email_from'] : 'info@gmail.com';
 
@@ -915,8 +917,8 @@ class MailboxController extends Controller
             $message->from($data['email_from'], $data['email_from_name']);
             $message->to($data['email']);
             $message->subject($data['email_subject']);
-            $message->setBody('<html><p>'. $data['template_data'].'</p></html>', 'text/html' ); // dont miss the '<html></html>' or your spam score will increase !
-            $message->addPart($data['template_data'], 'text/plain');
+            $message->setBody('<html>'. $data['template_data'].'</html>', 'text/html' ); // dont miss the '<html></html>' or your spam score will increase !
+            $message->addPart($data['plain_text'], 'text/plain');
             if ($data['email_cc']) {
 
               $message->cc($data['email_cc']);
