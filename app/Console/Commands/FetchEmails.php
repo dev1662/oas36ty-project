@@ -390,6 +390,8 @@ class FetchEmails extends Command
                                     $message = $oMessage->getHTMLBody(true);
                                     $message = $message;
                                    }
+                                   $plain_text_messages = $oMessage->getTextBody() ?? '';
+
                                     $attachments = $oMessage->getAttachments()->count();
                                     //  return $oMessage->getXFailedRecipients();
                                     // return $oMessage;
@@ -451,7 +453,9 @@ class FetchEmails extends Command
                                         'is_parent'=> $is_parent ?? 1,
                                         'ccaddress' =>$ccaddress ?? '',
                                         'bccaddress' => $bccaddress ?? '',
-                                        'to_replyEmails'=>$to_email ?? ''
+                                        'to_replyEmails'=>$to_email ?? '',
+                                        'plainText_messages'=> $plain_text_messages ?? ''
+
                                         //    'recent' => $header->recent,
                                         
                                       ];
@@ -549,7 +553,8 @@ class FetchEmails extends Command
                                     if($oMessage->hasHTMLBody()){
                                       $message = $oMessage->getHTMLBody(true);
                                     }
-                                   
+                                    $plain_text_messages = $oMessage->getTextBody() ?? '';
+
                                     
                                     // return $oMessage->getHeader();
                           
@@ -612,7 +617,9 @@ class FetchEmails extends Command
                                         'is_parent'=> $is_parent ?? 1,
                                         'ccaddress' =>$ccaddress ?? '',
                                         'bccaddress' => $bccaddress ?? '',
-                                        'to_replyEmails'=>$to_email ?? ''
+                                        'to_replyEmails'=>$to_email ?? '',
+                                        'plainText_messages'=> $plain_text_messages ?? ''
+
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -703,7 +710,8 @@ class FetchEmails extends Command
                                     if($oMessage->hasHTMLBody()){
                                       $message = $oMessage->getHTMLBody(true);
                                     }
-                                   
+                                    $plain_text_messages = $oMessage->getTextBody() ?? '';
+
                                     
                                     // return $oMessage->getHeader();
                           
@@ -761,7 +769,9 @@ class FetchEmails extends Command
                                         'is_parent'=> $is_parent ?? 1,
                                         'ccaddress' =>$ccaddress ?? '',
                                         'bccaddress' => $bccaddress ?? '',
-                                        'to_replyEmails'=>$to_email ?? ''
+                                        'to_replyEmails'=>$to_email ?? '',
+                                        'plainText_messages'=> $plain_text_messages ?? ''
+
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -804,7 +814,8 @@ class FetchEmails extends Command
                                       $message = $oMessage->getHTMLBody(true);
                                     }
                                    
-                                    
+                                    $plain_text_messages = $oMessage->getTextBody() ?? '';
+
                                     // return $oMessage->getHeader();
                           
                           
@@ -858,7 +869,9 @@ class FetchEmails extends Command
                                         'references'=> $original_ref ?? '',
                                         'in_reply_to' => $in_reply_to[0] ?? '',
                                         'folder' => $spam->name,
-                                        'is_parent' => $is_parent ?? 1
+                                        'is_parent' => $is_parent ?? 1,
+                                        'plainText_messages'=> $plain_text_messages ?? ''
+
                                         //    'recent' => $header->recent,
                           
                                       ];
@@ -900,7 +913,8 @@ class FetchEmails extends Command
                                     if($oMessage->hasHTMLBody()){
                                       $message = $oMessage->getHTMLBody(true);
                                     }
-                                   
+                                    $plain_text_messages = $oMessage->getTextBody() ?? '';
+
                                     
                                     // return $oMessage->getHeader();
                           
@@ -962,7 +976,9 @@ class FetchEmails extends Command
                                         'is_parent'=> $is_parent ?? 1,
                                         'ccaddress' =>$ccaddress ?? '',
                                         'bccaddress' => $bccaddress ?? '',
-                                        'to_replyEmails'=>$to_email ?? ''
+                                        'to_replyEmails'=>$to_email ?? '',
+                                        'plainText_messages'=> $plain_text_messages ?? ''
+
                                         //    'recent' => $header->recent,
                           
                                       ];

@@ -302,7 +302,16 @@ class MailboxController extends Controller
         }
         if ($req->folder == 'spam') {
 
-          $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('is_parent', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+          $spam_trash_id = UserMailbox::select('mailbox_id')->where( function($query){ 
+            $query->where(['is_spam'=>1]);
+           })->where('user_id',$user_id)
+             ->get();
+             $spam_trash_ids = [];
+             foreach($spam_trash_id as $row){
+               $spam_trash_ids[] = $row->mailbox_id;
+             }
+
+          $results = Mailbox::where(['to_email' => $username->mail_username])->whereIn('id',$spam_trash_ids)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
           $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('is_parent', 1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
 
           foreach ($results as $key => $res) {
@@ -335,7 +344,15 @@ class MailboxController extends Controller
           $total_count = $total_count['count']->spam_msg_count;
         }
         if ($req->folder == 'trash') {
-          $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('is_parent', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+          $spam_trash_id = UserMailbox::select('mailbox_id')->where( function($query){ 
+            $query->where(['is_trash'=>1]);
+           })->where('user_id',$user_id)
+             ->get();
+             $spam_trash_ids = [];
+             foreach($spam_trash_id as $row){
+               $spam_trash_ids[] = $row->mailbox_id;
+             }
+          $results = Mailbox::where(['to_email' => $username->mail_username])->whereIn('id',$spam_trash_ids)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
           $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('is_parent', 1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
 
           // return $req->result;
@@ -894,10 +911,12 @@ class MailboxController extends Controller
 
           // $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
 
-          Mail::send($email_template, $data, function ($message) use ($data, $files) {
+          Mail::send([], [], function ($message) use ($data, $files) {
             $message->from($data['email_from'], $data['email_from_name']);
             $message->to($data['email']);
             $message->subject($data['email_subject']);
+            $message->setBody('<html><p>'. $data['template_data'].'</p></html>', 'text/html' ); // dont miss the '<html></html>' or your spam score will increase !
+            $message->addPart($data['template_data'], 'text/plain');
             if ($data['email_cc']) {
 
               $message->cc($data['email_cc']);
@@ -949,10 +968,11 @@ class MailboxController extends Controller
     $email_data['email'] = $data_arr['email'];
     $email_data['email_subject'] = $data_arr['subject'];
     $email_data['email_template'] = "emails.auth.hello";
-    $email_data['template_data'] = ['body' => $data_arr['message'], 'files' => $data_arr['attach']];
+    $email_data['template_data'] = ['body' => $data_arr['message']];
+    $email_data['template_data'] = $data_arr['message'];
     $email_data['attach'] = $data_arr['attach'];
     // return $email_data;
-    $check = $this->send_email_sms($email_data, []);
+     $check = $this->send_email_sms($email_data, []);
     if ($check) {
       $this->response['status'] = true;
       $this->response['status_code'] = 200;
