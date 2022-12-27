@@ -15,8 +15,8 @@ class CreateToDoMentionsTable extends Migration
     {
         Schema::create('to_do_mentions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('to_do_id')->constrained();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('to_do_id')->nullable()->constrained();
+            $table->foreignId('user_id')->nullable()->constrained();
             $table->timestamps();
             $table->softDeletes();
         });

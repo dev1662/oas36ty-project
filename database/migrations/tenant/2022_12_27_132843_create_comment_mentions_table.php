@@ -15,8 +15,8 @@ class CreateCommentMentionsTable extends Migration
     {
         Schema::create('comment_mentions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('task_comment_id')->constrained();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('task_comment_id')->nullable()->constrained();
+            $table->foreignId('user_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

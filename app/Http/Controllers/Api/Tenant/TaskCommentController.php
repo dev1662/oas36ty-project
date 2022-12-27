@@ -351,8 +351,8 @@ class TaskCommentController extends Controller
                 // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
                 // $toDo->mentionUsers()->sync($users['id']);
                 CommentMention::create([
-                    'task_comment_id' => $id,
-                    'user_id' => $users['id']
+                    'task_comment_id' => $id ?? null,
+                    'user_id' => $users['id'] ?? null
                 ]);
                 
             }
