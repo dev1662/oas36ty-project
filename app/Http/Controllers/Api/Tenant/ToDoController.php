@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\ToDo;
+use App\Models\ToDoMention;
 use Illuminate\Support\Facades\Auth;
 
 class ToDoController extends Controller
@@ -174,12 +175,13 @@ class ToDoController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-
+        
         $validator = Validator::make($request->all(), [
-            'to_do' => 'required|max:255',
+            'to_do' => 'required|array',
+            'to_do.*' => 'required|max:255',
             'task_id' => 'nullable|exists:App\Models\Task,id',
             'user_ids' => 'nullable|array',
-            'user_ids.*' => 'required|exists:App\Models\User,id',
+            'user_ids.*.id' => 'nullable|exists:App\Models\User,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -187,20 +189,40 @@ class ToDoController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+        $todos = $request->to_do;
+        $taskID = $request->task_id;
+        $user_ids = $request->user_ids;
+        
+        // $arr = [];
+        foreach ($todos as $key => $todo) {
+            // preg_match_all("/(@\w+)/", $todo['subtask_assignee'], $matches);
+            $real_todo = trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
+        // return $matches;
         $todo_array = [
             // 'user_id' => Auth::user()->id,
-            'task_id' => $request->task_id,
-            'to_do' => $request->to_do,
+            'task_id' => $taskID,
+            'to_do' => $real_todo,
             // 'mention_users' => $request->mention_users
         ];
-        // return $todo_array;
+     
         $toDo = new ToDo($todo_array);
+        
         $toDo->status = ToDo::STATUS_NOT_DONE;
         $user->toDos()->save($toDo);
-        if(!empty($request->mention_users)){
-
-            $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+    
+        if(!empty($user_ids)){
+            foreach ($user_ids as $key => $users) {
+               
+                // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+                // $toDo->mentionUsers()->sync($users['id']);
+                ToDoMention::create([
+                    'to_do_id' => $toDo->id,
+                    'user_id' => $users['id']
+                ]);
+                
+            }
         }
+    }
         
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
@@ -295,12 +317,13 @@ class ToDoController extends Controller
     public function update(Request $request, $id)
     {
         $user = $request->user();
+        // return $id;
         $validator = Validator::make(['to_do_id' => $id] + $request->all(), [
             'to_do_id' => 'required|exists:App\Models\ToDo,id',
             'to_do' => 'required|max:255',
             'task_id' => 'nullable|exists:App\Models\Task,id',
             'user_ids' => 'nullable|array',
-            'user_ids.*' => 'required|exists:App\Models\User,id',
+            'user_ids.*' => 'nullable|exists:App\Models\User,id',
             'status' => 'required|in:not-done,done',
         ]);
         
@@ -320,10 +343,23 @@ class ToDoController extends Controller
 
         $toDo->fill($request->only(['to_do','task_id', 'status']));
         $toDo->update();
-        if(!empty($request->mention_users)){
+        // if(!empty($request->mention_users)){
 
-            $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
-        }
+        //     $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+        // }
+        // $user_ids = $request->user_ids;
+        // if(!empty($user_ids)){
+        //     foreach ($user_ids as $key => $users) {
+               
+        //         // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+        //         // $toDo->mentionUsers()->sync($users['id']);
+        //         ToDoMention::create([
+        //             'to_do_id' => $toDo->id,
+        //             'user_id' => $users['id']
+        //         ]);
+                
+        //     }
+        // }
         
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
@@ -390,6 +426,7 @@ class ToDoController extends Controller
     public function destroy(Request $request, $id)
     {
         $user = $request->user();
+        // return $id;
         
         $validator = Validator::make(['to_do_id' => $id], [
             'to_do_id' => 'required|exists:App\Models\ToDo,id',

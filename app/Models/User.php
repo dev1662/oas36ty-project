@@ -106,4 +106,8 @@ class User extends Authenticatable implements Syncable
     public function userEmails(){
         return $this->hasOne(UserEmail::class);
     }
+    public function taskComments()
+    {
+        return $this->hasMany(TaskComment::class);
+    }
 }

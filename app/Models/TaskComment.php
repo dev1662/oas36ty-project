@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Egulias\EmailValidator\Warning\Comment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -32,4 +33,13 @@ class TaskComment extends Model implements Auditable
     {
         return $this->belongsTo(Task::class);
     }
+    public function mentions()
+    {
+        return $this->hasMany(CommentMention::class);
+    }
+    public function mentionUsers()
+    {
+        return $this->belongsToMany(User::class, CommentMention::class, 'task_comment_id', 'user_id');
+    }
 }
+

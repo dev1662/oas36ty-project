@@ -1648,4 +1648,5 @@ return response()->json($this->response);
         $this->response["message"] = __('strings.destroy_failed');
         return response()->json($this->response, 422);
     }
+  
 }

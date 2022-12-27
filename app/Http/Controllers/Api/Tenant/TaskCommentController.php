@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Tenant;
 
 use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
+use App\Models\CommentMention;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 // use Illuminate\Support\FacadesValidator;
@@ -218,6 +219,7 @@ class TaskCommentController extends Controller
                         $q->select('id', 'name', 'email', 'avatar');
                     },
                     'audits',
+                    'mentions'
                     ])->select('id', 'user_id', 'comment', 'created_at')->orderBy('id', 'ASC')->get();
                     // if($original_task_id != undefined)
                     $assignedUsers = Task::where(['id' => $original_task_id])->with([
@@ -315,13 +317,17 @@ class TaskCommentController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-
+        // return $request->all();
         $validator = Validator::make($request->all(), [
             'task_id' => 'required|exists:App\Models\Task,id',
             'comment' => 'required',
+            'user_ids' => 'array|nullable',
+            'user_ids.*.id' => 'nullable|exists:App\Models\User,id',
         ]);
         $taskID = $request->task_id;
         // return $taskID;
+        $user_ids = $request->user_ids;
+
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
             $this->response["message"] = $validator->errors()->first();
@@ -330,10 +336,27 @@ class TaskCommentController extends Controller
         }
 
         $task = Task::find($taskID);
+        $comment_arr = [
+            'comment' => trim(preg_replace("/(@\w+)/",'',$request->comment)),
+            'task_id' => $request->task_id
+        ];
 
-        $taskComment = new TaskComment($request->all());
+        $taskComment = new TaskComment($comment_arr);
         $taskComment->user_id = $user->id;
         $comment = $task->comments()->save($taskComment);
+     
+        $id  = $comment->id;
+        if(!empty($user_ids)){
+            foreach ($user_ids as $key => $users) {
+                // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+                // $toDo->mentionUsers()->sync($users['id']);
+                CommentMention::create([
+                    'task_comment_id' => $id,
+                    'user_id' => $users['id']
+                ]);
+                
+            }
+        }
 
         broadcast(new MessageSent($user, $comment))->toOthers();
 
