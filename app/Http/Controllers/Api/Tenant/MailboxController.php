@@ -821,6 +821,7 @@ class MailboxController extends Controller
   public function sendEmail(Request $request)
   {
     // return $request->all();
+    // return $request->data['plain_text'];
     $user = $request->user();
     $bcc =  $request->data['bcc'] ?? '';
     $cc =  $request->data['cc'] ?? '';
@@ -961,6 +962,8 @@ class MailboxController extends Controller
     $email_data = [];
     ## sending email
     $email_data['email_cc'] = $data_arr['email_cc'];
+    $email_data['plain_text'] = $data_arr['plain_text'];
+
     $email_data['email_bcc'] = $data_arr['email_bcc'];
     $email_data['message_id'] = $data_arr['message_id'] ?? '';
     $email_data['references'] = $data_arr['references'] ?? '';
