@@ -674,6 +674,52 @@ class MailboxController extends Controller
     }
   }
 
+  public function markedAs_spam_trash(Request $req){
+
+    if ($req->folder == 'spam' || $req->folder == 'trash') {
+      if($req->dataToUpdate){
+      if ($req->dataToUpdate['isSpam'] && $req->dataToUpdate['mailbox_id']) {
+        $check = UserMailbox::where(['mailbox_id' => $req->dataToUpdate['mailbox_id'], 'user_id' => $req->dataToUpdate['user_id']])->first();
+        if ($check) {
+          if ($req->dataToUpdate['isSpam'] == false) {
+            UserMailbox::where('id', $check->id)->update(['is_spam' => false]);
+          } else if ($req->dataToUpdate['isSpam'] == true) {
+            UserMailbox::where('id', $check->id)->update(['is_spam' => true]);
+          }
+        } else {
+          $data_arr = [
+            'user_id' => $req->dataToUpdate['user_id'],
+            'mailbox_id' => $req->dataToUpdate['mailbox_id'],
+            'is_spam' => true
+          ];
+          UserMailbox::create($data_arr);
+        }
+      }else  if ($req->dataToUpdate['isTrash'] && $req->dataToUpdate['mailbox_id']) {
+        $check = UserMailbox::where(['mailbox_id' => $req->dataToUpdate['mailbox_id'], 'user_id' => $req->dataToUpdate['user_id']])->first();
+        if ($check) {
+          if ($req->dataToUpdate['isTrash'] == false) {
+            UserMailbox::where('id', $check->id)->update(['is_trash' => false]);
+          } else if ($req->dataToUpdate['isTrash'] == true) {
+            UserMailbox::where('id', $check->id)->update(['is_trash' => true]);
+          }
+        } else {
+          $data_arr = [
+            'user_id' => $req->dataToUpdate['user_id'],
+            'mailbox_id' => $req->dataToUpdate['mailbox_id'],
+            'is_trash' => true
+          ];
+          UserMailbox::create($data_arr);
+        }
+      }
+
+
+    }
+
+  }
+  return $this->fetchEmails($req);
+
+  }
+
   /**
    *
    * @OA\post(
