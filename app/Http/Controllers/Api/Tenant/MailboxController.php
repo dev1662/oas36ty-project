@@ -684,7 +684,7 @@ class MailboxController extends Controller
           if ($req->dataToUpdate['isSpam'] == false) {
             UserMailbox::where('id', $check->id)->update(['is_spam' => false]);
           } else if ($req->dataToUpdate['isSpam'] == true) {
-            UserMailbox::where('id', $check->id)->update(['is_spam' => true]);
+            UserMailbox::where('id', $check->id)->update(['is_spam' => true,'is_trash' => false]);
           }
         } else {
           $data_arr = [
@@ -700,7 +700,7 @@ class MailboxController extends Controller
           if ($req->dataToUpdate['isTrash'] == false) {
             UserMailbox::where('id', $check->id)->update(['is_trash' => false]);
           } else if ($req->dataToUpdate['isTrash'] == true) {
-            UserMailbox::where('id', $check->id)->update(['is_trash' => true]);
+            UserMailbox::where('id', $check->id)->update(['is_trash' => true,'is_spam' => false]);
           }
         } else {
           $data_arr = [
