@@ -17,7 +17,7 @@
         "league/flysystem-aws-s3-v3": "*",
         "owen-it/laravel-auditing": "^13.0",
         "phpmailer/phpmailer": "^6.6",
-        "pusher/pusher-php-server": "^7.0",
+        "pusher/pusher-php-server": "^7.2",
         "stancl/tenancy": "^3.5",
         "webklex/laravel-imap": "^4.0"
     },

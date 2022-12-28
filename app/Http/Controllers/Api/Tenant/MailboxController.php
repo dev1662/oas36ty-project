@@ -675,8 +675,11 @@ class MailboxController extends Controller
   }
 
   public function markedAs_spam_trash(Request $req){
-
+    // return $req->all();
+    $user = $req->user();
+    // $req->dataToUpdate['user_id'] = $user->id;
     if ($req->folder == 'spam' || $req->folder == 'trash') {
+
       if($req->dataToUpdate){
       if ($req->dataToUpdate['isSpam'] && $req->dataToUpdate['mailbox_id']) {
         $check = UserMailbox::where(['mailbox_id' => $req->dataToUpdate['mailbox_id'], 'user_id' => $req->dataToUpdate['user_id']])->first();
