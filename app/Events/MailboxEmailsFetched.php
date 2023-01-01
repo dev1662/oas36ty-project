@@ -2,8 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\TaskComment;
-use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -12,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageSent implements ShouldBroadcast
+class MailboxEmailsFetched implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -21,13 +19,10 @@ class MessageSent implements ShouldBroadcast
      *
      * @return void
      */
-
-     public $user;
-     public $message;
-    public function __construct(User $user, TaskComment $message)
+    public $data;
+    public function __construct($data)
     {
-        $this->user = $user;
-        $this->message = $message;
+        $this->data = $data;
     }
 
     /**
@@ -37,15 +32,14 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return ['chat'];//new PrivateChannel('chat');
+        return ['mailbox-emails'];//new PrivateChannel('mailbox-emails');
     }
     public function broadcastAs()
-{
-    return 'MessageSent';
-}
-public function broadcastWith()
     {
-        $this->message->user = $this->user;
-        return [$this->message];
+        return 'MailboxEmails';
+    }
+    public function broadcastWith()
+    {
+        return [$this->data];//new PrivateChannel('mailbox-emails');
     }
 }

@@ -359,7 +359,7 @@ class TaskCommentController extends Controller
         }
         // $taskC = TaskComment::find($id);
         
-        broadcast(new MessageSent($user, $taskComment))->toOthers();
+        broadcast(new MessageSent($user, $taskComment));
 
 
         $this->response["status"] = true;

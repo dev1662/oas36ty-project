@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Tenant;
 
+use App\Events\MailboxEmailsFetched;
 use App\Http\Controllers\Controller;
 use App\Mail\ForgotOrganization;
 use App\Mail\MailBoxSendMail;
@@ -2021,6 +2022,10 @@ class MailboxController extends Controller
         }
       }
     }
+    // $req=Request(); 
+    // return $this->fetchEmails($req);
+    // broadcast(new MailboxEmailsFetched('hllo'));
+
   }
 
   public function reply_to_all(Request $request)

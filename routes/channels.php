@@ -20,3 +20,9 @@ Broadcast::channel('chat', function ($user) {
         return $user;
     }
 });
+Broadcast::channel('mailbox-emails', function ($user) {
+    if(Auth::check()){
+
+        return $user;
+    }
+});

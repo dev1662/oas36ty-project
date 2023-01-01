@@ -20,6 +20,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         'App\Events\MessageSent'=> [
             'App\Listeners\MessageSent'
+        ],
+        'App\Events\MailboxEmailsFetched'=> [
+            'App\Listeners\MailboxEmailsFetched'
         ]
     ];
 
