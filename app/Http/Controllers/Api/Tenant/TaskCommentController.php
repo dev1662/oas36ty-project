@@ -337,10 +337,10 @@ class TaskCommentController extends Controller
 
         $task = Task::find($taskID);
         $comment_arr = [
-            'comment' => trim(preg_replace("/(@\w+)/",'',$request->comment)),
+            'comment' => $request->comment,//trim(preg_replace("/(@\w+)/",'',$request->comment)),
             'task_id' => $request->task_id
         ];
-
+        // return $comment_arr
         $taskComment = new TaskComment($comment_arr);
         $taskComment->user_id = $user->id;
         $comment = $task->comments()->save($taskComment);
