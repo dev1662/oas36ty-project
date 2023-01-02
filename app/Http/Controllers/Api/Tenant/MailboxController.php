@@ -319,7 +319,9 @@ class MailboxController extends Controller
                $spam_trash_ids[] = $row->mailbox_id;
              }
 
-          $results = Mailbox::where(['to_email' => $username->mail_username])->whereIn('id',$spam_trash_ids)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+          $results = Mailbox::
+          // where(['to_email' => $username->mail_username])->
+          whereIn('id',$spam_trash_ids)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
           $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Spam'])->where('is_parent', 1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
 
           foreach ($results as $key => $res) {
@@ -680,14 +682,17 @@ class MailboxController extends Controller
 
   public function markedAs_spam_trash(Request $req){
     $user = $req->user();
-    // $req->dataToUpdate['user_id'] = $user->id;
+    
     if ($req->folder == 'spam' || $req->folder == 'trash') {
-
+      // if($req->dataToUpdate['isSpam'] == false){
+      //   return 'false';
+      // }
+      
       if($req->dataToUpdate){
-      if ($req->dataToUpdate['isSpam'] && $req->dataToUpdate['mailbox_id']) {
+      if ($req->folder == 'spam' && $req->dataToUpdate['mailbox_id']) {
         $check = UserMailbox::where(['mailbox_id' => $req->dataToUpdate['mailbox_id'], 'user_id' => $req->dataToUpdate['user_id']])->first();
         if ($check) {
-          if ($req->dataToUpdate['isSpam'] == false) {
+          if ($req->dataToUpdate['isSpam'] === 'false') {
             UserMailbox::where('id', $check->id)->update(['is_spam' => false,'message_id'=>$req->dataToUpdate['message_id']]);
           } else if ($req->dataToUpdate['isSpam'] == true) {
             UserMailbox::where('id', $check->id)->update(['is_spam' => true,'is_trash' => false,'message_id'=>$req->dataToUpdate['message_id']]);
@@ -701,12 +706,14 @@ class MailboxController extends Controller
           ];
           UserMailbox::create($data_arr);
         }
-      }else  if ($req->dataToUpdate['isTrash'] && $req->dataToUpdate['mailbox_id']) {
+      }else if($req->folder == 'trash' && $req->dataToUpdate['mailbox_id']) {
         $check = UserMailbox::where(['mailbox_id' => $req->dataToUpdate['mailbox_id'], 'user_id' => $req->dataToUpdate['user_id']])->first();
         if ($check) {
           if ($req->dataToUpdate['isTrash'] == false) {
             UserMailbox::where('id', $check->id)->update(['is_trash' => false,'message_id'=>$req->dataToUpdate['message_id']]);
-          } else if ($req->dataToUpdate['isTrash'] == true) {
+          } else if($req->dataToUpdate['isTrash'] == true) {
+            
+
             UserMailbox::where('id', $check->id)->update(['is_trash' => true,'is_spam' => false,'message_id'=>$req->dataToUpdate['message_id']]);
           }
         } else {
