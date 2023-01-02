@@ -174,6 +174,7 @@ class ToDoController extends Controller
      */
     public function store(Request $request)
     {
+        // return $request->all();
         $user = $request->user();
         
         $validator = Validator::make($request->all(), [
@@ -196,7 +197,7 @@ class ToDoController extends Controller
         // $arr = [];
         foreach ($todos as $key => $todo) {
             // preg_match_all("/(@\w+)/", $todo['subtask_assignee'], $matches);
-            $real_todo = trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
+            $real_todo = $todo['subtask_assignee'];//trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
         // return $matches;
         $todo_array = [
             // 'user_id' => Auth::user()->id,
@@ -323,7 +324,7 @@ class ToDoController extends Controller
             'to_do' => 'required|max:255',
             'task_id' => 'nullable|exists:App\Models\Task,id',
             'user_ids' => 'nullable|array',
-            'user_ids.*' => 'nullable|exists:App\Models\User,id',
+            'user_ids.*.id' => 'nullable|exists:App\Models\User,id',
             'status' => 'required|in:not-done,done',
         ]);
         
@@ -343,6 +344,19 @@ class ToDoController extends Controller
 
         $toDo->fill($request->only(['to_do','task_id', 'status']));
         $toDo->update();
+        $user_ids = $request->user_ids;
+        if(!empty($user_ids)){
+            foreach ($user_ids as $key => $users) {
+               
+                // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+                // $toDo->mentionUsers()->sync($users['id']);
+                ToDoMention::create([
+                    'to_do_id' => $id,
+                    'user_id' => $users['id']
+                ]);
+                
+            }
+        }
         // if(!empty($request->mention_users)){
 
         //     $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
@@ -446,7 +460,7 @@ class ToDoController extends Controller
 
         $toDo->mentions()->forceDelete();
 
-        if ($toDo->delete()) {
+        if ($toDo->forceDelete()) {
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');
             return response()->json($this->response);
