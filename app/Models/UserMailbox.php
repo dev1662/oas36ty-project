@@ -16,6 +16,7 @@ class UserMailbox extends Model
         'is_read',
         'is_spam',
         'is_trash',
+        'message_id',
     ];
 
     // public function mailbox()

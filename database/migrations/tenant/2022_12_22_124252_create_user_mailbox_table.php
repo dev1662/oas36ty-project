@@ -20,6 +20,7 @@ class CreateUserMailboxTable extends Migration
             $table->boolean('is_read')->default(false);
             $table->boolean('is_trash')->default(false);
             $table->boolean('is_spam')->default(false);
+            $table->string('message_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

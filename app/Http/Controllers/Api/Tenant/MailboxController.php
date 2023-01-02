@@ -202,8 +202,6 @@ class MailboxController extends Controller
     $user_id = $req->currrent['id'];
     $emails = $req->currrent['email'];
 
-    // return $req->page;
-
     $page = $req->page;
     if ($page > 1) {
 
@@ -212,7 +210,6 @@ class MailboxController extends Controller
       $offset = 0;
     }
 
-    // return $user_id;
     $check_assigned_emails = UserEmail::where('user_id', $user_id)->whereNotNull('emails_setting_id')->with('EmailsSetting')->get();
     $inbound_array = [];
     // foreach loop to get inbound details
@@ -223,13 +220,10 @@ class MailboxController extends Controller
     }
     // foreach loop to check inbound username
     $result = [];
-    //  return $inbound_array;
     $total_count = [];
     $stared_emails = [];
     foreach ($inbound_array as $index => $username) {
-      // return $username->mail_username;
       if ($username != null) {
-        // return $username->mail_username;
         // $result[$index]= Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->paginate(20);
         if ($req->folder == 'sent') {
           if ($req->q) {
@@ -237,7 +231,20 @@ class MailboxController extends Controller
             $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent', 1)->where('subject', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
           }
           if (!$req->q) {
-            $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+
+            $spam_trash_id = UserMailbox::select('mailbox_id','message_id')->where( function($query){ 
+              $query->where(['is_spam'=>1])->orWhere(['is_trash'=>1]);
+             })->where('user_id',$user_id)
+               ->get();
+               $spam_trash_ids = [];
+               $spamTrash_messageId = [];
+               foreach($spam_trash_id as $row){
+                 $spam_trash_ids[] = $row->mailbox_id;
+                  $spamTrash_messageId[] = $row->message_id ?? '';
+               }
+            $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent', 1)
+            ->whereNotIn('id',$spam_trash_ids)
+            ->whereNotIn('message_id',$spamTrash_messageId)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
             $stared_emails = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent', 1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
           }
           foreach ($results as $key => $res) {
@@ -353,16 +360,20 @@ class MailboxController extends Controller
              foreach($spam_trash_id as $row){
                $spam_trash_ids[] = $row->mailbox_id;
              }
-          $results = Mailbox::where(['to_email' => $username->mail_username])->whereIn('id',$spam_trash_ids)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+
+             
+             $results = Mailbox::
+            //  where(['to_email' => $username->mail_username])->
+             whereIn('id',$spam_trash_ids)->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
           $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('is_parent', 1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
 
-          // return $req->result;
           foreach ($results as $key => $res) {
 
             // $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])->where('references','LIKE','%'.$res['message_id'].'%')->get();
             $eamils_arr = [];
             // if(!empty($res['in_reply_to'])){
-            $eamils_arr = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'Trash'])
+            $eamils_arr = Mailbox::
+            where(['to_email' => $username->mail_username, 'folder' => 'Trash'])
               ->where('message_id', '!=', $res['message_id'])
               ->where(function ($query) use ($res) {
                 $query->orWhere('references', 'LIKE', '%' . $res['message_id'] . '%');
@@ -386,22 +397,26 @@ class MailboxController extends Controller
             $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
           }
           if (!$req->q) {
-            $spam_trash_id = UserMailbox::select('mailbox_id')->where( function($query){ 
+            $spam_trash_id = UserMailbox::select('mailbox_id','message_id')->where( function($query){ 
              $query->where(['is_spam'=>1])->orWhere(['is_trash'=>1]);
             })->where('user_id',$user_id)
               ->get();
               $spam_trash_ids = [];
+              $spamTrash_messageId = [];
               foreach($spam_trash_id as $row){
                 $spam_trash_ids[] = $row->mailbox_id;
+                $spamTrash_messageId[] = $row->message_id ?? '';
               }
-            $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->where('is_parent', 1)->whereNotIn('id',$spam_trash_ids)->offset($offset)->limit(50)->with([
+
+            $results = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->orderBy('u_date', 'desc')->where('is_parent', 1)
+            ->whereNotIn('id',$spam_trash_ids)
+            ->whereNotIn('message_id',$spamTrash_messageId)->offset($offset)->limit(50)->with([
               'attachments_file',
               'userMailbox' => function ($q) use ($user_id) {
                 $q->where(['user_id' => $user_id])->get();
               },
 
             ])->get();
-            // return $results;
 
             $stared_emails = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('is_parent', 1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->get();
 
@@ -423,21 +438,17 @@ class MailboxController extends Controller
                 })->with('attachments_file')
                 ->orderBy('u_date')->get();
               // }    
-              // return $eamils_arr;
               if (count($eamils_arr) > 0) {
                 // if($res['ccaddress']){
 
-                //   return $res['ccaddress'];
                 // }
                 // if($eamils_arr['ccaddress']){
 
-                // return $eamils_arr;
                 // }
                 $result[] = ['parent' => $res, 'childs' => $eamils_arr];
               } else {
                 $result[] = ['parent' => $res];
               }
-              // return $res;
             }
           }
           $total_count =  ['count' => UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
@@ -493,8 +504,6 @@ class MailboxController extends Controller
         // $total_count =  ['count' => UserEmail::select('inbound_msg_count')->where(['user_id' => $user_id, 'emails_setting_id' => $username->id])->first() ?? 0];
       }
     }
-    //   return $total_count;
-    //  return $result;
     // $result = Mailbox::all();
     if ($result) {
       $result = $result;
@@ -507,16 +516,13 @@ class MailboxController extends Controller
       $count_of_msg = 0;
     }
 
-    //  return $count_of_msg;
     // $msg = [];
 
-    // return $result;
     if ($page > 1) {
       $count_email = ($page - 1) * 20 + count($result);
     } else {
       $count_email = 0; //count($result);
     }
-    // return $username->mail_username;
 
     // $unstared_emails = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent',0)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
     // $user_mailbox =  DB::table('user_mailboxes')->join('mailbox', 'id','=','mailbox_id')->get(); //UserMailbox::with(['mailbox'])->get();
@@ -608,7 +614,6 @@ class MailboxController extends Controller
 
   public function updateEmails(Request $req)
   {
-    //  return $req->dataToUpdate['isRead'];
     if ($req->folder == 'inbox' || $req->folder == 'starred') {
       if($req->dataToUpdate){
       if ($req->dataToUpdate['isRead'] && $req->dataToUpdate['mailbox_id']) {
@@ -631,7 +636,6 @@ class MailboxController extends Controller
     }
     }
     if (is_array($req->emailIds)) {
-      // return $req->status;
       foreach ($req->emailIds as $id) {
         // $check_not_stared = Mailbox::where(['id' => $id, 'isStarred' => 0])->first();
         // $check_stared = Mailbox::where(['id' => $id, 'isStarred' => 1])->first();
@@ -650,7 +654,6 @@ class MailboxController extends Controller
         }
       }
       return $this->fetchEmails($req);
-      // return;
       // $this->response['message'] = 'starred all mails';
       // $this->response['status'] = true;
       // $this->response['data'] = ;
@@ -676,7 +679,6 @@ class MailboxController extends Controller
   }
 
   public function markedAs_spam_trash(Request $req){
-    // return $req->all();
     $user = $req->user();
     // $req->dataToUpdate['user_id'] = $user->id;
     if ($req->folder == 'spam' || $req->folder == 'trash') {
@@ -686,15 +688,16 @@ class MailboxController extends Controller
         $check = UserMailbox::where(['mailbox_id' => $req->dataToUpdate['mailbox_id'], 'user_id' => $req->dataToUpdate['user_id']])->first();
         if ($check) {
           if ($req->dataToUpdate['isSpam'] == false) {
-            UserMailbox::where('id', $check->id)->update(['is_spam' => false]);
+            UserMailbox::where('id', $check->id)->update(['is_spam' => false,'message_id'=>$req->dataToUpdate['message_id']]);
           } else if ($req->dataToUpdate['isSpam'] == true) {
-            UserMailbox::where('id', $check->id)->update(['is_spam' => true,'is_trash' => false]);
+            UserMailbox::where('id', $check->id)->update(['is_spam' => true,'is_trash' => false,'message_id'=>$req->dataToUpdate['message_id']]);
           }
         } else {
           $data_arr = [
             'user_id' => $req->dataToUpdate['user_id'],
             'mailbox_id' => $req->dataToUpdate['mailbox_id'],
-            'is_spam' => true
+            'is_spam' => true,
+            'message_id'=>$req->dataToUpdate['message_id']
           ];
           UserMailbox::create($data_arr);
         }
@@ -702,15 +705,16 @@ class MailboxController extends Controller
         $check = UserMailbox::where(['mailbox_id' => $req->dataToUpdate['mailbox_id'], 'user_id' => $req->dataToUpdate['user_id']])->first();
         if ($check) {
           if ($req->dataToUpdate['isTrash'] == false) {
-            UserMailbox::where('id', $check->id)->update(['is_trash' => false]);
+            UserMailbox::where('id', $check->id)->update(['is_trash' => false,'message_id'=>$req->dataToUpdate['message_id']]);
           } else if ($req->dataToUpdate['isTrash'] == true) {
-            UserMailbox::where('id', $check->id)->update(['is_trash' => true,'is_spam' => false]);
+            UserMailbox::where('id', $check->id)->update(['is_trash' => true,'is_spam' => false,'message_id'=>$req->dataToUpdate['message_id']]);
           }
         } else {
           $data_arr = [
             'user_id' => $req->dataToUpdate['user_id'],
             'mailbox_id' => $req->dataToUpdate['mailbox_id'],
-            'is_trash' => true
+            'is_trash' => true,
+            'message_id'=>$req->dataToUpdate['message_id']
           ];
           UserMailbox::create($data_arr);
         }
@@ -870,8 +874,7 @@ class MailboxController extends Controller
 
   public function sendEmail(Request $request)
   {
-    // return $request->all();
-    // return $request->data['plain_text'];
+   
     $user = $request->user();
     $bcc =  $request->data['bcc'] ?? '';
     $cc =  $request->data['cc'] ?? '';
@@ -939,7 +942,6 @@ class MailboxController extends Controller
         if ($email) {
           $files = $email_data['attach'];
           $email_replyTo = $email_data['email_replyTo'] ?? '';
-          // return $email_replyTo ?? '';
           $data = [];
           $email_template = array_key_exists('email_template', $email_data)  ? $email_data['email_template'] : '';
           $data['email'] = $email;
@@ -960,7 +962,6 @@ class MailboxController extends Controller
           } else {
             $data['email_replyTo'] = '';
           }
-          // return $data;
 
           // $data['email_attach'] = array_key_exists('email_attach', $email_data)  ? $email_data['email_attach'] : '';
 
@@ -1026,7 +1027,6 @@ class MailboxController extends Controller
     $email_data['template_data'] = ['body' => $data_arr['message']];
     $email_data['template_data'] = $data_arr['message'];
     $email_data['attach'] = $data_arr['attach'];
-    // return $email_data;
      $check = $this->send_email_sms($email_data, []);
     if ($check) {
       $this->response['status'] = true;
@@ -1048,7 +1048,6 @@ class MailboxController extends Controller
   {
 
 
-    // return $request->all();
     $centralUser =  CentralUser::where('email', $request->currrent['email'])->first();
 
     $tenant = $centralUser->tenants()->find($request->header('X-Tenant'));
@@ -1064,14 +1063,11 @@ class MailboxController extends Controller
     if ($check && $check1 && $check2) {
 
       $user_setting  = UserEmail::where('user_id', $request->currrent['id'])->get();
-      // return $user_setting[0]->emails_setting_id;
       $details_inbound = [];
       $function = [];
       foreach ($user_setting as $index => $user_emails) {
-        // return $user_emails;
         $details_inbound[$index] = EmailInbound::where('id', $user_emails->emails_setting_id)->first();
       }
-      // return json_decode($request->currrent)->id;
       foreach ($details_inbound as  $data) {
         if ($data) {
 
@@ -1119,18 +1115,17 @@ class MailboxController extends Controller
             //     'attachment' => AttachmentMask::class
             // ]
           ]);
+
+
           if ($client->connect() == 'false') {
 
             return ['connection not established'];
           } else {
-            // return 'h';
             $check = Mailbox::where(['to_email' => $imap_array['mail_username'], 'folder' => 'INBOX'])->first();
             $check1 = Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Sent Mail'])->first();
             $trash_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Trash'])->first();
             $draft_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Drafts'])->first();
             $spam_check =  Mailbox::where(['from_email' => $imap_array['mail_username'], 'folder' => 'Spam'])->first();
-            $h = 'h';
-            // return $client->getFolders();
             $inbox = $client->getFolderByName('INBOX');
             $trash = $client->getFolderByName('Trash');
             $draft = $client->getFolderByName('Drafts');
@@ -1144,6 +1139,13 @@ class MailboxController extends Controller
 
             // return $messages = $all_mail->query()->from('jos@internshala.com')->getFetchFlags();
 
+          //   $valu = $inbox->query()->whereMessageId( "da81a9d9170c76bd07a5fb632c1737d0@127.0.0.1" )->get();
+          //   if($valu->move('Trash') == true){
+          //     return 'Message has ben moved in trash';
+          // }else{
+          //     return 'Message could not be moved';
+          // }
+          //   return [$valu];
 
 
             if ($inbox) {
@@ -1168,7 +1170,6 @@ class MailboxController extends Controller
               } else {
                 try {
                   // Artisan::call('fetch:emails');
-                  // return['Emails fetched'];
 
                   $totalMessages = $inbox->messages()->all()->count();
                   if ($totalMessages) {
@@ -1188,7 +1189,6 @@ class MailboxController extends Controller
             } else {
               $inbox_messages = [];
             }
-            // return $inbox_messages;
 
             $sent = $client->getFolderByName('Sent Mail');
             if ($sent) {
@@ -1334,8 +1334,7 @@ class MailboxController extends Controller
             } else {
               $spam_messages = [];
             }
-            // return ['inbox' => $inbox_messages, 'spam' => $spam_messages, 'draft' => $draft_messages, 'trash' => $trash_messages, 'sent' => $sent_messages];
-            // return '5';
+        
             foreach ($inbox_messages as $n => $oMessage) {
               // $reply[]=$oMessage->cc;
               // $oMessage->setFlag(['Seen', 'Flagged']);  
@@ -1382,7 +1381,6 @@ class MailboxController extends Controller
 
               //         ];
 
-              //   // return response()->json($thread->subject);
               // }
               // }
 
@@ -1405,7 +1403,6 @@ class MailboxController extends Controller
               $ccaddress = $oMessage->cc ?? null;
               $bccaddress = $oMessage->bcc ?? null;
               // if($ccaddress || $bccaddress){
-              //   // return $ccaddress;
               // //$bcc_cc[] = ['cc'=>$ccaddress ?? '', 'bcc'=>$bccaddress ?? ''] ;
               // // $bcc_cc[] = ['cc'=>explode('<',$ccaddress) ?? '', 'bcc'=>explode('<',$bccaddress) ?? '' ];
               // }
@@ -1418,20 +1415,14 @@ class MailboxController extends Controller
               $plain_text_messages = $oMessage->getTextBody() ?? '';
               $attachments = $oMessage->getAttachments()->count();
 
-              //  return $oMessage->getXFailedRecipients();
-              // return $oMessage;
-              // return $oMessage->getBodies();
-
               $check_email = Mailbox::where(['message_id' => $message_id, 'folder' => 'INBOX'])->first();
               // $check_email = "";
-              // return $check_email;
               if (!$check_email) {
 
                 //--------------------------------------- Download Attachments of messages ----------------------------
                 $attachments_file = $oMessage->getAttachments();
 
 
-                // return [$references[0]];
                 $is_parent = null;
                 if ($in_reply_to) {
                   // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
@@ -1483,9 +1474,7 @@ class MailboxController extends Controller
                   //    'recent' => $header->recent,
 
                 ];
-                // return $details_of_email[$n];
-                //  return $attachments;
-                // return [$details_of_email, 'parent checking'];
+             
                 try {
                   $insert_file = Mailbox::create($details_of_email);
 
@@ -1539,10 +1528,7 @@ class MailboxController extends Controller
                 }
               }
             }
-            // return $bcc_cc;
-
-            //  return [$insert];
-            //  return $attach_files;
+           
 
             foreach ($sent_messages as $n => $oMessage) {
               // $attachments_file2 = $oMessage->getAttachments();
@@ -1578,15 +1564,9 @@ class MailboxController extends Controller
               }
               $plain_text_messages = $oMessage->getTextBody() ?? '';
 
-
-              // return $oMessage->getHeader();
-
-
               $check_email = Mailbox::where(['message_id' => $message_id, 'folder' => 'Sent Mail'])->first();
               // $check_email = "";
-              // return $check_email;
               if (!$check_email) {
-                //  return "h";
                 $attachments_file = [];
                 $attachments_file = $oMessage->getAttachments();
 
@@ -1645,8 +1625,7 @@ class MailboxController extends Controller
                   //    'recent' => $header->recent,
 
                 ];
-                // return $details_of_email[$n];
-                //  return $attachments;
+               
                 try {
                   $insert_file = [];
                   $insert_file = Mailbox::create($details_of_email);
@@ -1681,7 +1660,6 @@ class MailboxController extends Controller
                             'folder' => $sent->name ?? ''
                           ];
                           $check = MailboxAttachment::create($insert_arr);
-                          // return $check;
 
                           if (!$check) {
                             continue;
@@ -1697,8 +1675,6 @@ class MailboxController extends Controller
                 }
               }
             }
-
-            // return $attach3;
 
             foreach ($draft_messages as $n => $oMessage) {
 
@@ -1729,15 +1705,9 @@ class MailboxController extends Controller
               }
               $plain_text_messages = $oMessage->getTextBody() ?? '';
 
-
-              // return $oMessage->getHeader();
-
-
               $check_email = Mailbox::where(['message_id' => $message_id, 'folder' => 'Drafts'])->first();
               // $check_email = "";
-              // return $check_email;
               if (!$check_email) {
-                //  return "h";
                 $is_parent = null;
                 if ($in_reply_to) {
                   // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
@@ -1793,8 +1763,7 @@ class MailboxController extends Controller
                   //    'recent' => $header->recent,
 
                 ];
-                // return $details_of_email[$n];
-                //  return $attachments;
+              
                 try {
                   $insert = Mailbox::create($details_of_email);
                 } catch (Exception $ex) {
@@ -1831,15 +1800,9 @@ class MailboxController extends Controller
               }
               $plain_text_messages = $oMessage->getTextBody() ?? '';
 
-
-              // return $oMessage->getHeader();
-
-
               $check_email = Mailbox::where(['message_id' => $message_id, 'folder' => 'Spam'])->first();
               // $check_email = "";
-              // return $check_email;
               if (!$check_email) {
-                //  return "h";
 
                 $is_parent = null;
                 if ($in_reply_to) {
@@ -1895,8 +1858,7 @@ class MailboxController extends Controller
                   //    'recent' => $header->recent,
 
                 ];
-                // return $details_of_email[$n];
-                //  return $attachments;
+             
                 try {
                   $insert = Mailbox::create($details_of_email);
                 } catch (Exception $ex) {
@@ -1936,14 +1898,9 @@ class MailboxController extends Controller
 
               $plain_text_messages = $oMessage->getTextBody() ?? '';
 
-              // return $oMessage->getHeader();
-
-
               $check_email = Mailbox::where(['message_id' => $message_id, 'folder' => 'Trash'])->first();
               // $check_email = "";
-              // return $check_email;
               if (!$check_email) {
-                //  return "h";
                 $is_parent = null;
                 if ($in_reply_to) {
                   // $check_parent = Mailbox::where('message_id','LIKE','%'.$in_reply_to.'%')->orWhere('in_reply_to','LIKE','%'.$in_reply_to.'%')->where(['to_email'=>$data->mail_username, 'folder'=>$inbox->name])->first();
@@ -2003,8 +1960,6 @@ class MailboxController extends Controller
                   //    'recent' => $header->recent,
 
                 ];
-                // return $details_of_email[$n];
-                //  return $attachments;
                 try {
                   $insert = Mailbox::create($details_of_email);
                 } catch (Exception $ex) {
@@ -2023,14 +1978,12 @@ class MailboxController extends Controller
       }
     }
     // $req=Request(); 
-    // return $this->fetchEmails($req);
     // broadcast(new MailboxEmailsFetched('hllo'));
 
   }
 
   public function reply_to_all(Request $request)
   {
-    // return $request->all();
     $user = $request->user();
     $bcc =  $request->data['bcc'] ?? '';
     $cc =  $request->data['cc'] ?? '';
@@ -2053,7 +2006,6 @@ class MailboxController extends Controller
         $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
         $attach[] = $url ?? '';
       }
-      // return $avatar;
     }
 
 
@@ -2115,7 +2067,6 @@ class MailboxController extends Controller
           $this->response['status'] = true;
           $this->response['status_code'] = 200;
           $this->response['message'] = "Attachment deleted successfully";
-          // return response()->json($this->response);
         } else {
           $this->response['status'] = true;
           $this->response['status_code'] = 201;
@@ -2139,7 +2090,6 @@ class MailboxController extends Controller
 
   public function addAttachS3File(Request $request)
   {
-    // return $request->data['attach'];
     try {
       if ($request->data['attach']) {
 
@@ -2160,7 +2110,6 @@ class MailboxController extends Controller
           $this->response['status_code'] = 200;
           $this->response['data'] = $attach;
           $this->response['message'] = "Attachments uploaded successfully";
-          // return response()->json($this->response);
         } else {
           $this->response['status'] = true;
           $this->response['status_code'] = 201;
@@ -2169,7 +2118,6 @@ class MailboxController extends Controller
         }
       }
     } catch (Exception $ex) {
-      // return $ex;
       $this->response['status'] = false;
       $this->response['status_code'] = 500;
       $this->response['data'] = $ex;
