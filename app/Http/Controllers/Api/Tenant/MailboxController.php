@@ -616,7 +616,9 @@ class MailboxController extends Controller
 
   public function updateEmails(Request $req)
   {
-    if ($req->folder == 'inbox' || $req->folder == 'starred') {
+    $user = $req->user();
+    if ((!(is_array($req->emailIds)) && $req->folder == 'inbox') || $req->folder == 'starred') {
+
       if($req->dataToUpdate){
       if ($req->dataToUpdate['isRead'] && $req->dataToUpdate['mailbox_id']) {
         $check = UserMailbox::where(['mailbox_id' => $req->dataToUpdate['mailbox_id'], 'user_id' => $req->dataToUpdate['user_id']])->first();
@@ -636,8 +638,85 @@ class MailboxController extends Controller
         }
       }
     }
-    }
+
+    
+  }
     if (is_array($req->emailIds)) {
+
+      if($req->folder == 'inbox'){
+        
+        foreach($req->emailIds as $row){
+          if($req->dataToUpdate){
+           
+            if ($req->dataToUpdate['isRead'] && $row) {
+              $check = UserMailbox::where(['mailbox_id' => $row, 'user_id' => $user->id])->first();
+              if ($check) {
+                if ($req->dataToUpdate['isRead'] === 'false') {
+                  UserMailbox::find($check->id)->update(['is_read' => false]);
+                } else if ($req->dataToUpdate['isRead'] == true) {
+                  UserMailbox::find($check->id)->update(['is_read' => true]);
+                }
+              } else {
+                $data_arr = [
+                  'user_id' =>  $user->id,
+                  'mailbox_id' => $row,
+                  'is_read' => true
+                ];
+                UserMailbox::create($data_arr);
+              }
+            }
+
+          }
+        }
+
+      }else if($req->folder === 'spam'){
+        foreach($req->emailIds as $row){
+          if ($req->folder == 'spam' && $row) {
+            $check = UserMailbox::where(['mailbox_id' => $row['id'], 'user_id' => $user->id])->first();
+            if ($check) {
+              if ($req->dataToUpdate['isSpam'] === 'false') {
+                UserMailbox::where('id', $check->id)->update(['is_spam' => false,'message_id'=>$row['message_id']]);
+              } else if ($req->dataToUpdate['isSpam'] == true) {
+                UserMailbox::where('id', $check->id)->update(['is_spam' => true,'is_trash' => false,'message_id'=>$row['message_id']]);
+              }
+            } else {
+              $data_arr = [
+                'user_id' => $user->id,
+                'mailbox_id' => $row['id'],
+                'is_spam' => true,
+                'message_id'=>$row['message_id']
+              ];
+              UserMailbox::create($data_arr);
+            }
+          }
+        }
+
+      }else if($req->folder === 'trash'){
+        foreach($req->emailIds as $row){
+        if($req->folder == 'trash' && $row) {
+          $check = UserMailbox::where(['mailbox_id' => $row['id'], 'user_id' => $user->id])->first();
+          if ($check) {
+            if ($req->dataToUpdate['isTrash'] === 'false') {
+              UserMailbox::where('id', $check->id)->update(['is_trash' => false,'message_id'=>$row['message_id']]);
+            } else if($req->dataToUpdate['isTrash'] == true) {
+              
+  
+              UserMailbox::where('id', $check->id)->update(['is_trash' => true,'is_spam' => false,'message_id'=>$row['message_id']]);
+            }
+          } else {
+            $data_arr = [
+              'user_id' => $user->id,
+              'mailbox_id' => $row['id'],
+              'is_trash' => true,
+              'message_id'=>$row['message_id']
+            ];
+            UserMailbox::create($data_arr);
+          }
+        }
+      }
+
+      }else
+      if($req->status){
       foreach ($req->emailIds as $id) {
         // $check_not_stared = Mailbox::where(['id' => $id, 'isStarred' => 0])->first();
         // $check_stared = Mailbox::where(['id' => $id, 'isStarred' => 1])->first();
@@ -655,7 +734,9 @@ class MailboxController extends Controller
           ]);
         }
       }
-      return $this->fetchEmails($req);
+    }
+    
+    return $this->fetchEmails($req);
       // $this->response['message'] = 'starred all mails';
       // $this->response['status'] = true;
       // $this->response['data'] = ;
