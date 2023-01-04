@@ -15,6 +15,7 @@ class CreateProposalTable extends Migration
     {
         Schema::create('proposal', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('task_id')->nullable();
             $table->date('proposal_date')->nullable();
             $table->string('client_name')->nullable();
             $table->string('concerned_person')->nullable();

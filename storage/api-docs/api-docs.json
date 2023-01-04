@@ -6061,6 +6061,237 @@
                 ]
             }
         },
+        "/proposal-templates": {
+            "get": {
+                "tags": [
+                    "Proposal Template"
+                ],
+                "summary": " Dsiplay all proposal template",
+                "description": "Proposal Template",
+                "operationId": "getProposalTemplate",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all data successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "template_name": {
+                                                        "type": "string",
+                                                        "example": "Proposal Name"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "timestamp",
+                                                        "example": "2022-09-02T06:01:37.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "proposalTemplateSections": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "proposal title"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "proposal descriptions"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Proposal Template"
+                ],
+                "summary": "Create proposal template",
+                "description": "Proposal Template",
+                "operationId": "postProposalTemplate",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "template_name": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "Template Name"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Created successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected name is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/switch": {
             "post": {
                 "tags": [
@@ -6735,7 +6966,7 @@
                 ]
             }
         },
-        "/tasks?route={route}": {
+        "/tasks": {
             "get": {
                 "tags": [
                     "tasks"
@@ -6746,12 +6977,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
-                    },
-                    {
-                        "name": "route",
-                        "in": "path",
-                        "description": "tasks/leads",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -6841,9 +7066,7 @@
                         "bearerAuth": []
                     }
                 ]
-            }
-        },
-        "/tasks": {
+            },
             "post": {
                 "tags": [
                     "tasks"
@@ -6902,7 +7125,7 @@
                                         "type": "string",
                                         "example": "2022-06-01"
                                     },
-                                    "priority": {
+                                    "importance": {
                                         "description": "",
                                         "type": "string",
                                         "example": "3"
@@ -7165,7 +7388,7 @@
                                         "type": "string",
                                         "example": "2022-06-01"
                                     },
-                                    "priority": {
+                                    "importance": {
                                         "description": "",
                                         "type": "string",
                                         "example": "3"
@@ -7174,18 +7397,6 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "closed"
-                                    },
-                                    "users": {
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "example": "1"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
                                     }
                                 },
                                 "type": "object"
