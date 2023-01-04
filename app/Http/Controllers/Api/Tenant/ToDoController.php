@@ -92,7 +92,7 @@ class ToDoController extends Controller
             // return response()->json($this->response);
         $user = $request->user();
 
-        $toDos = $user->toDos()->select('id', 'task_id','to_do', 'status')->with([
+        $toDos = $user->toDos()->select('id', 'task_id','to_do', 'status')->where('status',ToDo::STATUS_NOT_DONE)->with([
             'task' => function($q){
                 $q->select('id', 'type', 'subject', 'description');
             },
@@ -106,6 +106,8 @@ class ToDoController extends Controller
         $this->response["data"] = $toDos;
         return response()->json($this->response);
     }
+
+
 
     /**
      * 
@@ -197,7 +199,7 @@ class ToDoController extends Controller
         // $arr = [];
         foreach ($todos as $key => $todo) {
             // preg_match_all("/(@\w+)/", $todo['subtask_assignee'], $matches);
-            $real_todo = $todo['subtask_assignee'];//trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
+            $real_todo = $todo;//trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
         // return $matches;
         $todo_array = [
             // 'user_id' => Auth::user()->id,
@@ -236,9 +238,24 @@ class ToDoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
-        //
+        // return $id;
+        $user = $request->user();
+
+        $toDos = $user->toDos()->select('id', 'task_id','to_do', 'status')->where(['status'=>ToDo::STATUS_NOT_DONE, 'task_id' => $id])->with([
+            'task' => function($q){
+                $q->select('id', 'type', 'subject', 'description');
+            },
+            'mentionUsers' => function($q){
+                $q->select('users.id', 'name', 'email', 'avatar');
+            },
+        ])->latest()->get();
+
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.get_all_success');
+        $this->response["data"] = $toDos;
+        return response()->json($this->response);
     }
 
     /**
