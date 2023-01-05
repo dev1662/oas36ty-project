@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProposalTemplate;
+use App\Models\ProposalTemplateSection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -105,9 +106,7 @@ class ProposalTemplateController extends Controller
         $this->switchingDB($dbname);
         $template_data = ProposalTemplate::with([
             'audits',
-            'proposalTemplateSection' => function ($q) {
-                $q->select('id','title', 'description');
-            },
+            'proposalTemplateSection'
             ])->orderBy('id', 'DESC')->get();
 
         $this->response["status"] = true;
@@ -131,6 +130,25 @@ class ProposalTemplateController extends Controller
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="template_name", type="string", example="Template Name", description=""),
+     *              
+     *              @OA\Property(
+     *              property="templateSection", 
+     *              type="array",
+     *                  @OA\Items(
+     *                @OA\property(
+     *                         property = "title",
+     *                         type="string",
+     *                         example="Template title"
+     *                  ),
+     *                  @OA\property(
+     *                         property = "description",
+     *                         type="string",
+     *                         example="Template description"
+     *                  ),
+     *          ),
+     *        ),
+     * 
+     * 
      *         )
      *     ),
      *     @OA\Response(
@@ -187,7 +205,17 @@ class ProposalTemplateController extends Controller
         }
         // return $request->all();
         $template = new ProposalTemplate($request->all());
-        $template->save();
+         $template->save();
+        if($request->templateSection ){
+            foreach($request->templateSection as $row){
+                $data_arr = [
+                    'proposal_template_id' => $template->id,
+                    'title' => $row['title'],
+                    'description' => $row['description']
+                ];
+                ProposalTemplateSection::create($data_arr);
+            }
+        }
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
@@ -236,6 +264,28 @@ class ProposalTemplateController extends Controller
      *                      ),
      *                  ),
      *              ),
+     *          
+     *               @OA\Property(
+     *                  property="proposalTemplateSections",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="title",
+     *                         type="string",
+     *                         example="proposal title"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="description",
+     *                         type="string",
+     *                         example="proposal descriptions"
+     *                      ),
+     *                    ),
+     *                  ),
      *          )
      *     ),
      *     @OA\Response(
@@ -270,7 +320,7 @@ class ProposalTemplateController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $category = ProposalTemplate::find($id);
+        $category = ProposalTemplate::where('id',$id)->with('proposalTemplateSection')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');

@@ -6204,6 +6204,22 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "Template Name"
+                                    },
+                                    "templateSection": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Template title"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Template description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -6345,6 +6361,26 @@
                                                     "updated_at": {
                                                         "type": "timestamp",
                                                         "example": "2022-09-02T06:01:37.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "proposalTemplateSections": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "proposal title"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "proposal descriptions"
                                                     }
                                                 },
                                                 "type": "object"
