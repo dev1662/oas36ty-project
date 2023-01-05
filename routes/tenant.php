@@ -56,15 +56,13 @@ Route::middleware([
     Route::prefix('v1')->group(function(){
 
         Route::group(['middleware' => ['auth:api', 'verified']], function () {
+            // Route::get('todos/{id}', [ToDoController::class, 'get_todo_task_wise']);
             Route::post('switch', [SwitchOrganizationController::class, 'index']);
             Route::post('logout', [AccountController::class, 'logout']);
             Route::apiResource('branches', BranchController::class);
             Route::apiResource('categories', CategoryController::class);
 
-            Route::get('dev', function(){
-                return response()->json("h");
-                
-            });
+          
             Route::apiResource('tasks', TaskController::class)->parameters([
                 'tasks' => 'id'
             ]);

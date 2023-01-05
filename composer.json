@@ -4,6 +4,9 @@
     "description": "The Laravel Framework.",
     "keywords": ["framework", "laravel"],
     "license": "MIT",
+    "ignore":{
+        "webklex/laravel-imap": "*"
+    },
     "require": {
         "php": "^7.3|^8.0",
         "darkaonline/l5-swagger": "^8.3",
