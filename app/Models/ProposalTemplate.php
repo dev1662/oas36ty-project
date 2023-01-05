@@ -20,8 +20,8 @@ class ProposalTemplate extends Model implements Auditable
         'template_name',
     ];
 
-    public function proposalTemplateSections()
+    public function proposalTemplateSection()
     {
-        return $this->belongsToMany(ProposalTemplateSection::class);
+        return $this->hasMany(ProposalTemplateSection::class);
     }
 }
