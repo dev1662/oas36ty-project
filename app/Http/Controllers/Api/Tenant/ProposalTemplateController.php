@@ -134,7 +134,7 @@ class ProposalTemplateController extends Controller
      *              @OA\Property(
      *              property="templateSection", 
      *              type="array",
-     *                  @OA\Items(
+     *              @OA\Items(
      *                @OA\property(
      *                         property = "title",
      *                         type="string",
@@ -345,6 +345,23 @@ class ProposalTemplateController extends Controller
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="template_name", type="string", example="Template name", description=""),
+     *             @OA\Property(
+     *              property="templateSection", 
+     *              type="array",
+     *              @OA\Items(
+     *                @OA\property(
+     *                         property = "title",
+     *                         type="string",
+     *                         example="Template title"
+     *                  ),
+     *                  @OA\property(
+     *                         property = "description",
+     *                         type="string",
+     *                         example="Template description"
+     *                  ),
+     *          ),
+     *        ),
+     * 
      *         )
      *     ),
      *     @OA\Response(
@@ -415,6 +432,17 @@ class ProposalTemplateController extends Controller
 
         $template->fill($request->only(['template_name']));
         $template->update();
+        ProposalTemplateSection::where('proposal_template_id',$id)->forceDelete();
+        if($request->templateSection ){
+            foreach($request->templateSection as $row){
+                $data_arr = [
+                    'proposal_template_id' => $id,
+                    'title' => $row['title'],
+                    'description' => $row['description']
+                ];
+                ProposalTemplateSection::create($data_arr);
+            }
+        }
        
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
@@ -497,7 +525,8 @@ class ProposalTemplateController extends Controller
             return response()->json($this->response, 422);
         }
 
-        if ($category->delete()) {
+        if ($category->forceDelete()) {
+            ProposalTemplateSection::where('proposal_template_id',$id)->forceDelete();
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');
             return response()->json($this->response);
