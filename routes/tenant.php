@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\Tenant\EmailOutboundController;
 use App\Http\Controllers\Api\Tenant\EmailInboundController;
 use App\Http\Controllers\Api\Tenant\EmailMasterController;
 use App\Http\Controllers\Api\Tenant\MailboxController;
+use App\Http\Controllers\Api\Tenant\ProposalController;
 use App\Http\Controllers\Api\Tenant\ProposalTemplateController;
 use App\Http\Controllers\Api\Tenant\StatusMasterController;
 use App\Models\Task;
@@ -117,6 +118,8 @@ Route::middleware([
 
             // ------------------------------ Proposal Configuration ----------------------------
             Route::apiResource('proposal-templates', ProposalTemplateController::class);
+            Route::apiResource('proposal', ProposalController::class);
+
            
             Route::get('apps/todo/tasks', [ToDoController::class, 'index']);
             Route::get('audits', function(){

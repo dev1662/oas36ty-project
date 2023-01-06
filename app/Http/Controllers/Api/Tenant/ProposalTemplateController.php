@@ -519,13 +519,13 @@ class ProposalTemplateController extends Controller
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        $category = ProposalTemplate::find($id);
-        if(!$category){
+        $template = ProposalTemplate::find($id);
+        if(!$template){
             $this->response["message"] = __('strings.destroy_failed');
             return response()->json($this->response, 422);
         }
 
-        if ($category->forceDelete()) {
+        if ($template->forceDelete()) {
             ProposalTemplateSection::where('proposal_template_id',$id)->forceDelete();
             $this->response["status"] = true;
             $this->response["message"] = __('strings.destroy_success');
