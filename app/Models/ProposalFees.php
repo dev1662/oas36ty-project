@@ -21,4 +21,9 @@ class ProposalFees extends Model implements Auditable
         'amount',
     
     ];
+
+    public function proposal()
+    {
+        return $this->belongsToMany(Proposal::class);
+    }
 }

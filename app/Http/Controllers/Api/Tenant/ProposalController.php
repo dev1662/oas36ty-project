@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Models\Proposal;
 use Illuminate\Http\Request;
 
 class ProposalController extends Controller
@@ -12,9 +13,22 @@ class ProposalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $dbname = $request->header('X-Tenant');
+        $dbname = strtolower($dbname);
+        // return $dbname;
+        $this->switchingDB($dbname);
+        $template_data = Proposal::with([
+            'proposalSection',
+            'proposalFees',
+            'audits'
+            ])->orderBy('id', 'DESC')->get();
+
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.get_all_success');
+        $this->response["data"] = $template_data;
+        return response()->json($this->response);
     }
 
     /**

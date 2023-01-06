@@ -105,8 +105,8 @@ class ProposalTemplateController extends Controller
         // return $dbname;
         $this->switchingDB($dbname);
         $template_data = ProposalTemplate::with([
-            'audits',
-            'proposalTemplateSection'
+            'proposalTemplateSection',
+            'audits'
             ])->orderBy('id', 'DESC')->get();
 
         $this->response["status"] = true;

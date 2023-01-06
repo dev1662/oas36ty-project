@@ -30,4 +30,13 @@ class Proposal extends Model implements Auditable
 
     ];
 
+    public function proposalSection()
+    {
+        return $this->hasMany(ProposalSection::class);
+    }
+    public function proposalFees()
+    {
+        return $this->hasMany(ProposalFees::class);
+    }
+
 }
