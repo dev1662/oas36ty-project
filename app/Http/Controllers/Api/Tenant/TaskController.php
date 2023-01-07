@@ -129,7 +129,7 @@ class TaskController extends Controller
                     $q->select('users.id', 'name','avatar');
                 },
                 'comments' => function($q){
-                    $q->select('id', 'comment', 'task_id', 'user_id');
+                    $q->select('id', 'comment', 'task_id', 'user_id', 'created_at');
                 },
                 'status_master',
                 'audits',
@@ -1042,6 +1042,9 @@ class TaskController extends Controller
             'users' => function ($q){
                 
                 $q->select('users.id', 'name', 'avatar');
+            },
+            'comments' => function($q){
+                $q->select('id', 'comment', 'task_id', 'user_id', 'created_at');
             },
             'status_master',
             'audits',
