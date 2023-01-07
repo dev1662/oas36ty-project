@@ -2065,6 +2065,10 @@ class MailboxController extends Controller
         }
       }
     }
+    $this->response['status'] = true;
+    $this->response['message'] = 'Emails Fetched';
+    return response()->json($this->response);
+
     // $req=Request(); 
     // broadcast(new MailboxEmailsFetched('hllo'));
 
