@@ -662,7 +662,9 @@ class MailboxController extends Controller
 
     }
     if (array_key_exists('isStarred', $req->dataToUpdate) != 1) {
-      return;
+      $this->response['status'] = true;
+      $this->response['message'] = 'single mail fetched';
+      return response()->json($this->response);
     }
     if ($req->dataToUpdate['isStarred'] == true) {
 
@@ -678,6 +680,7 @@ class MailboxController extends Controller
         'isStarred' => 0
       ]);
     }
+
   }
 
   public function markedAs_spam_trash(Request $req){
