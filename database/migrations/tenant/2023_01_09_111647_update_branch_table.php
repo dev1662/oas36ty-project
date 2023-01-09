@@ -17,6 +17,7 @@ class UpdateBranchTable extends Migration
             Schema::table('branches', function (Blueprint $table){
                 $table->string('bussiness_name')->nullable();
                 $table->string('bussiness_type')->nullable();
+                $table->string('gst_number')->nullable();
                 $table->string('pan_number')->nullable();
                 $table->bigInteger('state_code')->nullable();
                 $table->bigInteger('bank_id')->nullable();

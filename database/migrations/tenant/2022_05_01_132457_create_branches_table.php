@@ -18,6 +18,7 @@ class CreateBranchesTable extends Migration
             $table->string('name', 64)->nullable();
             $table->string('bussiness_name')->nullable();
             $table->bigInteger('bussiness_type')->nullable();
+            $table->string('gst_number')->nullable();
             $table->string('pan_number')->nullable();
             $table->bigInteger('state_code')->nullable();
             $table->bigInteger('mobile')->nullable();
