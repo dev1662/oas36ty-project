@@ -23,5 +23,19 @@ class DatabaseSeeder extends Seeder
 
         $client->createPasswordGrantClient(null, 'Default password grant client', config('app.url'));
         $client->createPersonalAccessClient(null, 'Default personal access client', config('app.url'));
+
+        $this->call([
+
+            CountriesTableSeeder::class,
+            StatesTableSeeder::class,
+            CitiesTableChunkOneSeeder::class,
+            CitiesTableChunkTwoSeeders::class,
+            CitiesTableChunkThreeSeeder::class,
+            CitiesTableChunkFourSeeder::class,
+            CitiesTableChunkFiveSeeder::class,
+
+
+        ]);
+
     }
 }

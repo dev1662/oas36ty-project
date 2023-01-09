@@ -21,7 +21,17 @@ class Branch extends Model implements Auditable
      * @var array
      */
     protected $fillable = [
-        'name','type'
+        'name',
+        'type',
+        'bussiness_name',
+        'bussiness_type',
+        'pan_number',
+        'state_code',
+        'bank_id',
+        'address',
+        'website',
+        'logo',
+        'mobile'
     ];
     public function task()
     {

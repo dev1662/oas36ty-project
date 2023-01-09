@@ -921,6 +921,102 @@
                                                     "name": {
                                                         "type": "string",
                                                         "example": "Branch Name"
+                                                    },
+                                                    "bussiness_name": {
+                                                        "type": "string",
+                                                        "example": "Bussiness Name"
+                                                    },
+                                                    "pan_number": {
+                                                        "type": "string",
+                                                        "example": "GNBPK8989D"
+                                                    },
+                                                    "address": {
+                                                        "type": "string",
+                                                        "example": "Address"
+                                                    },
+                                                    "website": {
+                                                        "type": "string",
+                                                        "example": "https://rera.oas36ty.com/login#/"
+                                                    },
+                                                    "logo": {
+                                                        "type": "string",
+                                                        "example": "https://oas36ty-files.s3.ap-south-1.amazonaws.com/user-images/16702182421.png"
+                                                    },
+                                                    "bussiness_type": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "bussiness_type": {
+                                                                    "type": "string",
+                                                                    "example": "Branch Office"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "state_code": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "state_name": {
+                                                                    "type": "string",
+                                                                    "example": "Delhi"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "bank": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "account_name": {
+                                                                    "type": "string",
+                                                                    "example": "Delhi"
+                                                                },
+                                                                "bank_name": {
+                                                                    "type": "string",
+                                                                    "example": "State bank of india"
+                                                                },
+                                                                "account_number": {
+                                                                    "type": "integer",
+                                                                    "example": "002930293230309"
+                                                                },
+                                                                "ifsc_code": {
+                                                                    "type": "string",
+                                                                    "example": "SBIN0000138"
+                                                                },
+                                                                "swift_code": {
+                                                                    "type": "string",
+                                                                    "example": "SBININBB104"
+                                                                },
+                                                                "micr_code": {
+                                                                    "type": "integer",
+                                                                    "example": "110002087"
+                                                                },
+                                                                "branch_name": {
+                                                                    "type": "string",
+                                                                    "example": "New Delhi Main Branch"
+                                                                },
+                                                                "account_type": {
+                                                                    "type": "string",
+                                                                    "example": "current"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
                                                     }
                                                 },
                                                 "type": "object"
@@ -997,6 +1093,46 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "Branch Name"
+                                    },
+                                    "bussiness_name": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "Bussiness name"
+                                    },
+                                    "bussiness_type": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "pan_number": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "PAN"
+                                    },
+                                    "state_code": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "bank_id": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "address": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "Address"
+                                    },
+                                    "website": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "https://rera.oas36ty.com/login#/"
+                                    },
+                                    "logo": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "https://oas36ty-files.s3.ap-south-1.amazonaws.com/user-images/16702182421.png"
                                     }
                                 },
                                 "type": "object"
@@ -1129,7 +1265,103 @@
                                                     },
                                                     "name": {
                                                         "type": "string",
-                                                        "example": "Branch name"
+                                                        "example": "Branch Name"
+                                                    },
+                                                    "bussiness_name": {
+                                                        "type": "string",
+                                                        "example": "Bussiness Name"
+                                                    },
+                                                    "pan_number": {
+                                                        "type": "string",
+                                                        "example": "GNBPK8989D"
+                                                    },
+                                                    "address": {
+                                                        "type": "string",
+                                                        "example": "Address"
+                                                    },
+                                                    "website": {
+                                                        "type": "string",
+                                                        "example": "https://rera.oas36ty.com/login#/"
+                                                    },
+                                                    "logo": {
+                                                        "type": "string",
+                                                        "example": "https://oas36ty-files.s3.ap-south-1.amazonaws.com/user-images/16702182421.png"
+                                                    },
+                                                    "bussiness_type": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "bussiness_type": {
+                                                                    "type": "string",
+                                                                    "example": "Branch Office"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "state_code": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "state_name": {
+                                                                    "type": "string",
+                                                                    "example": "Delhi"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "bank": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "account_name": {
+                                                                    "type": "string",
+                                                                    "example": "Delhi"
+                                                                },
+                                                                "bank_name": {
+                                                                    "type": "string",
+                                                                    "example": "State bank of india"
+                                                                },
+                                                                "account_number": {
+                                                                    "type": "integer",
+                                                                    "example": "002930293230309"
+                                                                },
+                                                                "ifsc_code": {
+                                                                    "type": "string",
+                                                                    "example": "SBIN0000138"
+                                                                },
+                                                                "swift_code": {
+                                                                    "type": "string",
+                                                                    "example": "SBININBB104"
+                                                                },
+                                                                "micr_code": {
+                                                                    "type": "integer",
+                                                                    "example": "110002087"
+                                                                },
+                                                                "branch_name": {
+                                                                    "type": "string",
+                                                                    "example": "New Delhi Main Branch"
+                                                                },
+                                                                "account_type": {
+                                                                    "type": "string",
+                                                                    "example": "current"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
                                                     }
                                                 },
                                                 "type": "object"
@@ -1212,6 +1444,46 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "Branch name"
+                                    },
+                                    "bussiness_name": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "Bussiness name"
+                                    },
+                                    "bussiness_type": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "pan_number": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "PAN"
+                                    },
+                                    "state_code": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "bank_id": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "address": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "Address"
+                                    },
+                                    "website": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "https://rera.oas36ty.com/login#/"
+                                    },
+                                    "logo": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "https://oas36ty-files.s3.ap-south-1.amazonaws.com/user-images/16702182421.png"
                                     }
                                 },
                                 "type": "object"

@@ -49,6 +49,116 @@ class BranchController extends Controller
      *                         type="string",
      *                         example="Branch Name"
      *                      ),
+     *                      @OA\Property(
+     *                         property="bussiness_name",
+     *                         type="string",
+     *                         example="Bussiness Name"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="pan_number",
+     *                         type="string",
+     *                         example="GNBPK8989D"
+     *                      ),
+     *                    @OA\Property(
+     *                         property="address",
+     *                         type="string",
+     *                         example="Address"
+     *                      ),
+     *                    @OA\Property(
+     *                         property="website",
+     *                         type="string",
+     *                         example="https://rera.oas36ty.com/login#/"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="logo",
+     *                         type="string",
+     *                         example="https://oas36ty-files.s3.ap-south-1.amazonaws.com/user-images/16702182421.png"
+     *                      ),
+     *                  @OA\Property(
+     *                  property="bussiness_type",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="bussiness_type",
+     *                         type="string",
+     *                         example="Branch Office"
+     *                      ),
+     *                  ),
+     *              ),
+     * 
+     *               @OA\Property(
+     *                  property="state_code",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="state_name",
+     *                         type="string",
+     *                         example="Delhi"
+     *                      ),
+     *                  ),
+     *              ),
+     *               @OA\Property(
+     *                  property="bank",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="account_name",
+     *                         type="string",
+     *                         example="Delhi"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="bank_name",
+     *                         type="string",
+     *                         example="State bank of india"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="account_number",
+     *                         type="integer",
+     *                         example="002930293230309"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="ifsc_code",
+     *                         type="string",
+     *                         example="SBIN0000138"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="swift_code",
+     *                         type="string",
+     *                         example="SBININBB104"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="micr_code",
+     *                         type="integer",
+     *                         example="110002087"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="branch_name",
+     *                         type="string",
+     *                         example="New Delhi Main Branch"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="account_type",
+     *                         type="string",
+     *                         example="current"
+     *                      ),
+     *                  ),
+     *              ),
+     * 
      *                  ),
      *              ),
      *          )
@@ -103,6 +213,14 @@ class BranchController extends Controller
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Branch Name", description=""),
+     *             @OA\Property(property="bussiness_name", type="string", example="Bussiness name", description=""),
+     *             @OA\Property(property="bussiness_type", type="integer", example="1", description=""),
+     *             @OA\Property(property="pan_number", type="string", example="PAN", description=""),
+     *             @OA\Property(property="state_code", type="integer", example="1", description=""),
+     *             @OA\Property(property="bank_id", type="integer", example="1", description=""),
+     *             @OA\Property(property="address", type="string", example="Address", description=""),
+     *             @OA\Property(property="website", type="string", example="https://rera.oas36ty.com/login#/", description=""),
+     *             @OA\Property(property="logo", type="string", example="https://oas36ty-files.s3.ap-south-1.amazonaws.com/user-images/16702182421.png", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -149,6 +267,10 @@ class BranchController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\Branch,name',
+            'bussiness_name'=>'required',
+            'mobile'=>'required',
+            'bank_id'=>'required|exists:App\Models\BankDetails,id',
+            'logo'=>'required'
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -197,8 +319,118 @@ class BranchController extends Controller
      *                      @OA\Property(
      *                         property="name",
      *                         type="string",
-     *                         example="Branch name"
+     *                         example="Branch Name"
      *                      ),
+     *                      @OA\Property(
+     *                         property="bussiness_name",
+     *                         type="string",
+     *                         example="Bussiness Name"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="pan_number",
+     *                         type="string",
+     *                         example="GNBPK8989D"
+     *                      ),
+     *                    @OA\Property(
+     *                         property="address",
+     *                         type="string",
+     *                         example="Address"
+     *                      ),
+     *                    @OA\Property(
+     *                         property="website",
+     *                         type="string",
+     *                         example="https://rera.oas36ty.com/login#/"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="logo",
+     *                         type="string",
+     *                         example="https://oas36ty-files.s3.ap-south-1.amazonaws.com/user-images/16702182421.png"
+     *                      ),
+     *                  @OA\Property(
+     *                  property="bussiness_type",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="bussiness_type",
+     *                         type="string",
+     *                         example="Branch Office"
+     *                      ),
+     *                  ),
+     *              ),
+     * 
+     *               @OA\Property(
+     *                  property="state_code",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="state_name",
+     *                         type="string",
+     *                         example="Delhi"
+     *                      ),
+     *                  ),
+     *              ),
+     *               @OA\Property(
+     *                  property="bank",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="account_name",
+     *                         type="string",
+     *                         example="Delhi"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="bank_name",
+     *                         type="string",
+     *                         example="State bank of india"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="account_number",
+     *                         type="integer",
+     *                         example="002930293230309"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="ifsc_code",
+     *                         type="string",
+     *                         example="SBIN0000138"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="swift_code",
+     *                         type="string",
+     *                         example="SBININBB104"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="micr_code",
+     *                         type="integer",
+     *                         example="110002087"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="branch_name",
+     *                         type="string",
+     *                         example="New Delhi Main Branch"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="account_type",
+     *                         type="string",
+     *                         example="current"
+     *                      ),
+     *                  ),
+     *              ),
+     * 
      *                  ),
      *              ),
      *          )
@@ -256,6 +488,14 @@ class BranchController extends Controller
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Branch name", description=""),
+     *             @OA\Property(property="bussiness_name", type="string", example="Bussiness name", description=""),
+     *             @OA\Property(property="bussiness_type", type="integer", example="1", description=""),
+     *             @OA\Property(property="pan_number", type="string", example="PAN", description=""),
+     *             @OA\Property(property="state_code", type="integer", example="1", description=""),
+     *             @OA\Property(property="bank_id", type="integer", example="1", description=""),
+     *             @OA\Property(property="address", type="string", example="Address", description=""),
+     *             @OA\Property(property="website", type="string", example="https://rera.oas36ty.com/login#/", description=""),
+     *             @OA\Property(property="logo", type="string", example="https://oas36ty-files.s3.ap-south-1.amazonaws.com/user-images/16702182421.png", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -309,7 +549,10 @@ class BranchController extends Controller
     {
         $validator = Validator::make(['branch_id' => $id] + $request->all(), [
             'branch_id' => 'required|exists:App\Models\Branch,id',
-            'name' => 'required|max:64',
+            'bussiness_name'=>'required',
+            'mobile'=>'required',
+            'bank_id'=>'required|exists:App\Models\BankDetails,id',
+            'logo'=>'required'
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -324,7 +567,7 @@ class BranchController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $branch->fill($request->only(['name']));
+        $branch->fill($request->only(['name','bussiness_name','bussiness_type','pan_number','state_code','bank_id','address','website','logo']));
         $branch->update();
 
         $this->response["status"] = true;
