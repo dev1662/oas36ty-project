@@ -29,6 +29,8 @@ use App\Http\Controllers\Api\Tenant\EmailOutboundController;
 use App\Http\Controllers\Api\Tenant\EmailInboundController;
 use App\Http\Controllers\Api\Tenant\EmailMasterController;
 use App\Http\Controllers\Api\Tenant\MailboxController;
+use App\Http\Controllers\Api\Tenant\ProposalController;
+use App\Http\Controllers\Api\Tenant\ProposalTemplateController;
 use App\Http\Controllers\Api\Tenant\StatusMasterController;
 use App\Models\Task;
 use Illuminate\Support\Facades\Artisan;
@@ -113,6 +115,11 @@ Route::middleware([
             Route::apiResource('email-inbound', EmailInboundController::class);
             Route::post('email-outbound-status', [EmailOutboundController::class, 'update_active_inactive_status']);
             Route::post('email-inbound-status', [EmailInboundController::class, 'update_active_inactive_status']);
+
+            // ------------------------------ Proposal Configuration ----------------------------
+            Route::apiResource('proposal-templates', ProposalTemplateController::class);
+            Route::apiResource('proposal', ProposalController::class);
+
            
             Route::get('apps/todo/tasks', [ToDoController::class, 'index']);
             Route::get('audits', function(){
