@@ -61,6 +61,9 @@ Route::middleware([
             Route::post('switch', [SwitchOrganizationController::class, 'index']);
             Route::post('logout', [AccountController::class, 'logout']);
             Route::apiResource('branches', BranchController::class);
+
+            Route::get('get-states', [BranchController::class,'get_states']);
+
             Route::apiResource('categories', CategoryController::class);
 
           

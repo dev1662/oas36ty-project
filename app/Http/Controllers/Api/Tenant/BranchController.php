@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\Branch;
 use App\Models\CentralUser;
+use App\Models\States;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
@@ -53,6 +54,16 @@ class BranchController extends Controller
      *                         property="bussiness_name",
      *                         type="string",
      *                         example="Bussiness Name"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="mobile",
+     *                         type="integer",
+     *                         example="987 6547 965"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="gst_number",
+     *                         type="string",
+     *                         example="09AKNJK4898M1V9"
      *                      ),
      *                      @OA\Property(
      *                         property="pan_number",
@@ -218,6 +229,8 @@ class BranchController extends Controller
      *             @OA\Property(property="pan_number", type="string", example="PAN", description=""),
      *             @OA\Property(property="state_code", type="integer", example="1", description=""),
      *             @OA\Property(property="bank_id", type="integer", example="1", description=""),
+     *              @OA\Property(property="mobile", type="integer", example="987 654 7958", description=""),     
+     *              @OA\Property(property="gst_number", type="string", example="09AKNJK4898M1V9", description=""),
      *             @OA\Property(property="address", type="string", example="Address", description=""),
      *             @OA\Property(property="website", type="string", example="https://rera.oas36ty.com/login#/", description=""),
      *             @OA\Property(property="logo", type="string", example="https://oas36ty-files.s3.ap-south-1.amazonaws.com/user-images/16702182421.png", description=""),
@@ -493,6 +506,8 @@ class BranchController extends Controller
      *             @OA\Property(property="pan_number", type="string", example="PAN", description=""),
      *             @OA\Property(property="state_code", type="integer", example="1", description=""),
      *             @OA\Property(property="bank_id", type="integer", example="1", description=""),
+     *             @OA\Property(property="mobile", type="integer", example="987 654 7958", description=""),
+     *             @OA\Property(property="gst_number", type="string", example="09AKNJK4898M1V9", description=""),
      *             @OA\Property(property="address", type="string", example="Address", description=""),
      *             @OA\Property(property="website", type="string", example="https://rera.oas36ty.com/login#/", description=""),
      *             @OA\Property(property="logo", type="string", example="https://oas36ty-files.s3.ap-south-1.amazonaws.com/user-images/16702182421.png", description=""),
@@ -567,7 +582,7 @@ class BranchController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $branch->fill($request->only(['name','bussiness_name','bussiness_type','pan_number','state_code','bank_id','address','website','logo']));
+        $branch->fill($request->only(['name','bussiness_name','bussiness_type','pan_number','state_code','bank_id','address','website','logo','mobile','gst_number']));
         $branch->update();
 
         $this->response["status"] = true;
@@ -659,5 +674,87 @@ class BranchController extends Controller
 
         $this->response["message"] = __('strings.destroy_failed');
         return response()->json($this->response, 422);
+    }
+
+
+ /**
+     *
+     * @OA\Get(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"states"},
+     *     path="/get-states",
+     *     operationId="getStates",
+     *     summary="States",
+     *     description="States",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Fetched all data successfully"),
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="name",
+     *                         type="string",
+     *                         example="Category Name"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="country_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="country_code",
+     *                         type="string",
+     *                         example="IN"
+     *                      ),
+     *                     @OA\Property(
+     *                         property="fips_code",
+     *                         type="integer",
+     *                         example="01"
+     *                      ),
+     *                    @OA\Property(
+     *                         property="iso2",
+     *                         type="string",
+     *                         example="AN"
+     *                      ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     * )
+     */
+
+    public function get_states(){
+
+        $state = States::select('id','name','country_id','country_code','fips_code','iso2')->where('country_code','IN')->where('fips_code','!=',null)->get();
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.get_one_success');
+        $this->response["data"] = $state;
+        return response()->json($this->response);
     }
 }

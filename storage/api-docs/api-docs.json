@@ -926,6 +926,14 @@
                                                         "type": "string",
                                                         "example": "Bussiness Name"
                                                     },
+                                                    "mobile": {
+                                                        "type": "integer",
+                                                        "example": "987 6547 965"
+                                                    },
+                                                    "gst_number": {
+                                                        "type": "string",
+                                                        "example": "09AKNJK4898M1V9"
+                                                    },
                                                     "pan_number": {
                                                         "type": "string",
                                                         "example": "GNBPK8989D"
@@ -1118,6 +1126,16 @@
                                         "description": "",
                                         "type": "integer",
                                         "example": "1"
+                                    },
+                                    "mobile": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "987 654 7958"
+                                    },
+                                    "gst_number": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "09AKNJK4898M1V9"
                                     },
                                     "address": {
                                         "description": "",
@@ -1470,6 +1488,16 @@
                                         "type": "integer",
                                         "example": "1"
                                     },
+                                    "mobile": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "987 654 7958"
+                                    },
+                                    "gst_number": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "09AKNJK4898M1V9"
+                                    },
                                     "address": {
                                         "description": "",
                                         "type": "string",
@@ -1687,6 +1715,116 @@
                                                 }
                                             },
                                             "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/get-states": {
+            "get": {
+                "tags": [
+                    "states"
+                ],
+                "summary": "States",
+                "description": "States",
+                "operationId": "getStates",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all data successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Category Name"
+                                                    },
+                                                    "country_id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "country_code": {
+                                                        "type": "string",
+                                                        "example": "IN"
+                                                    },
+                                                    "fips_code": {
+                                                        "type": "integer",
+                                                        "example": "01"
+                                                    },
+                                                    "iso2": {
+                                                        "type": "string",
+                                                        "example": "AN"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"
