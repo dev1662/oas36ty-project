@@ -524,7 +524,7 @@ class ProposalController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $category = Proposal::where('id',$id)->with([
+        $category = Proposal::where('task_id',$id)->with([
             'proposalSection',
             'proposalFees'
             ])->get();
