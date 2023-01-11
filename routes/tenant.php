@@ -11,6 +11,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Api\Tenant\AccountController;
+use App\Http\Controllers\Api\Tenant\BankDetailsController;
 use App\Http\Controllers\Api\Tenant\SwitchOrganizationController;
 use App\Http\Controllers\Api\Tenant\BranchController;
 use App\Http\Controllers\Api\Tenant\CategoryController;
@@ -65,6 +66,8 @@ Route::middleware([
             Route::get('get-states', [BranchController::class,'get_states']);
 
             Route::apiResource('categories', CategoryController::class);
+            Route::apiResource('bank-details', BankDetailsController::class);
+
 
           
             Route::apiResource('tasks', TaskController::class)->parameters([
