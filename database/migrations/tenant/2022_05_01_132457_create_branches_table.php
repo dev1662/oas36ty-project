@@ -15,7 +15,17 @@ class CreateBranchesTable extends Migration
     {
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 64);
+            $table->string('name', 64)->nullable();
+            $table->string('bussiness_name')->nullable();
+            $table->bigInteger('bussiness_type')->nullable();
+            $table->string('gst_number')->nullable();
+            $table->string('pan_number')->nullable();
+            $table->bigInteger('state_code')->nullable();
+            $table->bigInteger('mobile')->nullable();
+            $table->bigInteger('bank_id')->nullable();
+            $table->longText('address')->nullable();
+            $table->string('website')->nullable();
+            $table->string('logo')->nullable();
             $table->enum('type', ['delete', 'dont_delete'])->default('delete');
             $table->timestamps();
             $table->softDeletes();
