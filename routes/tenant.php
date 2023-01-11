@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Tenant\AccountController;
 use App\Http\Controllers\Api\Tenant\BankDetailsController;
 use App\Http\Controllers\Api\Tenant\SwitchOrganizationController;
 use App\Http\Controllers\Api\Tenant\BranchController;
+use App\Http\Controllers\Api\Tenant\BusinessTypeController;
 use App\Http\Controllers\Api\Tenant\CategoryController;
 use App\Http\Controllers\Api\Tenant\TaskController;
 use App\Http\Controllers\Api\Tenant\UserController;
@@ -67,6 +68,7 @@ Route::middleware([
 
             Route::apiResource('categories', CategoryController::class);
             Route::apiResource('bank-details', BankDetailsController::class);
+            Route::apiResource('business-type', BusinessTypeController::class);
 
 
           
