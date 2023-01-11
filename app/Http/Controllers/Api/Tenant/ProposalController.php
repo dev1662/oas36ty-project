@@ -514,15 +514,15 @@ class ProposalController extends Controller
   
     public function show($id)
     {
-        $validator = Validator::make(['proposal_id' => $id], [
-            'proposal_id' => 'required|exists:App\Models\Proposal,id',
-        ]);
-        if ($validator->fails()) {
-            $this->response["code"] = "INVALID";
-            $this->response["message"] = $validator->errors()->first();
-            $this->response["errors"] = $validator->errors();
-            return response()->json($this->response, 422);
-        }
+        // $validator = Validator::make(['proposal_id' => $id], [
+        //     'proposal_id' => 'required|exists:App\Models\Proposal,task_id',
+        // ]);
+        // if ($validator->fails()) {
+        //     $this->response["code"] = "INVALID";
+        //     $this->response["message"] = $validator->errors()->first();
+        //     $this->response["errors"] = $validator->errors();
+        //     return response()->json($this->response, 422);
+        // }
 
         $category = Proposal::where('task_id',$id)->with([
             'proposalSection',
