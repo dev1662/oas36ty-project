@@ -113,6 +113,7 @@ class TaskController extends Controller
         $this->switchingDB($dbname);
     
             $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
+                'selfUser',
                 'branch' => function ($q) {
                     $q->select('id', 'name');
                 },
@@ -1173,6 +1174,8 @@ return response()->json($this->response);
 
     public function store(Request $request)
     {
+        $user = $request->user();
+       $user_id = $user->id;
 
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required',
@@ -1223,7 +1226,7 @@ return response()->json($this->response);
 
         $task->priority = $request->priority['id'] ?? null;
 
-
+        $task->user_id = $user_id ?? '';
         // echo '<pre>';print_r($task);exit;
         $task->status_master_id = $request->status['id'] ?? 1;
         // return $request->users[$i];

@@ -75,4 +75,8 @@ class Task extends Model implements Auditable
     {
         return $this->belongsTo(ContactPerson::class);
     }
+
+    public function selfUser(){
+        return $this->belongsTo(User::class,'user_id');
+    }
 }
