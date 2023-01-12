@@ -65,6 +65,8 @@ Route::middleware([
             Route::apiResource('branches', BranchController::class);
 
             Route::get('get-states', [BranchController::class,'get_states']);
+            Route::get('addBranch-logo', [BranchController::class,'addBranchLogo']);
+
 
             Route::apiResource('categories', CategoryController::class);
             Route::apiResource('bank-details', BankDetailsController::class);
