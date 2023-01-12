@@ -1343,6 +1343,7 @@ return response()->json($this->response);
         }
 
         $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
+            'selfUser',
             'branch' => function ($q) {
                 $q->select('id', 'name');
             },
