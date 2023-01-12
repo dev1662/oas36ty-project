@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Branch;
 use App\Models\CentralUser;
 use App\Models\States;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use PDO;
 
 class BranchController extends Controller
@@ -756,5 +758,56 @@ class BranchController extends Controller
         $this->response["message"] = __('strings.get_one_success');
         $this->response["data"] = $state;
         return response()->json($this->response);
+    }
+
+    public function addBranchLogo(Request $request){
+
+        try {
+            if ($request->data['attach']) {
+      
+              $base64String = $request->data['attach'];
+      
+              foreach ($base64String as $in => $file) {
+                $slug = time(); //name prefix
+                $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
+      
+                Storage::disk('s3')->put('branch-logos/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
+      
+                $url = Storage::disk('s3')->url('branch-logos/' . $avatar['name']);
+                $attach[] = ['url' => $url ?? '', 'fileName' => $file['name'] ?? ''];
+              }
+      
+              if ($attach) {
+                $this->response['status'] = true;
+                $this->response['status_code'] = 200;
+                $this->response['data'] = $attach;
+                $this->response['message'] = "Attachments uploaded successfully";
+              } else {
+                $this->response['status'] = true;
+                $this->response['status_code'] = 201;
+                $this->response['data'] = $attach;
+                $this->response['message'] = "Something went wrong";
+              }
+            }
+          } catch (Exception $ex) {
+            $this->response['status'] = false;
+            $this->response['status_code'] = 500;
+            $this->response['data'] = $ex;
+            $this->response['message'] = "Something went wrong";
+          }
+          return response()->json($this->response);
+
+    }
+
+    private function getFileName($image, $name, $index)
+    {
+      list($type, $file) = explode(';', $image);
+      list(, $extension) = explode('/', $type);
+      list(, $file) = explode(',', $file);
+      // $result['name'] = 'oas36ty'.now()->timestamp . '.' . $extension;
+      $result['name'] = str_replace(' ', '', explode('.', $name)[0]) . now()->timestamp . '.' . $extension;
+      // $result['data'] = ;
+      $result['file'] = $file;
+      return $result;
     }
 }
