@@ -38,7 +38,7 @@ class Branch extends Model implements Auditable
         return $this->hasMany(Task::class);
     }
     public function bankDetails(){
-        return $this->belongsTo(bankDetails::class,'bank_id');
+        return $this->belongsTo(BankDetails::class,'bank_id');
     }
   
 }
