@@ -202,7 +202,7 @@ class BranchController extends Controller
         $this->switchingDB($dbname);
         // return json_decode($request->header('currrent'))->tenant->organization->name;
 
-        $branches = Branch::with('audits')->orderBy('id', 'DESC')->get();
+        $branches = Branch::with(['audits','bankDetails'])->orderBy('id', 'DESC')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -479,7 +479,7 @@ class BranchController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $branch = Branch::select('id', 'name')->find($id);
+        $branch = Branch::find($id)->with(['audits','bankDetails']);
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
