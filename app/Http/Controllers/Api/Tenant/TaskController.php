@@ -19,6 +19,8 @@ use App\Models\TaskUser;
 use App\Models\User;
 use DateTime;
 use PDO;
+use Illuminate\Support\Str;
+
 
 class TaskController extends Controller
 {
@@ -606,7 +608,7 @@ class TaskController extends Controller
         //             });
         // })
 
-            
+                
 
         $tasks = Task::
                    where('type', $route)
@@ -659,6 +661,13 @@ class TaskController extends Controller
                     if(!empty($filters['search'])){
                         $search = $filters['search'];
 
+                        $search_id = Str::contains($search,'#');
+                        if($search_id){
+                            $searchData1 = explode('#',$search);
+                            $serachdata2 = explode(',',$searchData1[1]);
+                            $query->whereIn('id',$serachdata2);
+                            // return $serachdata2;
+                        }else{
                         $query->where(function($query) use($search){
 
                             $query->where('description','LIKE','%'.$search.'%')
@@ -668,6 +677,8 @@ class TaskController extends Controller
                             // ->comments()->orWhere('comment','LIKE', '%'.$search.'%')
                             ->orWhere('subject', 'LIKE', '%'.$search.'%');
                         });
+                    }
+
                     }
                         //    ->where('priority', 'LIKE', '%'.$filters['priority'].'%')
                         //    ->where('branch_id', $filters['branch'])
