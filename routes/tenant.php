@@ -129,7 +129,12 @@ Route::middleware([
             // ------------------------------ Proposal Configuration ----------------------------
             Route::apiResource('proposal-templates', ProposalTemplateController::class);
             Route::apiResource('proposal', ProposalController::class);
-
+            Route::post(
+                'users/update-profile-image'
+            ,[AccountController::class,'update_profile_picture']);
+            Route::post(
+                'users/update-password'
+            ,[AccountController::class,'update_password']);
            
             Route::get('apps/todo/tasks', [ToDoController::class, 'index']);
             Route::get('audits', function(){
