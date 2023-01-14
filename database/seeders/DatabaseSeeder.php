@@ -26,13 +26,13 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
 
-            CountriesTableSeeder::class,
-            StatesTableSeeder::class,
-            CitiesTableChunkOneSeeder::class,
-            CitiesTableChunkTwoSeeders::class,
-            CitiesTableChunkThreeSeeder::class,
-            CitiesTableChunkFourSeeder::class,
-            CitiesTableChunkFiveSeeder::class,
+            // CountriesTableSeeder::class,
+            // StatesTableSeeder::class,
+            // CitiesTableChunkOneSeeder::class,
+            // CitiesTableChunkTwoSeeders::class,
+            // CitiesTableChunkThreeSeeder::class,
+            // CitiesTableChunkFourSeeder::class,
+            // CitiesTableChunkFiveSeeder::class,
 
 
         ]);
