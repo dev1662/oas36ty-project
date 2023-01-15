@@ -23,13 +23,26 @@ use PDO;
 class TaskController extends Controller
 {
 
-    public function convert_lead_to_task(Request $req, $id)
+    public function markasCompleteOrClosed(Request $req)
     {
-        Task::where('id', $id)->update([
-            'type' => 'task'
+        $validator = Validator::make($req->all(), [
+            'task_id' => 'required',
+            'status.*' => 'required',
+            
+            // 'selected_db' => 'required'
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+        Task::where('id', $req->task_id)->update([
+            // 'type' => 'task'
+            'status_master_id'=> $req->status['id']
         ]);
         $this->response['status'] = true;
-        $this->response['message'] = 'Lead converted to task';
+        $this->response['message'] = 'Task status changed';
 
         // $this->response["data"] = $tasks;
         return response()->json($this->response);
