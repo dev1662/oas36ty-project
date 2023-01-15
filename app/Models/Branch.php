@@ -27,6 +27,7 @@ class Branch extends Model implements Auditable
         'bussiness_type',
         'pan_number',
         'state_code',
+        'gst_number',
         'bank_id',
         'address',
         'website',
