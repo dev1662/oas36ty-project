@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Proposal;
 use App\Models\ProposalFees;
 use App\Models\ProposalSection;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -320,6 +321,7 @@ class ProposalController extends Controller
         // return $request->all();
         $proposal = new Proposal($request->all());
          $proposal->save();
+
         if($request->proposalSection ){
             foreach($request->proposalSection as $row){
                 $data_arr = [
@@ -341,7 +343,11 @@ class ProposalController extends Controller
                 ProposalFees::create($data_arr);
             }
         }
-
+        if($request->type){
+            Task::where('id', $request->task_id)->update([
+                'type' => 'task'
+            ]);
+        }
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);

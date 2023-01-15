@@ -77,6 +77,7 @@ Route::middleware([
             Route::apiResource('tasks', TaskController::class)->parameters([
                 'tasks' => 'id'
             ]);
+            Route::post('tasks/mark-as-completed-closed', [TaskController::class,'markasCompleteOrClosed']);
             // Route::post('')
             Route::post('/sendEmail-outBound', [MailboxController::class, 'sendEmail']);
             Route::post('/fetch-latestEmails', [MailboxController::class, 'fetch_latestEmails']);
