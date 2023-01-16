@@ -863,14 +863,91 @@ class InvoiceController extends Controller
     
     }
 
-    /**
-     * Remove the specified resource from storage.
+
+        /**
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @OA\Delete(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Invoices"},
+     *     path="/invoices/{invoice_id}",
+     *     operationId="deleteInvoice",
+     *     summary="Delete invoice",
+     *     description="Invoices",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="invoice_id", in="path", required=true, description="Invoice ID"),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Deleted successfully!"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=403,
+     *          description="Forbidden Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Forbidden!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="branch_id",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected branch_id is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
      */
+
+
     public function destroy($id)
     {
-        //
+        $validator = Validator::make(['invoice_id' => $id], [
+            'invoice_id' => 'required|exists:App\Models\Invoice,id',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+
+        $invoice = Invoice::find($id);
+        if(!$invoice){
+            $this->response["message"] = __('strings.destroy_failed');
+            return response()->json($this->response, 422);
+        }
+
+        if ($invoice->forceDelete()) {
+            $this->response["status"] = true;
+            $this->response["message"] = __('strings.destroy_success');
+            return response()->json($this->response);
+        }
+
+        $this->response["message"] = __('strings.destroy_failed');
+        return response()->json($this->response, 422);
     }
 }
