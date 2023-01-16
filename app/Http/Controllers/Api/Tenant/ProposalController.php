@@ -344,9 +344,23 @@ class ProposalController extends Controller
             }
         }
         if($request->type){
-            Task::where('id', $request->task_id)->update([
-                'type' => 'task'
-            ]);
+            $check_client = Task::where(['id'=> $request->task_id, 'company_id' => null])->get();
+            if(count($check_client) > 0){
+
+            
+            $data_to_update = [
+                'type' => 'task',
+                'company_id' => $request->client_id
+            ];
+            Task::where('id', $request->task_id)->update($data_to_update);
+        }else{
+            $data_to_update = [
+                'type' => 'task',
+                // 'company_id' => $request->client_id
+            ];
+            Task::where('id', $request->task_id)->update($data_to_update);
+        }
+
         }
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
