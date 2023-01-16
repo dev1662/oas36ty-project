@@ -7194,6 +7194,679 @@
                 ]
             }
         },
+        "/invoices": {
+            "get": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Fetch all invoices",
+                "description": "Invoices",
+                "operationId": "getinvoice",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all data successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "client_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "client_gst_number": {
+                                                        "type": "string",
+                                                        "example": "09AKNJK4898M1V9"
+                                                    },
+                                                    "state_code": {
+                                                        "type": "integer",
+                                                        "example": 7
+                                                    },
+                                                    "invoice_number": {
+                                                        "type": "string",
+                                                        "example": "yr 22-23/0173"
+                                                    },
+                                                    "invoice_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "16 Jan 2023"
+                                                    },
+                                                    "due_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "16 Jan 2023"
+                                                    },
+                                                    "billing_address": {
+                                                        "type": "string",
+                                                        "example": "Jungpura ext."
+                                                    },
+                                                    "notes": {
+                                                        "type": "string",
+                                                        "example": "This invoice generate against proposal number 01"
+                                                    },
+                                                    "item_details": {
+                                                        "type": "string",
+                                                        "example": "Legeal purposes"
+                                                    },
+                                                    "amount": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "discount": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "taxable_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "igst": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 9
+                                                    },
+                                                    "igst_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "sgst": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 9
+                                                    },
+                                                    "sgst_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "cgst": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 5
+                                                    },
+                                                    "cgst_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "utgst": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 5
+                                                    },
+                                                    "utgst_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "sub_total": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "pocket_expenses": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "expenses_details": {
+                                                        "type": "string",
+                                                        "example": "This is the personal expenses"
+                                                    },
+                                                    "adjustment_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "total_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "client": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "Tata consultancy services"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "create new invoice",
+                "description": "Invoices",
+                "operationId": "postInvoice",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "client_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "client_gst_number": {
+                                        "type": "string",
+                                        "example": "09AKNJK4898M1V9"
+                                    },
+                                    "state_code": {
+                                        "type": "integer",
+                                        "example": 7
+                                    },
+                                    "invoice_number": {
+                                        "type": "string",
+                                        "example": "yr 22-23/0173"
+                                    },
+                                    "invoice_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-01-06"
+                                    },
+                                    "due_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-01-06"
+                                    },
+                                    "billing_address": {
+                                        "type": "string",
+                                        "example": "Jungpura ext."
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "This invoice generate against proposal number 01"
+                                    },
+                                    "item_details": {
+                                        "type": "string",
+                                        "example": "Legeal purposes"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    },
+                                    "discount": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    },
+                                    "taxable_amt": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    },
+                                    "igst": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 9
+                                    },
+                                    "igst_amt": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    },
+                                    "sgst": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 9
+                                    },
+                                    "sgst_amt": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    },
+                                    "cgst": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 5
+                                    },
+                                    "cgst_amt": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    },
+                                    "utgst": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 5
+                                    },
+                                    "utgst_amt": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    },
+                                    "sub_total": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    },
+                                    "pocket_expenses": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    },
+                                    "expenses_details": {
+                                        "type": "string",
+                                        "example": "This is the personal expenses"
+                                    },
+                                    "adjustment_amt": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    },
+                                    "total_amt": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 2000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registered successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected name is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/invoices/{invoice_id}": {
+            "get": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "create new invoice",
+                "description": "Invoices",
+                "operationId": "showInvoice",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "invoice_id",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all data successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "client_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "client_gst_number": {
+                                                        "type": "string",
+                                                        "example": "09AKNJK4898M1V9"
+                                                    },
+                                                    "state_code": {
+                                                        "type": "integer",
+                                                        "example": 7
+                                                    },
+                                                    "invoice_number": {
+                                                        "type": "string",
+                                                        "example": "yr 22-23/0173"
+                                                    },
+                                                    "invoice_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "16 Jan 2023"
+                                                    },
+                                                    "due_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "16 Jan 2023"
+                                                    },
+                                                    "billing_address": {
+                                                        "type": "string",
+                                                        "example": "Jungpura ext."
+                                                    },
+                                                    "notes": {
+                                                        "type": "string",
+                                                        "example": "This invoice generate against proposal number 01"
+                                                    },
+                                                    "item_details": {
+                                                        "type": "string",
+                                                        "example": "Legeal purposes"
+                                                    },
+                                                    "amount": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "discount": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "taxable_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "igst": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 9
+                                                    },
+                                                    "igst_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "sgst": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 9
+                                                    },
+                                                    "sgst_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "cgst": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 5
+                                                    },
+                                                    "cgst_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "utgst": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 5
+                                                    },
+                                                    "utgst_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "sub_total": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "pocket_expenses": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "expenses_details": {
+                                                        "type": "string",
+                                                        "example": "This is the personal expenses"
+                                                    },
+                                                    "adjustment_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "total_amt": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2000
+                                                    },
+                                                    "client": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "Tata consultancy services"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/apps/email/emails": {
             "post": {
                 "tags": [

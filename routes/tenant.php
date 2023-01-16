@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\Tenant\MailConfigController;
 use App\Http\Controllers\Api\Tenant\EmailOutboundController;
 use App\Http\Controllers\Api\Tenant\EmailInboundController;
 use App\Http\Controllers\Api\Tenant\EmailMasterController;
+use App\Http\Controllers\Api\Tenant\InvoiceController;
 use App\Http\Controllers\Api\Tenant\MailboxController;
 use App\Http\Controllers\Api\Tenant\ProposalController;
 use App\Http\Controllers\Api\Tenant\ProposalTemplateController;
@@ -63,6 +64,8 @@ Route::middleware([
             Route::post('switch', [SwitchOrganizationController::class, 'index']);
             Route::post('logout', [AccountController::class, 'logout']);
             Route::apiResource('branches', BranchController::class);
+            Route::apiResource('invoices', InvoiceController::class);
+
 
             Route::get('get-states', [BranchController::class,'get_states']);
             Route::post('addBranch-logo', [BranchController::class,'addBranchLogo']);
