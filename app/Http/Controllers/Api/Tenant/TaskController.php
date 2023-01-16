@@ -127,7 +127,7 @@ class TaskController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
     
-            $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
+            $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
                 'selfUser',
                 'branch' => function ($q) {
                     $q->select('id', 'name');
@@ -705,7 +705,7 @@ class TaskController extends Controller
                         //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
-                       })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
+                       })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
                         'branch' => function ($q) {
                             $q->select('id', 'name');
 
@@ -1050,7 +1050,7 @@ class TaskController extends Controller
          
             // return $request->user_data;
         }
-        $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
+        $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at','updated_at')->with([
             'branch' => function ($q) {
                 $q->where('name', 'banglo')->select('id', 'name');
 
@@ -1066,10 +1066,10 @@ class TaskController extends Controller
             },
             'users' => function ($q){
                 
-                $q->select('users.id', 'name', 'avatar');
+                $q->select('users.id', 'name', 'avatar', 'updated_at');
             },
             'comments' => function($q){
-                $q->select('id', 'comment', 'task_id', 'user_id', 'created_at');
+                $q->select('id', 'comment', 'task_id', 'user_id', 'created_at', 'updated_at');
             },
             'status_master',
             'audits',
@@ -1366,7 +1366,7 @@ return response()->json($this->response);
             return response()->json($this->response, 422);
         }
 
-        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
+        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
             'selfUser',
             'branch' => function ($q) {
                 $q->select('id', 'name');
