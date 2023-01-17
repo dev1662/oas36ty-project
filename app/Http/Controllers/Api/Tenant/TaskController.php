@@ -568,7 +568,7 @@ class TaskController extends Controller
         // $this->response["data"] = $tasks ?? [];
         // return response()->json($this->response);
     }
-    public function filterData(Request $request)
+  public function filterData(Request $request)
     {
         // return $request->all();
         $route= $_GET['route'];

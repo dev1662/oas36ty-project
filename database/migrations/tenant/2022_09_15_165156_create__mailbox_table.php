@@ -38,6 +38,7 @@ class CreateMailboxTable extends Migration
             $table->string('u_date')->nullable();
             $table->string('folder')->nullable();
             $table->string('task_lead_id')->nullable();
+            $table->bigInteger('task_id')->nullable();
             $table->timestamps();
         });
     }
