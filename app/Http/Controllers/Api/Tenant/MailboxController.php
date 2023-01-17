@@ -244,7 +244,7 @@ class MailboxController extends Controller
                }
             $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent', 1)
             ->whereNotIn('id',$spam_trash_ids)
-            ->whereNotIn('message_id',$spamTrash_messageId)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
+            ->whereNotIn('message_id',$spamTrash_messageId)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with(['attachments_file','taskStatus'])->get();
             $stared_emails = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent', 1)->where('isStarred', 1)->orderBy('u_date', 'desc')->offset($offset)->limit(50)->with('attachments_file')->get();
           }
           foreach ($results as $key => $res) {
@@ -417,6 +417,7 @@ class MailboxController extends Controller
               'userMailbox' => function ($q) use ($user_id) {
                 $q->where(['user_id' => $user_id])->get();
               },
+              'taskStatus',
 
             ])->get();
 
@@ -468,7 +469,8 @@ class MailboxController extends Controller
               'attachments_file',
               'userMailbox' => function ($q) use ($user_id) {
                 $q->where(['user_id' => $user_id])->get();
-              }
+              },
+              'taskStatus',
             ])->get();
 
           $starred_count = Mailbox::where(['isStarred' => 1])->where('is_parent', 1)

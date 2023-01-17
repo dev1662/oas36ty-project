@@ -1282,7 +1282,7 @@ return response()->json($this->response);
         $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
         if($request->mailbox_id && $task_det){
             $lead_task_id = $task_det->type.'_'.$task_det->id;
-            Mailbox::where('id',$request->mailbox_id)->update(['task_lead_id' => $lead_task_id]);
+            Mailbox::where('id',$request->mailbox_id)->update(['task_lead_id' => $lead_task_id,'task_id'=>$task_det->id]);
         }
 
         $this->response["status"] = true;

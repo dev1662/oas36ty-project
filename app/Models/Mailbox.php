@@ -45,5 +45,10 @@ class Mailbox extends Model implements Auditable
        {
            return $this->hasOne(UserMailbox::class);
           }
+
+    public function taskStatus(){
+        return $this->belongsTo(Task::class,'task_id');
+       
+    }
     
 }
