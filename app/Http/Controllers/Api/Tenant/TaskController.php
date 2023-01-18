@@ -130,7 +130,7 @@ class TaskController extends Controller
             $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type','mailbox_id', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
                 'selfUser',
                 'branch' => function ($q) {
-                    $q->select('id', 'name');
+                    $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
                 },
                 'category' => function ($q) {
                     $q->select('id', 'name');
@@ -708,7 +708,7 @@ class TaskController extends Controller
                        })->select('id', 'branch_id', 'category_id', 'company_id','mailbox_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
                         'selfUser',
                         'branch' => function ($q) {
-                            $q->select('id', 'name');
+                            $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
 
                         },
                         'category' => function ($q) {
@@ -1054,7 +1054,7 @@ class TaskController extends Controller
         $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'mailbox_id','company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at','updated_at')->with([
             'selfUser',
             'branch' => function ($q) {
-                $q->select('id', 'name');
+                $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
 
             },
             'category' => function ($q) {
@@ -1374,7 +1374,7 @@ return response()->json($this->response);
         $task = Task::select('id', 'branch_id','user_id', 'category_id', 'mailbox_id','company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
             'selfUser',
             'branch' => function ($q) {
-                $q->select('id', 'name');
+                $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
             },
             'category' => function ($q) {
                 $q->select('id', 'name');
