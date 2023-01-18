@@ -127,7 +127,7 @@ class TaskController extends Controller
         // return   $dbname;
         $this->switchingDB($dbname);
     
-            $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
+            $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type','mailbox_id', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
                 'selfUser',
                 'branch' => function ($q) {
                     $q->select('id', 'name');
@@ -705,7 +705,7 @@ class TaskController extends Controller
                         //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
-                       })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
+                       })->select('id', 'branch_id', 'category_id', 'company_id','mailbox_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
                         'branch' => function ($q) {
                             $q->select('id', 'name');
 
@@ -1050,7 +1050,7 @@ class TaskController extends Controller
          
             // return $request->user_data;
         }
-        $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at','updated_at')->with([
+        $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'mailbox_id','company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at','updated_at')->with([
             'branch' => function ($q) {
                 $q->where('name', 'banglo')->select('id', 'name');
 
@@ -1283,6 +1283,9 @@ return response()->json($this->response);
         if($request->mailbox_id && $task_det){
             $lead_task_id = $task_det->type.'_'.$task_det->id;
             Mailbox::where('id',$request->mailbox_id)->update(['task_lead_id' => $lead_task_id,'task_id'=>$task_det->id]);
+            Task::where('id', $task_det->id)->update([
+                'mailbox_id' => $request->mailbox_id
+            ]);
         }
 
         $this->response["status"] = true;
@@ -1366,7 +1369,7 @@ return response()->json($this->response);
             return response()->json($this->response, 422);
         }
 
-        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
+        $task = Task::select('id', 'branch_id','user_id', 'category_id', 'mailbox_id','company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
             'selfUser',
             'branch' => function ($q) {
                 $q->select('id', 'name');
