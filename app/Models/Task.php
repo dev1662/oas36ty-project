@@ -28,7 +28,7 @@ class Task extends Model implements Auditable
      * @var array
      */
     protected $fillable = [
-        'company_id', 'contact_person_id', 'branch_id', 'category_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id',
+        'company_id', 'contact_person_id', 'branch_id', 'category_id','user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id','mailbox_id'
     ];
     // public function users()
     // {

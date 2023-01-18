@@ -39,6 +39,9 @@ class User extends Authenticatable implements Syncable
         'email_verified_at',
         'status',
         'branch_id',
+        'phone',
+        'location',
+        'designation_id'
     ];
 
     /**
