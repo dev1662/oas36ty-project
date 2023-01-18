@@ -706,6 +706,7 @@ class TaskController extends Controller
                         //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
                         //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
                        })->select('id', 'branch_id', 'category_id', 'company_id','mailbox_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
+                        'selfUser',
                         'branch' => function ($q) {
                             $q->select('id', 'name');
 
@@ -1051,8 +1052,9 @@ class TaskController extends Controller
             // return $request->user_data;
         }
         $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'mailbox_id','company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at','updated_at')->with([
+            'selfUser',
             'branch' => function ($q) {
-                $q->where('name', 'banglo')->select('id', 'name');
+                $q->select('id', 'name');
 
             },
             'category' => function ($q) {
@@ -1066,7 +1068,7 @@ class TaskController extends Controller
             },
             'users' => function ($q){
                 
-                $q->select('users.id', 'name', 'avatar', 'updated_at');
+                $q->select('users.id', 'name', 'avatar');
             },
             'comments' => function($q){
                 $q->select('id', 'comment', 'task_id', 'user_id', 'created_at', 'updated_at');
