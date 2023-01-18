@@ -298,7 +298,7 @@ class UserController extends Controller
             }
         ])->get();
 
-        $users =  User::with(['branches'])->select('id', 'name', 'avatar','branch_id', 'email', 'status')->where(function ($q) use ($search) {
+        $users =  User::with(['branches'])->select('id', 'name', 'avatar','branch_id', 'email', 'status','phone','location','designation_id')->where(function ($q) use ($search) {
             if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
         })->latest()->get();
 
@@ -1311,5 +1311,98 @@ class UserController extends Controller
         return response()->json($this->response);
     }
 
+   
+        /**
+     *
+     * @OA\Put(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"users"},
+     *     path="/users/{userID}/update-profile",
+     *     operationId="putUsersUpdateProfile",
+     *     summary="Update User profile",
+     *     description="Update User profile",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="phone", type="integer", example= 7488796725 , description=""),
+     *             @OA\Property(property="name", type="string", example="John Doe", description=""),
+     *             @OA\Property(property="location", type="string", example="Delhi India - 110014", description=""),
+     * 
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Updated successfully"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=403,
+     *          description="Forbidden Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Forbidden!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="user_id",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected user_id is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
+
+public function updateProfile(Request $request, $id){
+        $validator = Validator::make(['user_id' => $id] + $request->all(), [
+            'user_id' => 'required|exists:App\Models\User,id',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+
+        $user = User::find($id);
+        if(!$user){
+            $this->response["message"] = __('strings.update_failed');
+            return response()->json($this->response, 422);
+        }
+
+        $user->fill($request->only(['phone','location','name']));
+        $user->update();
+
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.update_success');
+        return response()->json($this->response);
+    }
 
 }

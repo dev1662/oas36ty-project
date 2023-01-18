@@ -93,6 +93,7 @@ Route::middleware([
             Route::get('contact-people/show_all', [ContactPersonController::class, 'showAll']);
 
             Route::post('users/re-invite', [UserController::class, 'reInvite']);
+            Route::put('users/{id}/update-profile', [UserController::class, 'updateProfile']);
 
 
             Route::apiResource('tasks.users', TaskUserController::class);
