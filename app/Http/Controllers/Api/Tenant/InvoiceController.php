@@ -241,6 +241,11 @@ class InvoiceController extends Controller
      *                         example = 1
      *                      ),
      *                      @OA\Property(
+     *                         property="task_id",
+     *                         type="integer",
+     *                         example= 1
+     *                      ),
+     *                      @OA\Property(
      *                         property="client_gst_number",
      *                         type="string",
      *                         example="09AKNJK4898M1V9"
@@ -407,6 +412,7 @@ class InvoiceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'client_id' => 'required|exists:App\Models\Company,id',
+            'task_id' => 'required|exists:App\Models\Task,id',
             'invoice_number'=>'required',
             'invoice_date'=>'required',
             'due_date'=>'required',
@@ -864,7 +870,7 @@ class InvoiceController extends Controller
         'pocket_expenses',
         'expenses_details',
         'adjustment_amt',
-        'total_amt',]));
+        'total_amt','task_id']));
         $branch->update();
 
         $this->response["status"] = true;

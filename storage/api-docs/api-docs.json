@@ -7442,6 +7442,10 @@
                                         "type": "integer",
                                         "example": 1
                                     },
+                                    "task_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
                                     "client_gst_number": {
                                         "type": "string",
                                         "example": "09AKNJK4898M1V9"
