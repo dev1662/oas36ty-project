@@ -16,6 +16,7 @@ class CreateInoviceTable extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('client_id')->nullable();
+            $table->bigInteger('task_id')->nullable();
             $table->string('client_gst_number')->nullable();
             $table->integer('state_code')->nullable();
             $table->string('invoice_number')->nullable();
