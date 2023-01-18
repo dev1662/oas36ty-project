@@ -13072,6 +13072,252 @@
                     }
                 ]
             }
+        },
+        "/users/{userID}/update-signature": {
+            "put": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update User signature",
+                "description": "Update User signature",
+                "operationId": "putUpdateSignature",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "userID",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "signature": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "Thanks & Regards - John Doe +91 7488796756 .."
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "user_id": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected user_id is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/users/{userID}/get-signature": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Fetch User signature",
+                "description": "Fetch User signature",
+                "operationId": "getSignature",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "userID",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched data successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Jodn Doe"
+                                                    },
+                                                    "signature": {
+                                                        "type": "string",
+                                                        "example": "Thanks & Regards - John Doe +91 7488796756 .."
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {

@@ -94,7 +94,8 @@ Route::middleware([
 
             Route::post('users/re-invite', [UserController::class, 'reInvite']);
             Route::put('users/{id}/update-profile', [UserController::class, 'updateProfile']);
-
+            Route::put('users/{id}/update-signature', [UserController::class, 'updateSignature']);
+            Route::get('users/{id}/get-signature', [UserController::class, 'getSignature']);
 
             Route::apiResource('tasks.users', TaskUserController::class);
             Route::apiResource('tasks.comments', TaskCommentController::class);

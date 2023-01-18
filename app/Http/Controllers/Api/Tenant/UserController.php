@@ -18,6 +18,7 @@ use App\Mail\JoiningInvitation as JoiningInvitationMail;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\CategoryUser;
+use App\Models\EmailSignature;
 use App\Models\EmailsSetting;
 use App\Models\Mailbox;
 use App\Models\UserEmail;
@@ -1404,5 +1405,198 @@ public function updateProfile(Request $request, $id){
         $this->response["message"] = __('strings.update_success');
         return response()->json($this->response);
     }
+
+
+     /**
+     *
+     * @OA\Put(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"users"},
+     *     path="/users/{userID}/update-signature",
+     *     operationId="putUpdateSignature",
+     *     summary="Update User signature",
+     *     description="Update User signature",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="name", type="string", example="John Doe", description=""),
+     *             @OA\Property(property="signature", type="string", example="Thanks & Regards - John Doe +91 7488796756 ..", description=""),
+     * 
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Updated successfully"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=403,
+     *          description="Forbidden Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Forbidden!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="user_id",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected user_id is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
+public function updateSignature(Request $request, $id){
+    $validator = Validator::make(['user_id' => $id] + $request->all(), [
+        'user_id' => 'required|exists:App\Models\User,id',
+        'signature'=>'required',
+        'name'=>'required'
+    ]);
+    if ($validator->fails()) {
+        $this->response["code"] = "INVALID";
+        $this->response["message"] = $validator->errors()->first();
+        $this->response["errors"] = $validator->errors();
+        return response()->json($this->response, 422);
+    }
+
+    $user = User::find($id);
+    $signature = EmailSignature::where('user_id',$id)->first();
+    if($user){
+        if($signature){
+            $signature->fill($request->only('name','signature'));
+            $signature->update();
+        }else{
+            $data_arr = [
+                'user_id'=> $id,
+                'name'=> $request->name,
+                'signature'=>$request->singature,
+            ];
+            EmailSignature::create($data_arr);
+        }
+
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.update_success');
+    }else{
+    $this->response["message"] = __('strings.update_failed');
+    return response()->json($this->response, 422);
+    }
+   
+    return response()->json($this->response);
+}
+
+
+/**
+     *
+     * @OA\Get(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"users"},
+     *     path="/users/{userID}/get-signature",
+     *     operationId="getSignature",
+     *     summary="Fetch User signature",
+     *     description="Fetch User signature",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Fetched data successfully"),
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="user_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="name",
+     *                         type="string",
+     *                         example="Jodn Doe"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="signature",
+     *                         type="string",
+     *                         example="Thanks & Regards - John Doe +91 7488796756 .."
+     *                      ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     * )
+     */
+public function getSignature($id){
+    $validator = Validator::make(['user_id' => $id], [
+        'user_id' => 'required|exists:App\Models\User,id',
+    ]);
+    if ($validator->fails()) {
+        $this->response["code"] = "INVALID";
+        $this->response["message"] = $validator->errors()->first();
+        $this->response["errors"] = $validator->errors();
+        return response()->json($this->response, 422);
+    }
+
+    $user = User::find($id);
+    if($user){
+        $signature = EmailSignature::where('user_id',$id)->first();
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.get_all_success');
+        $this->response["data"] = $signature;
+    }else{
+    $this->response["message"] = __('strings.fetch_failed');
+    return response()->json($this->response, 422);
+    }
+   
+    return response()->json($this->response);
+}
 
 }

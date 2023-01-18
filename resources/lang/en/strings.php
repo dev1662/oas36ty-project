@@ -57,4 +57,5 @@ return [
     
     'destroy_success' => 'Record deleted!',
     'destroy_failed' => 'Failed to delete Record!',
+    'fetch_failed' => 'Fetch data failed !',
 ];

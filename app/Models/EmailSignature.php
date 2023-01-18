@@ -10,7 +10,8 @@ class EmailSignature extends Model
     use HasFactory;
     protected $fillable = [
         'name',
-        'signature'
+        'signature',
+        'user_id'
     ];
     
 }

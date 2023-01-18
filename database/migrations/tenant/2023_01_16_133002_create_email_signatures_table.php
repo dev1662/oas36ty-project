@@ -15,8 +15,9 @@ class CreateEmailSignaturesTable extends Migration
     {
         Schema::create('email_signatures', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('user_id')->nullable();
             $table->string('name')->nullable();
-            $table->longText('singature')->nullable();
+            $table->longText('signature')->nullable();
             $table->timestamps();
         });
     }
