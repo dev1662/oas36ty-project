@@ -42,6 +42,7 @@ class Invoice extends Model implements Auditable
         'expenses_details',
         'adjustment_amt',
         'total_amt',
+        'task_id',
        
     ];
 

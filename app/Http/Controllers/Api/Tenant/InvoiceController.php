@@ -161,6 +161,11 @@ class InvoiceController extends Controller
      *                         example=2000.00
      *                      ),
      *                  @OA\Property(
+     *                         property="task_id",
+     *                         type="integer",
+     *                         example= 1
+     *                      ),
+     *                  @OA\Property(
      *                  property="client",
      *                  type="array",
      *                  @OA\Items(
@@ -428,12 +433,12 @@ class InvoiceController extends Controller
      * @OA\Get(
      *     security={{"bearerAuth":{}}},
      *     tags={"Invoices"},
-     *     path="/invoices/{invoice_id}",
+     *     path="/invoices/{task_id}",
      *     operationId="showInvoice",
      *     summary="Show invoice Details",
      *     description="Invoices",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
-     *     @OA\Parameter(name="invoice_id", in="path", required=true, description="Invoice ID"),
+     *     @OA\Parameter(name="task_id", in="path", required=true, description="Invoice ID"),
      *     @OA\Response(
      *          response=200,
      *          description="Successful Response",
@@ -575,6 +580,11 @@ class InvoiceController extends Controller
      *                         example=2000.00
      *                      ),
      *                  @OA\Property(
+     *                         property="task_id",
+     *                         type="integer",
+     *                         example= 1
+     *                      ),
+     *                  @OA\Property(
      *                  property="client",
      *                  type="array",
      *                  @OA\Items(
@@ -613,8 +623,8 @@ class InvoiceController extends Controller
      */
     public function show($id)
     {
-        $validator = Validator::make(['invoice_id' => $id], [
-            'invoice_id' => 'required|exists:App\Models\Invoice,id',
+        $validator = Validator::make(['task_id' => $id], [
+            'task_id' => 'required|exists:App\Models\Task,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -623,7 +633,7 @@ class InvoiceController extends Controller
             return response()->json($this->response, 422);
         }
         
-        $invoice = Invoice::where('id',$id)->with(['audits','client'])->get();
+        $invoice = Invoice::where('task_id',$id)->with(['audits','client'])->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');

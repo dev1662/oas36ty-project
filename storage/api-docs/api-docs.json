@@ -7347,6 +7347,10 @@
                                                         "format": "double",
                                                         "example": 2000
                                                     },
+                                                    "task_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
                                                     "client": {
                                                         "type": "array",
                                                         "items": {
@@ -7638,7 +7642,7 @@
                 ]
             }
         },
-        "/invoices/{invoice_id}": {
+        "/invoices/{task_id}": {
             "get": {
                 "tags": [
                     "Invoices"
@@ -7651,7 +7655,7 @@
                         "$ref": "#/components/parameters/tenant--header"
                     },
                     {
-                        "name": "invoice_id",
+                        "name": "task_id",
                         "in": "path",
                         "description": "Invoice ID",
                         "required": true
@@ -7797,6 +7801,10 @@
                                                         "format": "double",
                                                         "example": 2000
                                                     },
+                                                    "task_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
                                                     "client": {
                                                         "type": "array",
                                                         "items": {
@@ -7865,7 +7873,9 @@
                         "bearerAuth": []
                     }
                 ]
-            },
+            }
+        },
+        "/invoices/{invoice_id}": {
             "put": {
                 "tags": [
                     "Invoices"
