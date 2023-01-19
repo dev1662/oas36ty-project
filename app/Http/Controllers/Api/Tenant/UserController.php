@@ -1496,7 +1496,7 @@ public function updateSignature(Request $request, $id){
             $data_arr = [
                 'user_id'=> $id,
                 'name'=> $request->name,
-                'signature'=>$request->singature,
+                'signature'=>$request->signature,
             ];
             EmailSignature::create($data_arr);
         }
