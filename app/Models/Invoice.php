@@ -15,8 +15,10 @@ class Invoice extends Model implements Auditable
     const STATUS_INACTIVE = 'inactive';
     const TYPE_DELETE = 'delete';
     const TYPE_DONT_DELETE = 'dont_delete';
+    public $incrementing = false;
     public $table = 'invoices';
     protected $fillable = [
+        'id',
         'client_id',
         'client_gst_number',
         'state_code',
@@ -43,11 +45,15 @@ class Invoice extends Model implements Auditable
         'adjustment_amt',
         'total_amt',
         'task_id',
+        'proposal_id',
        
     ];
 
     public function client(){
         return $this->belongsTo(Company::class,'client_id');
+    }
+    public function proposal(){
+        return $this->hasMany(ProposalFees::class,'proposal_id','proposal_id');
     }
 
 }
