@@ -448,6 +448,7 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         $lastRow = Invoice::all()->last();
+        
         $id = $request->id ?? $lastRow->id +1;
         // return $id;
         $validator = Validator::make(['invoice_id' => $id] +  $request->all(), [
