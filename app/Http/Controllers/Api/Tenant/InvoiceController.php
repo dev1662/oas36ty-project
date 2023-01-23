@@ -165,6 +165,33 @@ class InvoiceController extends Controller
      *                         type="integer",
      *                         example= 1
      *                      ),
+     *   @OA\Property(
+     *                  property="proposal",
+     *                  type="array",
+     *                  @OA\Items(
+     *                        @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="proposal_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                  
+     *                   @OA\Property(
+     *                         property="description",
+     *                         type="string",
+     *                         example="Amount descriptions"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="amount",
+     *                         type="double",
+     *                         example="4000.00"
+     *                      ),
+     *                  ),
+     *              ),
      *                  @OA\Property(
      *                  property="client",
      *                  type="array",
@@ -213,7 +240,7 @@ class InvoiceController extends Controller
         $this->switchingDB($dbname);
         // return json_decode($request->header('currrent'))->tenant->organization->name;
 
-        $invoices = Invoice::with(['audits','client'])->get();
+        $invoices = Invoice::with(['proposal','client','audits'])->orderBy('id', 'DESC')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -235,7 +262,17 @@ class InvoiceController extends Controller
      *          required=true,
      *          @OA\JsonContent(
      *             type="object",
-     *            @OA\Property(
+     *               @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example = 1
+     *                      ),
+     *                  @OA\Property(
+     *                         property="proposal_id",
+     *                         type="integer",
+     *                         example = 1
+     *                      ),
+     *                   @OA\Property(
      *                         property="client_id",
      *                         type="integer",
      *                         example = 1
@@ -410,13 +447,18 @@ class InvoiceController extends Controller
    
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $lastRow = Invoice::all()->last();
+        $id = $request->id ?? $lastRow->id +1;
+        // return $id;
+        $validator = Validator::make(['invoice_id' => $id] +  $request->all(), [
+            'invoice_id'=>'required|unique:App\Models\Invoice,id',
             'client_id' => 'required|exists:App\Models\Company,id',
             'task_id' => 'required|exists:App\Models\Task,id',
             'invoice_number'=>'required',
             'invoice_date'=>'required',
             'due_date'=>'required',
-            'amount'=>'required'
+            'amount'=>'required',
+            'proposal_id'=>'required|exists:App\Models\Proposal,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -427,7 +469,7 @@ class InvoiceController extends Controller
 
         
         $invoice = new Invoice($request->all());
-     
+        $invoice->id = $request->id ?? $id;
         $invoice->save();
 
         $this->response["status"] = true;
@@ -590,6 +632,34 @@ class InvoiceController extends Controller
      *                         type="integer",
      *                         example= 1
      *                      ),
+     * 
+     *           @OA\Property(
+     *                       property="proposal",
+     *                  type="array",
+     *                  @OA\Items(
+     *                     @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="proposal_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                  
+     *                   @OA\Property(
+     *                         property="description",
+     *                         type="string",
+     *                         example="Amount descriptions"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="amount",
+     *                         type="double",
+     *                         example="4000.00"
+     *                      ),
+     *                  ),
+     *              ),
      *                  @OA\Property(
      *                  property="client",
      *                  type="array",
@@ -606,6 +676,7 @@ class InvoiceController extends Controller
      *                      ),
      *                  ),
      *              ),
+     * 
      *                  ),
      *              ),
      *          )
@@ -639,7 +710,7 @@ class InvoiceController extends Controller
             return response()->json($this->response, 422);
         }
         
-        $invoice = Invoice::where('task_id',$id)->with(['audits','client'])->get();
+        $invoice = Invoice::where('task_id',$id)->with(['proposal','client','audits'])->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
