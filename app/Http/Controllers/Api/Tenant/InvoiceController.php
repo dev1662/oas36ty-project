@@ -240,7 +240,7 @@ class InvoiceController extends Controller
         $this->switchingDB($dbname);
         // return json_decode($request->header('currrent'))->tenant->organization->name;
 
-        $invoices = Invoice::with(['proposal','client','audits'])->orderBy('id', 'DESC')->get();
+        $invoices = Invoice::with(['proposal','client','audits'])->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
