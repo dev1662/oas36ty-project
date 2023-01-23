@@ -73,7 +73,7 @@ class CompanyController extends Controller
         $dbname = config('tenancy.database.prefix').strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-        $Companys = Company::select('id', 'name','type')->with('audits')->orderBy('id', 'DESC')->get();
+        $Companys = Company::with('audits')->orderBy('id', 'DESC')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -274,7 +274,7 @@ class CompanyController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $Company = Company::select('id', 'name')->find($id);
+        $Company = Company::find($id);
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_one_success');
