@@ -34,6 +34,7 @@ use App\Http\Controllers\Api\Tenant\InvoiceController;
 use App\Http\Controllers\Api\Tenant\MailboxController;
 use App\Http\Controllers\Api\Tenant\ProposalController;
 use App\Http\Controllers\Api\Tenant\ProposalTemplateController;
+use App\Http\Controllers\Api\Tenant\RecordPaymentController;
 use App\Http\Controllers\Api\Tenant\StatusMasterController;
 use App\Models\Task;
 use Illuminate\Support\Facades\Artisan;
@@ -135,6 +136,11 @@ Route::middleware([
             // ------------------------------ Proposal Configuration ----------------------------
             Route::apiResource('proposal-templates', ProposalTemplateController::class);
             Route::apiResource('proposal', ProposalController::class);
+            Route::apiResource('record-payment',RecordPaymentController::class);
+
+
+
+
             Route::post(
                 'users/update-profile-image'
             ,[AccountController::class,'update_profile_picture']);
