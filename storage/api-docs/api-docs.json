@@ -3709,6 +3709,78 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "Company Name"
+                                    },
+                                    "location": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "Delhi India"
+                                    },
+                                    "address": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "Jungpura ext. Delhi"
+                                    },
+                                    "gst_number": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "07AKNPA4240M1Z6"
+                                    },
+                                    "state_code": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": 7
+                                    },
+                                    "pan": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "AKNPA4240M"
+                                    },
+                                    "client_types": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "annual_turn_over": {
+                                        "description": "",
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 15478960.75
+                                    },
+                                    "opening_balance": {
+                                        "description": "",
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 150000
+                                    },
+                                    "opening_bal_date": {
+                                        "description": "",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "16 Jan 2023"
+                                    },
+                                    "password": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "compliance": {
+                                                    "type": "string",
+                                                    "example": "GST 3B-Monthly"
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "username"
+                                                },
+                                                "password": {
+                                                    "type": "string",
+                                                    "example": "password"
+                                                },
+                                                "remarks": {
+                                                    "type": "string",
+                                                    "example": "This credential is only for client"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     }
                                 },
                                 "type": "object"

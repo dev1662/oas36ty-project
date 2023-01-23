@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\Company;
+use App\Models\CompanyPassword;
 use Illuminate\Support\Facades\Config;
 use PDO;
 
@@ -95,6 +96,41 @@ class CompanyController extends Controller
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Company Name", description=""),
+     *             @OA\Property(property="location", type="string", example="Delhi India", description=""),
+     *             @OA\Property(property="address", type="string", example="Jungpura ext. Delhi", description=""),
+     *             @OA\Property(property="gst_number", type="string", example="07AKNPA4240M1Z6", description=""),
+     *             @OA\Property(property="state_code", type="integer", example=07, description=""),
+     *             @OA\Property(property="pan", type="string", example="AKNPA4240M", description=""),
+     *             @OA\Property(property="client_types", type="integer", example=1, description=""),
+     *             @OA\Property(property="annual_turn_over", type="double", example=15478960.75, description=""),
+     *             @OA\Property(property="opening_balance", type="double", example=150000, description=""),
+     *             @OA\Property(property="opening_bal_date", type="date", example="16 Jan 2023", description=""),
+     *              @OA\Property(
+     *                  property="password",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="compliance",
+     *                         type="string",
+     *                         example="GST 3B-Monthly"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="username",
+     *                         type="string",
+     *                         example="username"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="password",
+     *                         type="string",
+     *                         example="password"
+     *                      ),
+     *                  @OA\Property(
+     *                         property="remarks",
+     *                         type="string",
+     *                         example="This credential is only for client"
+     *                      ),
+     *                  ),
+     *              ),
      *         )
      *     ),
      *     @OA\Response(
@@ -154,6 +190,19 @@ class CompanyController extends Controller
         $Company->user_id = $user->id;
         $Company->save();
 
+        if($request->password){
+            foreach($request->password as $row){
+                $data_arr = [
+                    'company_id' => $Company->id,
+                    'compliance' => $row['compliance'],
+                    'username' => $row['username'],
+                    'password' => $row['password'],
+                    'remarks' => $row['remarks'],
+                ];
+                CompanyPassword::create($data_arr);
+            }
+        }
+
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
@@ -212,6 +261,7 @@ class CompanyController extends Controller
      *     ),
      * )
      */
+
     public function show($id)
     {
         $validator = Validator::make(['company_id' => $id], [
