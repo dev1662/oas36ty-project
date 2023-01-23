@@ -29,7 +29,10 @@ class RecordPayment extends Model implements Auditable
     ];
 
     public function invoice(){
-        return $this->belongsTo(Invoice::class,'invoice_id');
+        // return $this->belongsTo(Invoice::class,'invoice_id');
+
+        return $this->belongsToMany(Invoice::class, RecordPaymentInvoice::class, 'record_payment_id', 'invoice_id');
+
     }
     
     public function recordPayInvoice(){

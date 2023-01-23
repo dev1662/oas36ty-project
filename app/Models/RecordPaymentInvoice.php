@@ -17,9 +17,14 @@ class RecordPaymentInvoice extends Model  implements Auditable
     const TYPE_DONT_DELETE = 'dont_delete';
     public $table = 'record_payment_invoices';
     protected $fillable = [
-        'record_payment_id	',
+        'record_payment_id',
         'invoice_id',
         'tds_deducted',
         'paid_amount'
     ];
+
+    public function invoice()
+    {
+        return $this->belongsToMany(Invoice::class);
+    }
 }

@@ -10387,9 +10387,9 @@
                                                                     "type": "integer",
                                                                     "example": "1"
                                                                 },
-                                                                "description": {
+                                                                "invoice_number": {
                                                                     "type": "string",
-                                                                    "example": "Amount descriptions"
+                                                                    "example": "yr 22-23/001"
                                                                 },
                                                                 "amount": {
                                                                     "type": "number",
@@ -10623,6 +10623,173 @@
                                                 }
                                             },
                                             "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/record-payment/{recordPay_id}": {
+            "get": {
+                "tags": [
+                    "Record Payment"
+                ],
+                "summary": "Show record payment",
+                "description": "Record Payment",
+                "operationId": "showtRecordPayment",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "recordPay_id",
+                        "in": "path",
+                        "description": "Record Payment ID",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Fetched all data successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "client_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "payment_mode": {
+                                                        "type": "string",
+                                                        "example": "Bank Transfer"
+                                                    },
+                                                    "branch_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "amount": {
+                                                        "type": "number",
+                                                        "format": "double",
+                                                        "example": 2500
+                                                    },
+                                                    "pay_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "16 Jan 2023"
+                                                    },
+                                                    "reference_id": {
+                                                        "type": "string",
+                                                        "example": "APQWERT74673KJD"
+                                                    },
+                                                    "notes": {
+                                                        "type": "string",
+                                                        "example": "Thank you for your business"
+                                                    },
+                                                    "invoice": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "proposal_id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "invoice_number": {
+                                                                    "type": "string",
+                                                                    "example": "yr 22-23/001"
+                                                                },
+                                                                "total_amt": {
+                                                                    "type": "number",
+                                                                    "format": "double",
+                                                                    "example": "4000.00"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "client": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "Tata consultancy services"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
                                         }
                                     },
                                     "type": "object"

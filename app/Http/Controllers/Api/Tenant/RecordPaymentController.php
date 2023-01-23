@@ -87,9 +87,9 @@ class RecordPaymentController extends Controller
      *                      ),
      *                  
      *                   @OA\Property(
-     *                         property="description",
+     *                         property="invoice_number",
      *                         type="string",
-     *                         example="Amount descriptions"
+     *                         example="yr 22-23/001"
      *                      ),
      *                   @OA\Property(
      *                         property="amount",
@@ -143,7 +143,11 @@ class RecordPaymentController extends Controller
         $this->switchingDB($dbname);
         // return json_decode($request->header('currrent'))->tenant->organization->name;
 
-        $invoices = RecordPayment::with(['recordPayInvoice','invoice','audits'])->orderBy('id', 'DESC')->get();
+        $invoices = RecordPayment::with(['recordPayInvoice',
+        'invoice'=> function($q){
+            $q->select('invoices.id','invoice_number','total_amt');
+        } 
+        ,'audits'])->orderBy('id', 'DESC')->first();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -280,38 +284,190 @@ class RecordPaymentController extends Controller
         return response()->json($this->response);
     }
 
-    /**
-     * Display the specified resource.
+   
+ /**
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Record Payment"},
+     *     path="/record-payment/{recordPay_id}",
+     *     operationId="showtRecordPayment",
+     *     summary="Show record payment",
+     *     description="Record Payment",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="recordPay_id", in="path", required=true, description="Record Payment ID"),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Fetched all data successfully"),
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="client_id",
+     *                         type="integer",
+     *                         example = 1
+     *                      ),
+     *                      @OA\Property(
+     *                         property="payment_mode",
+     *                         type="string",
+     *                         example="Bank Transfer"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="branch_id",
+     *                         type="integer",
+     *                         example=1
+     *                      ),
+     *                      @OA\Property(
+     *                         property="amount",
+     *                         type="double",
+     *                         example= 2500
+     *                      ),
+     *                      @OA\Property(
+     *                         property="pay_date",
+     *                         type="date",
+     *                         example="16 Jan 2023"
+     *                      ),
+     *                       @OA\Property(
+     *                         property="reference_id",
+     *                         type="string",
+     *                         example="APQWERT74673KJD"
+     *                      ),
+     *                    @OA\Property(
+     *                         property="notes",
+     *                         type="string",
+     *                         example="Thank you for your business"
+     *                      ),
+     *                   
+     *              @OA\Property(
+     *                  property="invoice",
+     *                  type="array",
+     *                  @OA\Items(
+     *                        @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="proposal_id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                  
+     *                   @OA\Property(
+     *                         property="invoice_number",
+     *                         type="string",
+     *                         example="yr 22-23/001"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="total_amt",
+     *                         type="double",
+     *                         example="4000.00"
+     *                      ),
+     *                  ),
+     *              ),
+     *                  @OA\Property(
+     *                  property="client",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="name",
+     *                         type="string",
+     *                         example="Tata consultancy services"
+     *                      ),
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     * )
      */
+
     public function show($id)
     {
-        //
+        $validator = Validator::make(['recordPay_id' => $id], [
+            'recordPay_id' => 'required|exists:App\Models\RecordPayment,id',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+        
+        $invoice = RecordPayment::where('id',$id)->with(['recordPayInvoice',
+        'invoice'=> function($q){
+            $q->select('invoices.id','invoice_number','total_amt');
+        } 
+        ,'audits'])->get();
+
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.get_one_success');
+        $this->response["data"] = $invoice;
+        return response()->json($this->response);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make(['recordPay_id' => $id] + $request->all(), [
+            'recordPay_id' => 'required|exists:App\Models\RecordPayment,id',
+            'task_id' => 'required|exists:App\Models\Task,id',
+            'client_id'=>'required|exists:App\Models\Company,id',
+            'payment_mode'=>'required',
+            'branch_id'=>'required|exists:App\Models\Branch,id',
+            'amount'=>'required',
+            'pay_date'=> 'required',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+
+        $recordPaid = RecordPayment::find($id);
+        if(!$recordPaid){
+            $this->response["message"] = __('strings.update_failed');
+            return response()->json($this->response, 422);
+        }
+
+        $recordPaid->fill($request->only(['task_id','client_id','payment_mode','branch_id','amount','pay_date','reference_id','notes']));
+        $recordPaid->update();
+
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.update_success');
+        return response()->json($this->response);
+    
     }
 
     /**
