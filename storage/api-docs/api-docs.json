@@ -3995,7 +3995,55 @@
                                     "name": {
                                         "description": "",
                                         "type": "string",
-                                        "example": "Company name"
+                                        "example": "Company Name"
+                                    },
+                                    "location": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "Delhi India"
+                                    },
+                                    "address": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "Jungpura ext. Delhi"
+                                    },
+                                    "gst_number": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "07AKNPA4240M1Z6"
+                                    },
+                                    "state_code": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": 7
+                                    },
+                                    "pan": {
+                                        "description": "",
+                                        "type": "string",
+                                        "example": "AKNPA4240M"
+                                    },
+                                    "client_types": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "annual_turn_over": {
+                                        "description": "",
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 15478960.75
+                                    },
+                                    "opening_balance": {
+                                        "description": "",
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": 150000
+                                    },
+                                    "opening_bal_date": {
+                                        "description": "",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "16 Jan 2023"
                                     }
                                 },
                                 "type": "object"
@@ -4131,6 +4179,150 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized access!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "example": "INVALID"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "company_id": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The selected company_id is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/Companys/{passwordID}/update-password": {
+            "put": {
+                "tags": [
+                    "Companys"
+                ],
+                "summary": "Update Company Password",
+                "description": "Update Company Password",
+                "operationId": "putCompanyPassword",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "passwordID",
+                        "in": "path",
+                        "description": " Company Password ID",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "compliance": {
+                                        "type": "string",
+                                        "example": "GST 3B-Monthly"
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "example": "username"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    },
+                                    "remarks": {
+                                        "type": "string",
+                                        "example": "This credential is only for client"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Updated successfully"
                                         }
                                     },
                                     "type": "object"

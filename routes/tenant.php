@@ -104,6 +104,8 @@ Route::middleware([
 
             Route::apiResource('to-dos', ToDoController::class);
             Route::apiResource('Companys', CompanyController::class);
+            Route::put('Companys/{id}/update-password', [UserController::class, 'updateCompanyPassword']);
+
             Route::apiResource('status_master', StatusMasterController::class);
             Route::get('contact-people/leads',[ContactPersonController::class,'getDataForLeads']);
             Route::apiResource('contact-people', ContactPersonController::class);

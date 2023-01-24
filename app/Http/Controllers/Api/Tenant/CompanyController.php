@@ -178,6 +178,7 @@ class CompanyController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64|unique:App\Models\Company,name',
+            'location'=> 'required',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -297,7 +298,16 @@ class CompanyController extends Controller
      *          required=true,
      *          @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="name", type="string", example="Company name", description=""),
+     *             @OA\Property(property="name", type="string", example="Company Name", description=""),
+     *             @OA\Property(property="location", type="string", example="Delhi India", description=""),
+     *             @OA\Property(property="address", type="string", example="Jungpura ext. Delhi", description=""),
+     *             @OA\Property(property="gst_number", type="string", example="07AKNPA4240M1Z6", description=""),
+     *             @OA\Property(property="state_code", type="integer", example=07, description=""),
+     *             @OA\Property(property="pan", type="string", example="AKNPA4240M", description=""),
+     *             @OA\Property(property="client_types", type="integer", example=1, description=""),
+     *             @OA\Property(property="annual_turn_over", type="double", example=15478960.75, description=""),
+     *             @OA\Property(property="opening_balance", type="double", example=150000, description=""),
+     *             @OA\Property(property="opening_bal_date", type="date", example="16 Jan 2023", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -365,12 +375,122 @@ class CompanyController extends Controller
             return response()->json($this->response, 422);
         }
 
-        $Company->fill($request->only(['name']));
+        $Company->fill($request->only(['name','location','address','gst_number','state_code','pan','client_types','annual_turn_over','opening_balance','opening_bal_date']));
         $Company->update();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.update_success');
         return response()->json($this->response);
+    }
+
+
+     /**
+     *
+     * @OA\Put(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Companys"},
+     *     path="/Companys/{passwordID}/update-password",
+     *     operationId="putCompanyPassword",
+     *     summary="Update Company Password",
+     *     description="Update Company Password",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="passwordID", in="path", required=true, description=" Company Password ID"),
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                         property="compliance",
+     *                         type="string",
+     *                         example="GST 3B-Monthly"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="username",
+     *                         type="string",
+     *                         example="username"
+     *                      ),
+     *                   @OA\Property(
+     *                         property="password",
+     *                         type="string",
+     *                         example="password"
+     *                      ),
+     *                  @OA\Property(
+     *                         property="remarks",
+     *                         type="string",
+     *                         example="This credential is only for client"
+     *                      ),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Updated successfully"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=403,
+     *          description="Forbidden Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Forbidden!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="company_id",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected company_id is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
+
+public function updateCompanyPassword(Request $request, $id){
+        $validator = Validator::make(['password_id' => $id] + $request->all(), [
+            'password_id' => 'required|exists:App\Models\CompanyPassword,id',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+        $companyPassword = CompanyPassword::find($id);
+        if(!$companyPassword){
+            $this->response["message"] = __('strings.update_failed');
+            return response()->json($this->response, 422);
+        }
+
+        $companyPassword->fill($request->only(['compliance','username','password','remarks',]));
+        $companyPassword->update();
+
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.update_success');
+        return response()->json($this->response);
+
     }
 
     /**
