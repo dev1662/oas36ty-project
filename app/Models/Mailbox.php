@@ -51,5 +51,9 @@ class Mailbox extends Model implements Auditable
         return $this->belongsTo(Task::class,'task_id');
        
     }
+    public function task()
+    {
+        return $this->hasMany(Task::class);
+    }
     
 }
