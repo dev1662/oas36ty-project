@@ -145,7 +145,7 @@ class RecordPaymentController extends Controller
 
         $invoices = RecordPayment::with(['recordPayInvoice',
         'invoice'=> function($q){
-            $q->select('invoices.id','invoice_number','total_amt');
+            $q->select('invoices.id','invoice_number','total_amt','amount');
         } 
         ,'audits'])->orderBy('id', 'DESC')->first();
 
@@ -426,7 +426,7 @@ class RecordPaymentController extends Controller
         
         $invoice = RecordPayment::where('task_id',$id)->with(['recordPayInvoice',
         'invoice'=> function($q){
-            $q->select('invoices.id','invoice_number','total_amt');
+            $q->select('invoices.id','invoice_number','total_amt','amount');
         } 
         ,'audits'])->get();
 
