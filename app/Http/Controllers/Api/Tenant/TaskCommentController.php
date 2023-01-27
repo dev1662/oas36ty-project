@@ -634,6 +634,7 @@ class TaskCommentController extends Controller
   public function getTaskMailThread(Request $request,$id){
     $user = $request->user();
     $user_id = $user->id;
+    $result = [];
     $validator = Validator::make(['task_id' => $id], [
         'task_id' => 'required|exists:App\Models\Task,id',
     ]);
@@ -665,7 +666,8 @@ class TaskCommentController extends Controller
 
         ])->get();
         // return  $results[0]['folder'];
-
+        //  return $results[0] ?? $results;
+        if(count($results) > 0){
         if($results[0]['folder'] == 'INBOX'){
         $username = $results[0]['to_email'];
         }else if($results[0]['folder'] = 'Sent Mail'){
@@ -673,6 +675,7 @@ class TaskCommentController extends Controller
         }else{
             $username = $results[0]['to_email'];
         }
+
         foreach ($results as $key => $res) {
           $eamils_arr = [];
           // if(!empty($res['in_reply_to'])){
@@ -697,10 +700,11 @@ class TaskCommentController extends Controller
             $result[] = ['parent' => $res];
           }
         }
+            }
 
         $this->response['status'] = true;
         $this->response['message'] = 'data fetched';
-        $this->response['data'] = $result;
+        $this->response['data'] = $result ?? '';
         return response()->json($this->response);
 
       }
