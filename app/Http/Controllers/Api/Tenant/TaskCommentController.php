@@ -230,8 +230,8 @@ class TaskCommentController extends Controller
                         },
                         // 'audits',
                         ])->orderBy('id', 'ASC')->first();
-            $taskComments['mail'] = $this->getTaskMailThread($request,$taskID);
-            return $taskComments;
+            // $taskComments['mail'] = $this->getTaskMailThread($request,$taskID);
+            // return $taskComments;
                         
             }
             if($original_task_id == 'undefined'){
