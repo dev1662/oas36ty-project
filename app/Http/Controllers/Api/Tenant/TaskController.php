@@ -132,6 +132,7 @@ class TaskController extends Controller
                 'branch' => function ($q) {
                     $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
                 },
+                'mailbox',
                 'category' => function ($q) {
                     $q->select('id', 'name');
                 },

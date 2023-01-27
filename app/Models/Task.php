@@ -70,6 +70,10 @@ class Task extends Model implements Auditable
     {
         return $this->belongsTo(Company::class);
     }
+    public function mailbox()
+    {
+        return $this->belongsTo(Mailbox::class);
+    }
 
     public function contactPerson()
     {

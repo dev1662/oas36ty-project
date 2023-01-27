@@ -145,7 +145,7 @@ class RecordPaymentController extends Controller
 
         $invoices = RecordPayment::with(['recordPayInvoice',
         'invoice'=> function($q){
-            $q->select('invoices.id','invoice_number','total_amt');
+            $q->select('invoices.id','invoice_number','total_amt','amount');
         } 
         ,'audits'])->orderBy('id', 'DESC')->first();
 
@@ -414,8 +414,8 @@ class RecordPaymentController extends Controller
 
     public function show($id)
     {
-        $validator = Validator::make(['recordPay_id' => $id], [
-            'recordPay_id' => 'required|exists:App\Models\RecordPayment,id',
+        $validator = Validator::make(['task_id' => $id], [
+            'task_id' => 'required|exists:App\Models\Task,id',
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -424,9 +424,9 @@ class RecordPaymentController extends Controller
             return response()->json($this->response, 422);
         }
         
-        $invoice = RecordPayment::where('id',$id)->with(['recordPayInvoice',
+        $invoice = RecordPayment::where('task_id',$id)->with(['recordPayInvoice',
         'invoice'=> function($q){
-            $q->select('invoices.id','invoice_number','total_amt');
+            $q->select('invoices.id','invoice_number','total_amt','amount');
         } 
         ,'audits'])->get();
 
