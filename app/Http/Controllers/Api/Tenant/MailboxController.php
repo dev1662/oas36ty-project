@@ -2143,6 +2143,7 @@ class MailboxController extends Controller
     $status = [];
     foreach ($request->data['to'] as $email) {
       $data_arr = [
+        'plain_text'=> $request->data['plain_text'] ?? '',
         'message' => $message ?? '', 'subject' => $subject ?? '', 'email' => $email ?? '', 'email_bcc' => $bcc, 'email_cc' => $cc, 'attach' => $attach, 'email_replyTo' => $email_replyTo, 'message_id' => $message_id, 'references' => $references,
         'email_from' => $request->data['from']['email']
       ];
