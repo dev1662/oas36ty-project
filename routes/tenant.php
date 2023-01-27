@@ -82,7 +82,7 @@ Route::middleware([
                 'tasks' => 'id'
             ]);
 
-            Route::get('/tasks/{taskID}/mail-thread',[TaskController::class,'getTaskMailThread']);
+            Route::get('/tasks/{taskID}/mail-thread',[TaskCommentController::class,'getTaskMailThread']);
             Route::post('tasks/mark-as-completed-closed', [TaskController::class,'markasCompleteOrClosed']);
             // Route::post('')
             Route::post('/sendEmail-outBound', [MailboxController::class, 'sendEmail']);
