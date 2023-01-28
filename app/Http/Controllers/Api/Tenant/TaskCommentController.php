@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Tenant;
 use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Models\CommentMention;
+use App\Models\Mailbox;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 // use Illuminate\Support\FacadesValidator;
@@ -12,6 +13,7 @@ use Illuminate\Http\Response;
 use App\Models\Task;
 use App\Models\TaskComment;
 use App\Models\TaskUser;
+use App\Models\UserMailbox;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -228,6 +230,8 @@ class TaskCommentController extends Controller
                         },
                         // 'audits',
                         ])->orderBy('id', 'ASC')->first();
+            // $taskComments['mail'] = $this->getTaskMailThread($request,$taskID);
+            // return $taskComments;
                         
             }
             if($original_task_id == 'undefined'){
@@ -562,4 +566,150 @@ class TaskCommentController extends Controller
         $this->response["message"] = __('strings.destroy_failed');
         return response()->json($this->response, 422);
     }
+
+     /**
+     *
+     * @OA\Get(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"tasks"},
+     *     path="/tasks/{taskID}/mail-thread",
+     *     operationId="showMailThread",
+     *     summary="Show Mail Thread",
+     *     description="Show Task",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="taskID", in="path", required=true, description="Task ID"),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Fetched data successfully"),
+     *              @OA\Property(
+     *                  property="data",
+     *                  type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example="1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="type",
+     *                         type="string",
+     *                         example="lead"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="subject",
+     *                         type="string",
+     *                         example="Task subject"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="description",
+     *                         type="string",
+     *                         example="Task description"
+     *                      ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     * )
+     */
+
+
+  public function getTaskMailThread(Request $request,$id){
+    $user = $request->user();
+    $user_id = $user->id;
+    $result = [];
+    $validator = Validator::make(['task_id' => $id], [
+        'task_id' => 'required|exists:App\Models\Task,id',
+    ]);
+    if ($validator->fails()) {
+        $this->response["code"] = "INVALID";
+        $this->response["message"] = $validator->errors()->first();
+        $this->response["errors"] = $validator->errors();
+        return response()->json($this->response, 422);
+    }
+    if ($id) {
+        $spam_trash_id = UserMailbox::select('mailbox_id','message_id')->where( function($query){ 
+         $query->where(['is_spam'=>1])->orWhere(['is_trash'=>1]);
+        })->where('user_id',$user_id)
+          ->get();
+          $spam_trash_ids = [];
+          $spamTrash_messageId = [];
+          foreach($spam_trash_id as $row){
+            $spam_trash_ids[] = $row->mailbox_id;
+            $spamTrash_messageId[] = $row->message_id ?? '';
+          }
+        $results = Mailbox::where(['task_id' => $id])->where('is_parent', 1)
+        ->whereNotIn('id',$spam_trash_ids)
+        ->whereNotIn('message_id',$spamTrash_messageId)->with([
+          'attachments_file',
+        //   'userMailbox' => function ($q) use ($user_id) {
+        //     $q->where(['user_id' => $user_id])->get();
+        //   },
+        //   'taskStatus',
+
+        ])->get();
+        // return  $results[0]['folder'];
+        //  return $results[0] ?? $results;
+        if(count($results) > 0){
+        if($results[0]['folder'] == 'INBOX'){
+        $username = $results[0]['to_email'];
+        }else if($results[0]['folder'] = 'Sent Mail'){
+            $username = $results[0]['from_email'];
+        }else{
+            $username = $results[0]['to_email'];
+        }
+
+        foreach ($results as $key => $res) {
+          $eamils_arr = [];
+          // if(!empty($res['in_reply_to'])){
+          $eamils_arr = Mailbox::whereIn('folder', ['INBOX', 'Sent Mail'])
+            ->where('message_id', '!=', $res['message_id'])
+            ->where(function ($query) use ($res) {
+              $query->orWhere('references', 'LIKE', '%' . $res['message_id'] . '%');
+              if (!empty($res['in_reply_to'])) {
+                $query->orWhere('in_reply_to', 'LIKE', '%' . $res['in_reply_to'] . '%')
+                  ->orWhere('message_id', 'LIKE', '%' . $res['in_reply_to'] . '%');
+              }
+            })
+            ->where(function ($query) use ($username) {
+              $query->where(['to_email' => $username])
+                ->orWhere(['from_email' => $username]);
+            })->with('attachments_file')
+            ->orderBy('u_date')->get();
+          // }    
+          if (count($eamils_arr) > 0) {
+            $result[] = ['parent' => $res, 'childs' => $eamils_arr];
+          } else {
+            $result[] = ['parent' => $res];
+          }
+        }
+            }
+
+        $this->response['status'] = true;
+        $this->response['message'] = 'data fetched';
+        $this->response['data'] = $result ?? '';
+        return response()->json($this->response);
+
+      }
+
+
+}
+
 }
