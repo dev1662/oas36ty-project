@@ -141,7 +141,7 @@ class TaskController extends Controller
                     $q->select('id', 'name');
                 },
                 'contactPerson' => function ($q) {
-                    $q->select('id', 'name');
+                    $q->select('id', 'name')->with(['emails']);
                 },
                 'users' => function ($q) {
                     $q->select('users.id', 'name','avatar');
@@ -719,8 +719,9 @@ class TaskController extends Controller
                         'Company' => function ($q) {
                             $q->select('id', 'name');
                         },
+                        'mailbox',
                         'contactPerson' => function ($q) {
-                            $q->select('id', 'name');
+                            $q->select('id', 'name')->with(['emails']);
                         },
                         'users' => function ($q) use($filters) {
                             
@@ -1065,8 +1066,9 @@ class TaskController extends Controller
             'Company' => function ($q) {
                 $q->select('id', 'name');
             },
+            'mailbox',
             'contactPerson' => function ($q) {
-                $q->select('id', 'name');
+                $q->select('id', 'name')->with(['emails']);
             },
             'users' => function ($q){
                 
@@ -1378,6 +1380,7 @@ return response()->json($this->response);
             'branch' => function ($q) {
                 $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
             },
+            'mailbox',
             'category' => function ($q) {
                 $q->select('id', 'name');
             },
@@ -1385,7 +1388,7 @@ return response()->json($this->response);
                 $q->select('id', 'name');
             },
             'contactPerson' => function ($q) {
-                $q->select('id', 'name');
+                $q->select('id', 'name')->with(['emails']);
             },
             'users' => function ($q) {
                 $q->select('users.id', 'name','avatar');
