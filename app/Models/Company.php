@@ -30,7 +30,8 @@ class Company extends Model implements Auditable
         'client_types',
         'annual_turn_over',
         'opening_balance',
-        'opening_bal_date'
+        'opening_bal_date',
+        'tan'
     ];
     public function task()
     {
