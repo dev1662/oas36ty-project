@@ -11,6 +11,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Api\Tenant\AccountController;
+use App\Http\Controllers\Api\Tenant\AllMasterController;
 use App\Http\Controllers\Api\Tenant\BankDetailsController;
 use App\Http\Controllers\Api\Tenant\SwitchOrganizationController;
 use App\Http\Controllers\Api\Tenant\BranchController;
@@ -191,6 +192,9 @@ Route::prefix('v1')->group(function(){
 
     Route::post('/apps/email/add-attach', [MailboxController::class, 'addAttachS3File']);
     Route::post('/apps/email/delete-attach', [MailboxController::class, 'deleteS3File']);
+
+                // -------------------------All Master ------------------
+                Route::apiResource('all-master', AllMasterController::class);
 
 });
 InitializeTenancyByRequestData::$onFail = function ($exception, $request, $next) {

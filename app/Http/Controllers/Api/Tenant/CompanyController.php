@@ -104,7 +104,7 @@ class CompanyController extends Controller
      *             @OA\Property(property="client_types", type="integer", example=1, description=""),
      *             @OA\Property(property="annual_turn_over", type="double", example=15478960.75, description=""),
      *             @OA\Property(property="opening_balance", type="double", example=150000, description=""),
-     *             @OA\Property(property="opening_bal_date", type="date", example= 2023-01-06, description=""),
+     *             @OA\Property(property="opening_bal_date", type="date", example="2023-01-06", description=""),
      *              @OA\Property(
      *                  property="password",
      *                  type="array",
@@ -307,7 +307,7 @@ class CompanyController extends Controller
      *             @OA\Property(property="client_types", type="integer", example=1, description=""),
      *             @OA\Property(property="annual_turn_over", type="double", example=15478960.75, description=""),
      *             @OA\Property(property="opening_balance", type="double", example=150000, description=""),
-     *             @OA\Property(property="opening_bal_date", type="date", example= 2023-01-06, description=""),
+     *             @OA\Property(property="opening_bal_date", type="date", example="2023-01-06", description=""),
      *         )
      *     ),
      *     @OA\Response(
