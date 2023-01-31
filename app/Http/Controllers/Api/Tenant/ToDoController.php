@@ -250,6 +250,7 @@ class ToDoController extends Controller
             'mentionUsers' => function($q){
                 $q->select('users.id', 'name', 'email', 'avatar');
             },
+            'audits'
         ])->latest()->get();
 
         $this->response["status"] = true;
