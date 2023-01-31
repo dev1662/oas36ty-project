@@ -546,7 +546,8 @@ class ProposalController extends Controller
 
         $category = Proposal::where('task_id',$id)->with([
             'proposalSection',
-            'proposalFees'
+            'proposalFees',
+            'audits'
             ])->get();
 
         $this->response["status"] = true;
