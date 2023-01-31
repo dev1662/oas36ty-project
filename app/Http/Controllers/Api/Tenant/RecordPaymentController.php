@@ -147,7 +147,7 @@ class RecordPaymentController extends Controller
         'invoice'=> function($q){
             $q->select('invoices.id','invoice_number','total_amt','amount');
         } 
-        ,'audits'])->orderBy('id', 'DESC')->first();
+        ,'audits'])->orderBy('id', 'DESC')->get();
 
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
