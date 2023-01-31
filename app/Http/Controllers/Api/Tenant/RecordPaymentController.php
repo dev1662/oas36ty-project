@@ -144,9 +144,7 @@ class RecordPaymentController extends Controller
         // return json_decode($request->header('currrent'))->tenant->organization->name;
 
         $invoices = RecordPayment::select('client_id')->with([
-        'recordPayInvoice' => function($q){
-            $q->select('paid_amount');
-        },
+        'recordPayInvoice',
         'invoice'=> function($q){
             $q->select('invoices.id','invoice_number','total_amt','amount');
         } 
