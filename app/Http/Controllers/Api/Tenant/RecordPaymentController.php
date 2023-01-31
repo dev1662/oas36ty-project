@@ -143,7 +143,10 @@ class RecordPaymentController extends Controller
         $this->switchingDB($dbname);
         // return json_decode($request->header('currrent'))->tenant->organization->name;
 
-        $invoices = RecordPayment::with(['recordPayInvoice',
+        $invoices = RecordPayment::select('client_id')->with([
+        'recordPayInvoice' => function($q){
+            $q->select('recordPayInvoices.id', 'paid_amount');
+        },
         'invoice'=> function($q){
             $q->select('invoices.id','invoice_number','total_amt','amount');
         } 
