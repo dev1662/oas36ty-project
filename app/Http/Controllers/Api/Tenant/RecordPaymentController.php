@@ -145,7 +145,7 @@ class RecordPaymentController extends Controller
 
         $invoices = RecordPayment::select('client_id')->with([
         'recordPayInvoice' => function($q){
-            $q->select('id', 'paid_amount');
+            $q->select('paid_amount');
         },
         'invoice'=> function($q){
             $q->select('invoices.id','invoice_number','total_amt','amount');
