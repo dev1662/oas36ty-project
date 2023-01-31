@@ -16,6 +16,8 @@ class CreateUserAccessPrivilegesTable extends Migration
         Schema::create('user_access_privileges', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_access_master_id')->nullable();
+            $table->bigInteger('user_role_id')->nullable();
+            $table->bigInteger('all_master_id')->nullable();
             $table->bigInteger('privilege_id')->nullable();
             $table->softDeletes();
             $table->timestamps();

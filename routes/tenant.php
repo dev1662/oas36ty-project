@@ -37,6 +37,7 @@ use App\Http\Controllers\Api\Tenant\ProposalController;
 use App\Http\Controllers\Api\Tenant\ProposalTemplateController;
 use App\Http\Controllers\Api\Tenant\RecordPaymentController;
 use App\Http\Controllers\Api\Tenant\StatusMasterController;
+use App\Http\Controllers\Api\Tenant\UserRoleController;
 use App\Models\Task;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -94,6 +95,8 @@ Route::middleware([
             Route::post('users/{id}/deactivate', [UserController::class, 'deactivate']);
             Route::get('/users/get-emails-to-assign', [UserController::class, 'get_emails_to_assign']);
             Route::apiResource('users', UserController::class);
+            Route::apiResource('users-role', UserRoleController::class);
+
             Route::get('contact-people/show_all', [ContactPersonController::class, 'showAll']);
 
             Route::post('users/re-invite', [UserController::class, 'reInvite']);

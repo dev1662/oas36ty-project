@@ -41,7 +41,8 @@ class User extends Authenticatable implements Syncable
         'branch_id',
         'phone',
         'location',
-        'designation_id'
+        'designation_id',
+        'user_role_id'
     ];
 
     /**
