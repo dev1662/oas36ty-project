@@ -21,5 +21,6 @@ class UserAccessPrivileges extends Model implements Auditable
         'user_access_master_id',
         'all_master_id',
         'privilege_id',
+        'status',
     ];
 }

@@ -19,6 +19,7 @@ class CreateUserAccessPrivilegesTable extends Migration
             $table->bigInteger('user_role_id')->nullable();
             $table->bigInteger('all_master_id')->nullable();
             $table->bigInteger('privilege_id')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');           
             $table->softDeletes();
             $table->timestamps();
         });

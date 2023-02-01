@@ -199,7 +199,7 @@ class UserRoleController extends Controller
      *              type="array",
      *              @OA\Items(
      *                @OA\property(
-     *                         property = "master_id",
+     *                         property = "all_master_id",
      *                         type="integer",
      *                         example="1"
      *                  ),
@@ -280,7 +280,7 @@ class UserRoleController extends Controller
             foreach($request->masterAccess as $rows){
                 $access_data = [
                     'user_role_id'=> $designation_det->id,
-                    'all_master_id'=>$rows['master_id'],
+                    'all_master_id'=>$rows['all_master_id'],
                     'status'=> UserAccessMaster::STATUS_ACTIVE,
                 ];
                 $master_data = new UserAccessMaster($access_data);
@@ -290,7 +290,7 @@ class UserRoleController extends Controller
                     'user_access_master_id' => $master_data->id,
                     'privilege_id' => $row['privileges_id'],
                     'user_role_id'=> $designation_det->id,
-                    'all_master_id'=>$rows['master_id'],
+                    'all_master_id'=>$rows['all_master_id'],
                 ];
                 UserAccessPrivileges::create($data_arr);
             }
@@ -425,6 +425,11 @@ class UserRoleController extends Controller
      *                         type="integer",
      *                         example="1"
      *                      ),
+     *                  @OA\Property(
+     *                         property="status",
+     *                         type="sting",
+     *                         example="active"
+     *                      ),
      *                    ),
      *                  ),
      *                 
@@ -475,6 +480,102 @@ class UserRoleController extends Controller
 
     }
 
+  
+   /**
+     *
+     * @OA\Put(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Users Role"},
+     *     path="/users-role/{userRole_id}",
+     *     operationId="putUserRole",
+     *     summary=" Dsiplay all Users Designation",
+     *     description="Users Role",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="userRole_id", in="path", required=true, description="UserRole ID"),
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="designation_name", type="string", example="Owner", description=""),
+     *              
+     *              @OA\Property(
+     *              property="masterAccess", 
+     *              type="array",
+     *              @OA\Items(
+     *                @OA\property(
+     *                         property = "all_master_id",
+     *                         type="integer",
+     *                         example="1"
+     *                  ),
+     *              @OA\property(
+     *                         property = "status",
+     *                         type="string",
+     *                         example="active"
+     *                          ),
+     *              @OA\Property(
+     *              property="privileges", 
+     *              type="array",
+     *              @OA\Items(
+     *                @OA\property(
+     *                         property = "privileges_id",
+     *                         type="integer",
+     *                         example="1"
+     *                          ),
+     *                  @OA\property(
+     *                         property = "status",
+     *                         type="string",
+     *                         example="active"
+     *                          ),
+     *                 
+     *                      ),
+     *                  ),
+     * 
+     *               ),
+     *             ),
+     * 
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Updated successfully"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="name",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected name is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
+  
+
     
     public function update(Request $request, $id)
     {
@@ -497,28 +598,45 @@ class UserRoleController extends Controller
 
         if($request->masterAccess){
             foreach($request->masterAccess as $rows){
+                $check_master = UserAccessMaster::where(['user_role_id'=>$id, 'all_master_id'=>$rows['all_master_id']])->first();
+                
                 $access_data = [
                     'user_role_id'=> $designation_det->id,
-                    'all_master_id'=>$rows['master_id'],
-                    'status'=> UserAccessMaster::STATUS_ACTIVE,
+                    'all_master_id'=>$rows['all_master_id'],
+                    'status'=> UserAccessMaster::STATUS_ACTIVE,      
                 ];
-                $master_data = new UserAccessMaster($access_data);
-                $master_data->save();
+                if($check_master){
+                // $master_data =  UserAccessMaster::find($rows['id']);
+                $check_master->update(['status'=>$rows['status']]);
+                }else{
+                    $master_data = new UserAccessMaster($access_data);
+                    $master_data->save();
+                }
                 foreach($rows['privileges'] as $row){
                 $data_arr = [
-                    'user_access_master_id' => $master_data->id,
+                    'user_access_master_id' => $master_data->id ?? $check_master->id,
                     'privilege_id' => $row['privileges_id'],
                     'user_role_id'=> $designation_det->id,
-                    'all_master_id'=>$rows['master_id'],
+                    'all_master_id'=>$rows['all_master_id'],
+                    'status' => UserAccessPrivileges::STATUS_ACTIVE,
                 ];
+                $check_priv = UserAccessPrivileges::where(['user_role_id'=>$id, 'all_master_id'=>$rows['all_master_id'],'privilege_id'=>$row['privileges_id']])->first();
+                if($check_priv){
+                    if($row['status']==='active'){
+                    UserAccessPrivileges::where('id',$check_priv->id)->update(['status'=>UserAccessPrivileges::STATUS_ACTIVE]);
+                    }else{
+                        UserAccessPrivileges::where('id',$check_priv->id)->update(['status'=>UserAccessPrivileges::STATUS_INACTIVE]);
+                    }
+                }else{
                 UserAccessPrivileges::create($data_arr);
+                }
             }
          }
 
         }
         
         $this->response["status"] = true;
-        $this->response["message"] = __('strings.store_success');
+        $this->response["message"] = __('strings.update_success');
         return response()->json($this->response);
     
     }
