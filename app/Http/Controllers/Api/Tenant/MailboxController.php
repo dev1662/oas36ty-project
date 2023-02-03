@@ -2088,22 +2088,22 @@ class MailboxController extends Controller
     $references =  $request->data['references'] ?? '';
     $email_replyTo =  $request->data['email_replyTo'] ?? '';
 
-    $attach = [];
-    $f = [];
-    if ($request->data['attach']) {
+    $attach = $request->data['attach_url'];
+        $f = [];
+    // if ($request->data['attach']) {
 
-      $base64String = $request->data['attach'];
+    //   $base64String = $request->data['attach'];
 
-      foreach ($base64String as $in => $file) {
-        $slug = time(); //name prefix
-        $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
+    //   foreach ($base64String as $in => $file) {
+    //     $slug = time(); //name prefix
+    //     $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
 
-        Storage::disk('s3')->put('email-files/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
+    //     Storage::disk('s3')->put('email-files/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
 
-        $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
-        $attach[] = $url ?? '';
-      }
-    }
+    //     $url = Storage::disk('s3')->url('email-files/' . $avatar['name']);
+    //     $attach[] = $url ?? '';
+    //   }
+    // }
 
 
     $outbound_id = $request->data['from']['id'];
