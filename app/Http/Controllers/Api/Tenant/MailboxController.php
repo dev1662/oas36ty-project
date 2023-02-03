@@ -975,8 +975,6 @@ class MailboxController extends Controller
     $attach = $request->data['attach_url'];
     $f = [];
 
-
-
     $outbound_id = $request->data['from']['id'];
     $centralUser =  CentralUser::where('email', json_decode($request->header('currrent'))->email)->first();
 
@@ -2158,10 +2156,12 @@ class MailboxController extends Controller
   public function deleteS3File(Request $request)
   {
     try {
-      $file_path = $request->data['attach_url'];
-      if (Storage::disk('s3')->exists($file_path)) {
-        $check = Storage::disk('s3')->delete($file_path);
-        if ($check) {
+      // https://oas36ty-files.s3.ap-south-1.amazonaws.com/email-files/wa1675422343.png
+      $filePath = $request->data['attach_url'];
+      $file_path = explode('.com/',$filePath);
+      if (Storage::disk('s3')->exists($file_path[1])) {
+        $check = Storage::disk('s3')->delete($file_path[1]);
+        if($check) {
           $this->response['status'] = true;
           $this->response['status_code'] = 200;
           $this->response['message'] = "Attachment deleted successfully";
@@ -2176,7 +2176,6 @@ class MailboxController extends Controller
         $this->response['message'] = "Something went wrong";
       }
 
-      return true;
     } catch (Exception $ex) {
       $this->response['status'] = false;
       $this->response['status_code'] = 500;
