@@ -2176,7 +2176,7 @@ class MailboxController extends Controller
         $this->response['message'] = "Something went wrong";
       }
 
-      return true;
+      // return true;
     } catch (Exception $ex) {
       $this->response['status'] = false;
       $this->response['status_code'] = 500;
