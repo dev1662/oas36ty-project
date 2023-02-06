@@ -396,7 +396,7 @@ class MailboxController extends Controller
         if (!$req->folder) {
           if ($req->q) {
 
-            $result[] = Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+            $result= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
           }
           if (!$req->q) {
             $spam_trash_id = UserMailbox::select('mailbox_id','message_id')->where( function($query){ 
