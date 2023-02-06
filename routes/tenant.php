@@ -83,9 +83,15 @@ Route::middleware([
             Route::apiResource('tasks', TaskController::class)->parameters([
                 'tasks' => 'id'
             ]);
+            
+            Route::post('/task-client/add-attach', [TaskController::class, 'addAttachS3File']);
+            Route::post('/task-client/delete-attach', [TaskController::class, 'deleteS3File']);
+            Route::post('/task-client/update-attach', [TaskController::class, 'updateAttachments']);
 
             Route::get('/tasks/{taskID}/mail-thread',[TaskCommentController::class,'getTaskMailThread']);
             Route::post('tasks/mark-as-completed-closed', [TaskController::class,'markasCompleteOrClosed']);
+            Route::post('/tasks/add-attachment', [TaskController::class,'uploadAttachments']);
+
             // Route::post('')
             Route::post('/sendEmail-outBound', [MailboxController::class, 'sendEmail']);
             Route::post('/fetch-latestEmails', [MailboxController::class, 'fetch_latestEmails']);

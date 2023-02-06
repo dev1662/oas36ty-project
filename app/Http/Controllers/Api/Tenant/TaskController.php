@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attachments;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +20,8 @@ use App\Models\TaskUser;
 use App\Models\User;
 use App\Models\UserMailbox;
 use DateTime;
+use Exception;
+use Illuminate\Support\Facades\Storage;
 use PDO;
 use Illuminate\Support\Str;
 
@@ -1690,5 +1693,172 @@ return response()->json($this->response);
         return response()->json($this->response, 422);
     }
 
+    private function getFileName($image, $name, $index)
+    {
+      list($type, $file) = explode(';', $image);
+      list(, $extension) = explode('/', $type);
+      list(, $file) = explode(',', $file);
+      // $result['name'] = 'oas36ty'.now()->timestamp . '.' . $extension;
+      $result['name'] = str_replace(' ', '', explode('.', $name)[0]) . now()->timestamp . '.' . $extension;
+      // $result['data'] = ;
+      $result['file'] = $file;
+      return $result;
+    }
+    
+  public function deleteS3File(Request $request)
+  {
+    try {
+      $filePath = $request->data['attach_url'];
+      $file_path = explode('.com/',$filePath);
+      if (Storage::disk('s3')->exists($file_path[1])) {
+        $check = Storage::disk('s3')->delete($file_path[1]);
+        if ($check) {
+          $this->response['status'] = true;
+          $this->response['status_code'] = 200;
+          $this->response['message'] = "Attachment deleted successfully";
+        } else {
+          $this->response['status'] = true;
+          $this->response['status_code'] = 201;
+          $this->response['message'] = "Something went wrong";
+        }
+      } else {
+        $this->response['status'] = true;
+        $this->response['status_code'] = 201;
+        $this->response['message'] = "Something went wrong";
+      }
+    } catch (Exception $ex) {
+      $this->response['status'] = false;
+      $this->response['status_code'] = 500;
+      $this->response['data'] = $ex;
+      $this->response['message'] = "Something went wrong";
+    }
+    return response()->json($this->response);
+  }
+
+  public function addAttachS3File(Request $request)
+  {
+    try {
+      if ($request->data['attach']) {
+
+        $base64String = $request->data['attach'];
+
+        foreach ($base64String as $in => $file) {
+          $slug = time(); //name prefix
+          $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
+
+          Storage::disk('s3')->put('task-files/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
+
+          $url = Storage::disk('s3')->url('task-files/' . $avatar['name']);
+          $attach[] = ['url' => $url ?? '', 'fileName' => $file['name'] ?? ''];
+        }
+
+        if ($attach) {
+          $this->response['status'] = true;
+          $this->response['status_code'] = 200;
+          $this->response['data'] = $attach;
+          $this->response['message'] = "Attachments uploaded successfully";
+        } else {
+          $this->response['status'] = true;
+          $this->response['status_code'] = 201;
+          $this->response['data'] = $attach;
+          $this->response['message'] = "Something went wrong";
+        }
+      }
+    } catch (Exception $ex) {
+      $this->response['status'] = false;
+      $this->response['status_code'] = 500;
+      $this->response['data'] = $ex;
+      $this->response['message'] = "Something went wrong";
+    }
+    return response()->json($this->response);
+  }
+
+
+
+   /**
+     *
+     * @OA\Post(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"tasks"},
+     *     path="/tasks/add-attachment",
+     *     operationId="postTaskAttach",
+     *     summary="Upload Task or Clients Attachments",
+     *     description="Upload Attachments",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="attachment", type="string", example="https://oas36ty-files.s3.ap-south-1.amazonaws.com/email-files/Screenshot_20230117_1115531674021484.png", description=""),
+     *             @OA\Property(property="type", type="string", example="company", description="company or task"),
+     *             @OA\Property(property="company_id", type="integer", example="1", description=""),
+     *             @OA\Property(property="task_id", type="integer", example="1", description=""),
+
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Created successfully"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="subject",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected subject is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
+
+  public function uploadAttachments(Request $request){
+    // $user = $request->user();
+    //    $user_id = $user->id;
+
+        $validator = Validator::make($request->all(), [
+            'attachment' => 'required',
+            'type' => 'required',
+            'company_id' => 'required|exists:App\Models\Company,id',
+            'task_id' => 'required|exists:App\Models\Task,id',
+        ]);
+        if ($validator->fails()) {
+            $this->response["code"] = "INVALID";
+            $this->response["message"] = $validator->errors()->first();
+            $this->response["errors"] = $validator->errors();
+            return response()->json($this->response, 422);
+        }
+        
+        $attachmet = new Attachments($request->all());
+        $attachmet->save();
+        $this->response["status"] = true;
+        $this->response["message"] = __('strings.store_success');
+        return response()->json($this->response);
+
+  }
      
 }
