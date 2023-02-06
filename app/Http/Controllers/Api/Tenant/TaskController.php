@@ -1845,7 +1845,7 @@ return response()->json($this->response);
         $validator = Validator::make($request->all(), [
             'attachment' => 'required',
             'type' => 'required',
-            'company_id' => 'required|exists:App\Models\Company,id',
+            // 'company_id' => 'required|exists:App\Models\Company,id',
             'task_id' => 'required|exists:App\Models\Task,id',
         ]);
         if ($validator->fails()) {
