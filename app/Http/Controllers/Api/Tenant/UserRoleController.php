@@ -612,6 +612,7 @@ class UserRoleController extends Controller
                     $master_data = new UserAccessMaster($access_data);
                     $master_data->save();
                 }
+                UserAccessPrivileges::where(['user_role_id'=>$id, 'all_master_id'=>$rows['all_master_id']])->update(['status'=>UserAccessPrivileges::STATUS_INACTIVE]);
                 foreach($rows['privileges'] as $row){
                 $data_arr = [
                     'user_access_master_id' => $master_data->id ?? $check_master->id,
