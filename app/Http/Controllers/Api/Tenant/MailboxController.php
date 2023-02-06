@@ -396,7 +396,7 @@ class MailboxController extends Controller
         if (!$req->folder) {
           if ($req->q) {
 
-            $result= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->with([
+            $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->with([
               'attachments_file',
               'userMailbox' => function ($q) use ($user_id) {
                 $q->where(['user_id' => $user_id])->get();
