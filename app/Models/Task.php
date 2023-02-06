@@ -83,4 +83,9 @@ class Task extends Model implements Auditable
     public function selfUser(){
         return $this->belongsTo(User::class,'user_id');
     }
+
+    public function attachments()
+    {
+        return $this->hasMany(Attachments::class);
+    }
 }

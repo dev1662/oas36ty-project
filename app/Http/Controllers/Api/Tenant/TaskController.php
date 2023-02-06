@@ -64,6 +64,7 @@ class TaskController extends Controller
      *     summary="Tasks",
      *     description="Tasks",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="route", in="path", required=true, description="tasks or leads"),
      *     @OA\Response(
      *          response=200,
      *          description="Successful Response",
@@ -152,6 +153,7 @@ class TaskController extends Controller
                 'comments' => function($q){
                     $q->select('id', 'comment', 'task_id', 'user_id', 'created_at');
                 },
+                'attachments',
                 'status_master',
                 'audits',
                 // 'priorities' => function($q){

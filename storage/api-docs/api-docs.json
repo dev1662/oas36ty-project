@@ -12455,6 +12455,12 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tenant--header"
+                    },
+                    {
+                        "name": "route",
+                        "in": "path",
+                        "description": "tasks or leads",
+                        "required": true
                     }
                 ],
                 "responses": {
