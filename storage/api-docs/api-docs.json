@@ -14091,6 +14091,16 @@
                                         "description": "",
                                         "type": "string",
                                         "example": "naveen.w3master@gmail.com"
+                                    },
+                                    "branch_id": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "user_role_id": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -14215,20 +14225,6 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "file"
-                                ],
-                                "properties": {
-                                    "file": {
-                                        "description": "file to upload",
-                                        "type": "file"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        },
                         "application/json": {
                             "schema": {
                                 "properties": {
@@ -14242,11 +14238,15 @@
                                         "type": "string",
                                         "example": "John Doe"
                                     },
-                                    "image": {
+                                    "branch_id": {
                                         "description": "",
-                                        "type": "file",
-                                        "format": "binary",
-                                        "example": ""
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "user_role_id": {
+                                        "description": "",
+                                        "type": "integer",
+                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -15464,7 +15464,7 @@
                 "tags": [
                     "Users Role"
                 ],
-                "summary": " Dsiplay all Users Designation",
+                "summary": "Update Users Designation",
                 "description": "Users Role",
                 "operationId": "putUserRole",
                 "parameters": [

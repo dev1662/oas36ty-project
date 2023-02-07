@@ -312,32 +312,7 @@ class UserController extends Controller
                 "user_emails" => $users_emails
                 //  "path" => $path
             ];
-        // $request_email = json_decode($request->header('currrent'))->email;
-
-        // $email_master = EmailsSetting::where('email', $request_email)->with(['emailInbound', 'emailOutbound'])->first();
-        // $data = [
-        //     'mail_host' => $email_master->emailInbound->mail_host,
-        //     'mail_transport' => $email_master->emailInbound->mail_transport,
-        //     'mail_encryption' => $email_master->emailInbound->mail_encryption,
-        //     'mail_username' => $email_master->emailInbound->mail_username,
-        //     'mail_password' => $email_master->emailInbound->mail_password,
-        //     'mail_port' => $email_master->emailInbound->mail_port,
-
-        // ];
-
-        //  $data = [
-        //     'mail_host' => "imap.gmail.com",
-        //     'mail_transport' => "imap",
-        //     'mail_encryption' => "ssl",
-        //     'mail_username' => " jakeraubin@gmail.com",
-        //     'mail_password' => "yfkfaxbeignwfebw",
-        //     'mail_port' => 993,
-
-        // ];
-        // $job= TestQueueRecieveEmail::dispatchAfterResponse($data);
-        // Log::info($job);
-        // dispatch(new TestQueueRecieveEmail($data))->afterResponse();
-        // Artisan::call('queue:listen');
+       
         return response()->json($this->response);
     }
 
@@ -357,6 +332,8 @@ class UserController extends Controller
      *             type="object",
      *             @OA\Property(property="name", type="string", example="Naveen", description=""),
      *             @OA\Property(property="email", type="string", example="naveen.w3master@gmail.com", description=""),
+     *             @OA\Property(property="branch_id", type="integer", example="1", description=""),
+     *             @OA\Property(property="user_role_id", type="integer", example="1", description=""),
      *         )
      *     ),
      *     @OA\Response(
@@ -407,13 +384,12 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        // return 'h';
-
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:64',
             // 'branch_id' => 'required',
             'email' => 'required|email|max:64|unique:App\Models\User,email',
-            // 'token' => 'required'
+            // 'token' => 'required',
+            'user_role_id'=>'required|exists:App\Models\UserRole,id'
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -450,6 +426,7 @@ class UserController extends Controller
             if ($request->name != $user->name)  $user->display_name = $request->name;
             $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
+            $user->user_role_id = $request->user_role_id;
             $user->update();
 
             if ($request->emails) {
@@ -534,6 +511,7 @@ class UserController extends Controller
             $user->avatar =  'https://ui-avatars.com/api/?name=' . $request->name;
             $user->status = User::STATUS_PENDING;
             $branch_id = $request->branch_id ?? 1; 
+            $user->user_role_id = $request->user_role_id;
             if($branch_id){
             $user->branch_id = $request->branch_id ?? 1;
             }
@@ -595,7 +573,7 @@ class UserController extends Controller
             });
 
 
-            $result = User::select('id', 'name', 'email', 'status')->find($user->id);
+            $result = User::select('id', 'name', 'email','user_role_id', 'status')->find($user->id);
         }
 
         $this->response["status"] = true;
@@ -794,22 +772,12 @@ class UserController extends Controller
      *     @OA\Parameter(name="userID", in="path", required=true, description="User ID"),
      *     @OA\RequestBody(
      *          required=true,
-     *  @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                     description="file to upload",
-     *                     property="file",
-     *                     type="file",
-     *                ),
-     *                 required={"file"}
-     *             )
-     *         ),
      *          @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="email", type="string", example="naveen.w3master@gmail.com", description=""),
      *             @OA\Property(property="name", type="string", example="John Doe", description=""),
-     *             @OA\Property(property="image", type="file", example="", description="", format="binary"),
+     *             @OA\Property(property="branch_id", type="integer", example="1", description=""),
+     *             @OA\Property(property="user_role_id", type="integer", example="1", description=""),
      * 
      *         )
      *     ),
@@ -881,6 +849,7 @@ class UserController extends Controller
             // 'image' => 'required',
             'name' => 'required',
             'emails' => 'nullable',
+            'user_role_id'=>'required|exists:App\Models\UserRole,id'
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -892,15 +861,7 @@ class UserController extends Controller
         $tenantName = $request->header('X-Tenant');
         $tenantName = config('tenancy.database.prefix') . strtolower($tenantName);
 
-        // return $request->image;
-
-        // $path = tenant_asset($stored);
         $member = User::find($id);
-        // if ($member->status == User::STATUS_PENDING) {
-        //     $this->response["message"] = __('strings.update_failed');
-        //     return response()->json($this->response, Response::HTTP_FORBIDDEN);
-        // }
-        // return $member;
 
         $oldCentralUser = tenancy()->central(function ($tenant) use ($member) {
             return CentralUser::where(['email' => $member->email])->first();
@@ -912,67 +873,25 @@ class UserController extends Controller
         if ($request->input('image')) {
 
             $base64String = $request->input('image');
-            // $base64String= "base64 string";
-
-            // $image = $request->image; // the base64 image you want to upload
+  
             $slug = time() . $user->id; //name prefix
             $avatar = $this->getFileName($base64String, $slug);
             Storage::disk('s3')->put('user-images/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
             $url = Storage::disk('s3')->url('user-images/' . $avatar['name']);
         }
 
-        // $p = Storage::disk('s3')->put('' . $imageName, $image, 'public'); 
-
-        // $image_url = Storage::disk()->url($imageName);
-
-        // $imgdata = base64_decode($base64File);
-        // $mime = getImageP
-
-        // $image_parts = explode(";base64,", $base64File);
-        // $image_type_aux = explode("image/", $image_parts[0]);
-        // $image_type = $image_type_aux[1];
-        // $image_base64 = base64_decode($image_parts[1]);
-
-        // $this->uploadFile();
-        // $path = "user-images/";
-        //  $request->request->add(['image' => $base64File]);
-        // return $request->all();
-        // $check = $this->uploadFile('', 'image', $path);
-        // return $check;
-        // decode the base64 file
-        // $fileData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64File));
-        // // return $fileData;
-        // // save it to temporary dir first.
-        // return file_get_contents($fileData);
-        // $tmpFilePath = sys_get_temp_dir() . '/' . Str::uuid()->toString();
-        // // file_put_contents($tmpFilePath, $fileData);
-        // // this just to help us get file info.
-        // $tmpFile = new FileFile($tmpFilePath);
-
-        // $file = new UploadedFile(
-        //     // $tmpFile->getPathname(),
-        //     $tmpFile->getFilename(),
-        //     $tmpFile->getMimeType(),
-        //     0,
-        //     true // Mark it as test, since the file isn't from real HTTP POST.
-        // );
-        // return $file;
-        // if ($oldCentralUserTenantsCount == 1) {
         $member->name = $request->name;
         $member->branch_id = $request->branch_id ?? 1;
+        $member->user_role_id = $request->user_role_id;
+
 
         if ($request->input('image')) {
 
             $member->avatar = $url;
-            // }
-            // $member->avatar = $imageName;
 
         }
         $member->update();
-        // $tenant = $oldCentralUser->tenants()->find($tenantName);
-        // return $id;
         $this->switchingDB($tenantName);
-        // $user = $tenant->run(function ($tenant) use ($oldCentralUser, $request) {
         if ($request->emails) {
 
 
@@ -989,37 +908,8 @@ class UserController extends Controller
 
                     ]);
                 }
-                // if(count($exists_user_emails) >= 1){
-                //     $this->response['status'] = true;
-                //     $this->response["message"] = 'Emails are already assigned choose another email';
-                //     return response()->json($this->response,200);
-                // }else{
-                //     // $email_of_user = User::where('id', $id)->first()
-                //     UserEmail::create([
-                //        'user_id' => $id,
-                //        'emails_setting_id' => $all_email['id']
-
-                //    ]);
-
-                // }
-
             }
         }
-
-
-
-
-        // });
-        //else {
-
-
-
-        // if ($oldCentralUserTenantsCount == 1) {
-        //     tenancy()->central(function ($tenant) use ($oldCentralUser) {
-        //         $oldCentralUser->delete();
-        //     });
-        // }
-        //}
 
         $this->response["status"] = true;
         $this->response["message"] = [

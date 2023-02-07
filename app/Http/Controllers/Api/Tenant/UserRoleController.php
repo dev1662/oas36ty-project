@@ -264,7 +264,7 @@ class UserRoleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'designation_name' => 'required',
+            'designation_name' => 'required|unique:App\Models\UserRole,designation_name',
            ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
@@ -488,7 +488,7 @@ class UserRoleController extends Controller
      *     tags={"Users Role"},
      *     path="/users-role/{userRole_id}",
      *     operationId="putUserRole",
-     *     summary=" Dsiplay all Users Designation",
+     *     summary="Update Users Designation",
      *     description="Users Role",
      *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
      *     @OA\Parameter(name="userRole_id", in="path", required=true, description="UserRole ID"),
@@ -581,7 +581,7 @@ class UserRoleController extends Controller
     {
         $validator = Validator::make(['userRole_id' => $id] + $request->all(), [
             'userRole_id' => 'required|exists:App\Models\UserRole,id',
-            'designation_name'=>'required',
+            'designation_name'=>'required|unique:App\Models\UserRole,designation_name,'.$id,
         ]);
         if ($validator->fails()) {
             $this->response["code"] = "INVALID";
