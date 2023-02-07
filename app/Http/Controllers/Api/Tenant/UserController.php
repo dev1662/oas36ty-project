@@ -299,7 +299,7 @@ class UserController extends Controller
             }
         ])->get();
 
-        $users =  User::with(['branches'])->select('id', 'name', 'avatar','branch_id', 'email', 'status','phone','location','designation_id')->where(function ($q) use ($search) {
+        $users =  User::with(['branches'])->select('id', 'name', 'avatar','branch_id', 'email', 'status','phone','location','designation_id','user_role_id')->where(function ($q) use ($search) {
             if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
         })->latest()->get();
 
