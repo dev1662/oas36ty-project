@@ -287,7 +287,7 @@ class UserController extends Controller
         // return $path;
         $users_emails = UserEmail::with([
             'users' => function ($q) use ($search) {
-                $q->select('id', 'name', 'avatar', 'email', 'status','phone','location','designation_id')
+                $q->select('id', 'name', 'avatar', 'email', 'status','phone','location','designation_id','user_role_id')
                     // ->where(function ($q) use ($search) {
                     //     if ($search) $q->where('name', 'like', '%' . $search . '%')->orWhere('email', 'like', '%' . $search . '%');
                     // })
