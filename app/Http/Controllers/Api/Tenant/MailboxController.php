@@ -227,8 +227,48 @@ class MailboxController extends Controller
         // $result[$index]= Mailbox::where('to_email', $username->mail_username)->orderBy('id', 'DESC')->paginate(20);
         if ($req->folder == 'sent') {
           if ($req->q) {
+            $results= Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('from_email', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)
+            // ->with([
+            //   'attachments_file',
+            //   'userMailbox' => function ($q) use ($user_id) {
+            //     $q->where(['user_id' => $user_id])->get();
+            //   },
+            //   'taskStatus',
 
-            $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent', 1)->where('subject', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
+            // ])
+            ->get();
+            // return $results;
+            foreach ($results as $key => $res) {
+              $eamils_arr = [];
+              // if(!empty($res['in_reply_to'])){
+              $eamils_arr = Mailbox::whereIn('folder', ['INBOX', 'Sent Mail'])
+                ->where('message_id', '!=', $res['message_id'])
+                ->where(function ($query) use ($res) {
+                  $query->orWhere('references', 'LIKE', '%' . $res['message_id'] . '%');
+                  if (!empty($res['in_reply_to'])) {
+                    $query->orWhere('in_reply_to', 'LIKE', '%' . $res['in_reply_to'] . '%')
+                      ->orWhere('message_id', 'LIKE', '%' . $res['in_reply_to'] . '%');
+                  }
+                })
+                ->where(function ($query) use ($username) {
+                  $query->where(['to_email' => $username->mail_username])
+                    ->orWhere(['from_email' => $username->mail_username]);
+                })->with('attachments_file')
+                ->orderBy('u_date')->get();
+              // }    
+              if (count($eamils_arr) > 0) {
+                // if($res['ccaddress']){
+
+                // }
+                // if($eamils_arr['ccaddress']){
+
+                // }
+                $result[] = ['parent' => $res, 'childs' => $eamils_arr];
+              } else {
+                $result[] = ['parent' => $res];
+              }
+            }
+            // $results = Mailbox::where(['from_email' => $username->mail_username, 'folder' => 'Sent Mail'])->where('is_parent', 1)->where('subject', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)->get();
           }
           if (!$req->q) {
 
@@ -396,15 +436,15 @@ class MailboxController extends Controller
         if (!$req->folder) {
           if ($req->q) {
 
-            $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('subject', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)
-            // ->with([
-            //   'attachments_file',
-            //   'userMailbox' => function ($q) use ($user_id) {
-            //     $q->where(['user_id' => $user_id])->get();
-            //   },
-            //   'taskStatus',
+            $results= Mailbox::where(['to_email' => $username->mail_username, 'folder' => 'INBOX'])->where('to_email', 'LIKE', '%' . $req->q . '%')->orderBy('u_date', 'desc')->offset($offset)->limit(20)
+            ->with([
+              'attachments_file',
+              'userMailbox' => function ($q) use ($user_id) {
+                $q->where(['user_id' => $user_id])->get();
+              },
+              'taskStatus',
 
-            // ])
+            ])
             ->get();
             // return $results;
             foreach ($results as $key => $res) {
