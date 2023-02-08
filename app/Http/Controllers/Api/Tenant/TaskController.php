@@ -1791,8 +1791,16 @@ return response()->json($this->response);
      *          required=true,
      *          @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="attachment", type="string", example="https://oas36ty-files.s3.ap-south-1.amazonaws.com/email-files/Screenshot_20230117_1115531674021484.png", description=""),
-     *             @OA\Property(property="type", type="string", example="company", description="company or task"),
+     *             @OA\Property(
+     *              property="attachment",
+     *               type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                        property="attachment_url",
+     *                        type="string", example="https://oas36ty-files.s3.ap-south-1.amazonaws.com/email-files/Screenshot_20230117_1115531674021484.png", description=""),
+     *            ),
+     *          ),
+     *           @OA\Property(property="type", type="string", example="company", description="company or task"),
      *             @OA\Property(property="company_id", type="integer", example="1", description=""),
      *             @OA\Property(property="task_id", type="integer", example="1", description=""),
 
@@ -1839,9 +1847,7 @@ return response()->json($this->response);
      */
 
   public function uploadAttachments(Request $request){
-    // $user = $request->user();
-    //    $user_id = $user->id;
-
+   
         $validator = Validator::make($request->all(), [
             'attachment' => 'required',
             'type' => 'required',
@@ -1854,9 +1860,18 @@ return response()->json($this->response);
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
+        if($request->attachment){
+            foreach($request->attachment as $row){
+                $data_arr = [
+                    'attachment'=>$row['attachment_url'],
+                    'type'=> $request->type,
+                    'task_id'=>$request->task_id,
+                    'company_id'=>$request->company_id ?? ''
+                ];
+                Attachments::create($data_arr);
+            }
+        }
         
-        $attachmet = new Attachments($request->all());
-        $attachmet->save();
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);

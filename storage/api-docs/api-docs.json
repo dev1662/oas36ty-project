@@ -13119,9 +13119,17 @@
                             "schema": {
                                 "properties": {
                                     "attachment": {
-                                        "description": "",
-                                        "type": "string",
-                                        "example": "https://oas36ty-files.s3.ap-south-1.amazonaws.com/email-files/Screenshot_20230117_1115531674021484.png"
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "attachment_url": {
+                                                    "description": "",
+                                                    "type": "string",
+                                                    "example": "https://oas36ty-files.s3.ap-south-1.amazonaws.com/email-files/Screenshot_20230117_1115531674021484.png"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     },
                                     "type": {
                                         "description": "company or task",

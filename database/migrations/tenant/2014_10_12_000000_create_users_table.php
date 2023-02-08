@@ -25,7 +25,7 @@ class CreateUsersTable extends Migration
             $table->bigInteger('branch_id')->nullable();
             $table->bigInteger('phone')->nullable();
             $table->string('location')->nullable();
-            $table->bigInteger('designation_id')->default(1)->nullable();
+            $table->bigInteger('user_role_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
