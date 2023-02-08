@@ -448,6 +448,7 @@ class TaskCommentController extends Controller
      *     ),
      * )
      */
+
     public function update(Request $request, $taskID, $taskCommentID)
     {
         $validator = Validator::make(['task_id' => $taskID, 'task_comment_id' => $taskCommentID] + $request->all(), [
@@ -666,7 +667,7 @@ class TaskCommentController extends Controller
 
         ])->get();
         // return  $results[0]['folder'];
-        //  return $results[0] ?? $results;
+        //  return $results;
         if(count($results) > 0){
         if($results[0]['folder'] == 'INBOX'){
         $username = $results[0]['to_email'];
@@ -712,4 +713,91 @@ class TaskCommentController extends Controller
 
 }
 
+
+    /**
+     *
+     * @OA\Put(
+     *     security={{"bearerAuth":{}}},
+     *     tags={"taskComments"},
+     *     path="/mail-to-comments/{mailbox_id}",
+     *     operationId="putMailToComment",
+     *     summary="Update mail to Comments",
+     *     description="Update Mail to Comments",
+     *     @OA\Parameter(ref="#/components/parameters/tenant--header"),
+     *     @OA\Parameter(name="mailbox_id", in="path", required=true, description="Mailbox ID"),
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="task_id", type="integer", example="1", description=""),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successful Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Updated successfully"),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Unauthorized Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Unauthorized access!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=403,
+     *          description="Forbidden Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Forbidden!")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response=422,
+     *          description="Validation Response",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="boolean", example=false),
+     *              @OA\Property(property="message", type="string", example="Something went wrong!"),
+     *              @OA\Property(property="code", type="string", example="INVALID"),
+     *              @OA\Property(
+     *                  property="errors",
+     *                  type="object",
+     *                      @OA\Property(
+     *                  property="task_id",
+     *                  type="array",
+     *                  @OA\Items(
+     *                         type="string",
+     *                         example="The selected task_id is invalid."
+     *                  ),
+     *              ),
+     *                  ),
+     *              ),
+     *          )
+     *     ),
+     * )
+     */
+
+public function mailToComments(Request $request, $id){
+    $user = $request->user();
+    $user_id = $user->id;
+    $result = [];
+    $validator = Validator::make(['mailbox_id' => $id] + $request->all(), [
+        'mailbox_id'=>'required|exists:App\Models\Mailbox,id',
+        'task_id' => 'required|exists:App\Models\Task,id',
+    ]);
+    if ($validator->fails()) {
+        $this->response["code"] = "INVALID";
+        $this->response["message"] = $validator->errors()->first();
+        $this->response["errors"] = $validator->errors();
+        return response()->json($this->response, 422);
+    }
+
+     Mailbox::where('id',$id)->update(['task_id'=>$request->task_id]);
+     $this->response['status'] = true;
+        $this->response['message'] =  __('strings.update_success');
+        return response()->json($this->response);
+
+}
 }

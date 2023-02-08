@@ -89,6 +89,8 @@ Route::middleware([
             Route::post('/task-client/update-attach', [TaskController::class, 'updateAttachments']);
 
             Route::get('/tasks/{taskID}/mail-thread',[TaskCommentController::class,'getTaskMailThread']);
+            Route::put('/mail-to-comments/{mailbox_id}',[TaskCommentController::class,'mailToComments']);
+
             Route::post('tasks/mark-as-completed-closed', [TaskController::class,'markasCompleteOrClosed']);
             Route::post('/tasks/add-attachment', [TaskController::class,'uploadAttachments']);
 
