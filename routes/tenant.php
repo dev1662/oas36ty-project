@@ -31,6 +31,7 @@ use App\Http\Controllers\Api\Tenant\MailConfigController;
 use App\Http\Controllers\Api\Tenant\EmailOutboundController;
 use App\Http\Controllers\Api\Tenant\EmailInboundController;
 use App\Http\Controllers\Api\Tenant\EmailMasterController;
+use App\Http\Controllers\Api\Tenant\EmailTemplateController;
 use App\Http\Controllers\Api\Tenant\InvoiceController;
 use App\Http\Controllers\Api\Tenant\MailboxController;
 use App\Http\Controllers\Api\Tenant\ProposalController;
@@ -153,7 +154,8 @@ Route::middleware([
             Route::apiResource('proposal-templates', ProposalTemplateController::class);
             Route::apiResource('proposal', ProposalController::class);
             Route::apiResource('record-payment',RecordPaymentController::class);
-
+        //    --------------------Email Template-----------------
+        Route::apiResource('email-template', EmailTemplateController::class);
 
 
 
