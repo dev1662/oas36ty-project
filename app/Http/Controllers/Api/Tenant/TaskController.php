@@ -1871,8 +1871,9 @@ return response()->json($this->response);
                 Attachments::create($data_arr);
             }
         }
-        
+        $result = Attachments::where(['task_id'=>$request->task_id,'type'=> $request->type])->get();
         $this->response["status"] = true;
+        $this->response['data'] = $result;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
 
