@@ -38,6 +38,7 @@ use App\Http\Controllers\Api\Tenant\ProposalController;
 use App\Http\Controllers\Api\Tenant\ProposalTemplateController;
 use App\Http\Controllers\Api\Tenant\RecordPaymentController;
 use App\Http\Controllers\Api\Tenant\StatusMasterController;
+use App\Http\Controllers\Api\Tenant\SubtaskTemplateController;
 use App\Http\Controllers\Api\Tenant\UserRoleController;
 use App\Models\Task;
 use Illuminate\Support\Facades\Artisan;
@@ -156,6 +157,7 @@ Route::middleware([
             Route::apiResource('record-payment',RecordPaymentController::class);
         //    --------------------Email Template-----------------
         Route::apiResource('email-template', EmailTemplateController::class);
+        Route::apiResource('subtask-templates', SubtaskTemplateController::class);
 
 
 
