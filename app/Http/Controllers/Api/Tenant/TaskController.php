@@ -15,8 +15,13 @@ use App\Models\Category;
 use App\Models\Company;
 use App\Models\ContactPerson;
 use App\Models\Mailbox;
+use App\Models\Proposal;
+use App\Models\ProposalFees;
+use App\Models\ProposalSection;
 use App\Models\TaskComment;
 use App\Models\TaskUser;
+use App\Models\ToDo;
+use App\Models\ToDoMention;
 use App\Models\User;
 use App\Models\UserMailbox;
 use DateTime;
@@ -1271,6 +1276,165 @@ return response()->json($this->response);
         // return $request->users[$i];
         $task->save();
       $task_det = $task; 
+     
+      if($request->type == 'task'){
+        // create proposals, create todos, store attachments
+        if($request->proposals){
+            $proposal = new Proposal($request->all());
+            $proposal->task_id = $task_det->id;
+            $proposal->proposal_date = $request->proposals['proposal_date'];
+            $proposal->client_name = $request->proposals['client_name'];
+            $proposal->concerned_person = $request->proposals['concerned_person'];
+            $proposal->address = $request->proposals['address'];
+            $proposal->subject = $request->subject;
+            $proposal->prephase = $request->proposals['prephase'];
+            $proposal->internal_notes = $request->proposals['internal_notes'];
+            $proposal->footer_title = $request->proposals['footer_title'];
+            $proposal->footer_description = $request->proposals['footer_description'];
+
+            $proposal->save();
+   
+           if($request->proposals['proposalSection'] ){
+               foreach($request->proposals['proposalSection'] as $row){
+                   $data_arr = [
+                       'proposal_id' => $proposal->id,
+                       'title' => $row['title'],
+                       'description' => $row['description']
+                   ];
+                   ProposalSection::create($data_arr);
+               }
+           }
+   
+           if($request->proposals['proposalFees'] ){
+               foreach($request->proposals['proposalFees'] as $row){
+                   $data_arr = [
+                       'proposal_id' => $proposal->id,
+                       'description' => $row['description'],
+                       'amount' => $row['amount'],
+                   ];
+                   ProposalFees::create($data_arr);
+               }
+           }
+           if($request->type){
+               $check_client = Task::where(['id'=> $task_det->id, 'company_id' => null])->get();
+               if(count($check_client) > 0){
+   
+               
+               $data_to_update = [
+                   'type' => 'task',
+                   'company_id' => $request->proposals['client_id']
+               ];
+               Task::where('id', $task_det->id)->update($data_to_update);
+           }else{
+               $data_to_update = [
+                   'type' => 'task',
+                   // 'company_id' => $request->client_id
+               ];
+               Task::where('id', $task_det->id)->update($data_to_update);
+           }
+        }
+        if($request->subtask){
+            $todos = $request->subtask['c_todo'];
+            $taskID = $task_det->id;
+            $user_ids = $request->user_ids;
+            
+            // $arr = [];
+            foreach ($todos as $key => $todo) {
+                // preg_match_all("/(@\w+)/", $todo['subtask_assignee'], $matches);
+                $real_todo = $todo;//trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
+            // return $matches;
+            $todo_array = [
+                // 'user_id' => Auth::user()->id,
+                'task_id' => $taskID,
+                'to_do' => $real_todo,
+                // 'mention_users' => $request->mention_users
+            ];
+        
+            $toDo = new ToDo($todo_array);
+            
+            $toDo->status = ToDo::STATUS_NOT_DONE;
+            $user->toDos()->save($toDo);
+        
+            if(!empty($user_ids)){
+                foreach ($user_ids as $key => $users) {
+                
+                    // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+                    // $toDo->mentionUsers()->sync($users['id']);
+                    ToDoMention::create([
+                        'to_do_id' => $toDo->id,
+                        'user_id' => $users['id']
+                    ]);
+                    
+                }
+            }
+        }
+        }
+    }
+        if($request->task_attachments){
+            foreach($request->task_attachments as $row){
+                $data_arr = [
+                    'attachment'=>$row['url'],
+                    'type'=> $request->type,
+                    'task_id'=>$task_det->id,
+                    'company_id'=>$request->company_id['id'] ?? ''
+                ];
+                Attachments::create($data_arr);
+            }
+        }
+      }else{
+        // create todos, store attachments
+       
+        if($request->subtask){
+            $todos = $request->subtask['c_todo'];
+            $taskID = $task_det->id;
+            $user_ids = $request->user_ids;
+            
+            // $arr = [];
+            foreach ($todos as $key => $todo) {
+                // preg_match_all("/(@\w+)/", $todo['subtask_assignee'], $matches);
+                $real_todo = $todo;//trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
+            // return $matches;
+            $todo_array = [
+                // 'user_id' => Auth::user()->id,
+                'task_id' => $taskID,
+                'to_do' => $real_todo,
+                // 'mention_users' => $request->mention_users
+            ];
+        
+            $toDo = new ToDo($todo_array);
+            
+            $toDo->status = ToDo::STATUS_NOT_DONE;
+            $user->toDos()->save($toDo);
+        
+            if(!empty($user_ids)){
+                foreach ($user_ids as $key => $users) {
+                
+                    // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+                    // $toDo->mentionUsers()->sync($users['id']);
+                    ToDoMention::create([
+                        'to_do_id' => $toDo->id,
+                        'user_id' => $users['id']
+                    ]);
+                    
+                }
+            }
+            }
+        }
+        
+        if($request->attachments){
+            foreach($request->task_attachments as $row){
+                $data_arr = [
+                    'attachment'=>$row['url'],
+                    'type'=> $request->type,
+                    'task_id'=>$task_det->id,
+                    'company_id'=>$request->company_id['id'] ?? ''
+                ];
+                Attachments::create($data_arr);
+            }
+        }
+      }
+
+
         if($request->users && count($request->users) > 0){
 
         
@@ -1287,6 +1451,7 @@ return response()->json($this->response);
             $taskss->users()->attach($request->users[$i]['id']);
         }
     }
+
 
         $data = [
             'type' => 'dont_delete',
@@ -1306,7 +1471,7 @@ return response()->json($this->response);
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
-    }
+      }
 
 
     /**
