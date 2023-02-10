@@ -21,6 +21,7 @@ use App\Models\User;
 use App\Models\UserMailbox;
 use DateTime;
 use Exception;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use PDO;
 use Illuminate\Support\Str;
@@ -320,6 +321,7 @@ class TaskController extends Controller
                             $q->where('users.id', 'LIKE', '%'. $filters['user']. '%')->select('users.id', 'name', 'avatar');
                         },
                         'audits',
+                        'attachments',
                         // 'priorities' => function($q){
                         //     $q->select('id', 'icons');
                         // },
@@ -749,6 +751,7 @@ class TaskController extends Controller
                         // 'priorities' => function($q){
                         //     $q->select('id', 'icons');
                         // },
+                        'attachments',
             
                     ])->latest()
                     //    ->orderBy('created_at', 'desc')
@@ -1209,6 +1212,7 @@ return response()->json($this->response);
 
     public function store(Request $request)
     {
+        // return Route::currentRouteName();
         $user = $request->user();
        $user_id = $user->id;
 
