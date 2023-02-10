@@ -1549,7 +1549,8 @@ return response()->json($this->response);
             return response()->json($this->response, 422);
         }
 
-        $task = Task::select('id', 'branch_id','user_id', 'category_id', 'mailbox_id','company_id', 'contact_person_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
+        
+        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type','mailbox_id', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
             'selfUser',
             'branch' => function ($q) {
                 $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
@@ -1568,8 +1569,9 @@ return response()->json($this->response);
                 $q->select('users.id', 'name','avatar');
             },
             'comments' => function($q){
-                $q->select('id', 'comment', 'task_id', 'user_id');
+                $q->select('id', 'comment', 'task_id', 'user_id', 'created_at');
             },
+            'attachments',
             'status_master',
             'audits',
         ])->find($id);
