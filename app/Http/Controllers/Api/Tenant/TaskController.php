@@ -40,7 +40,7 @@ class TaskController extends Controller
         $validator = Validator::make($req->all(), [
             'task_id' => 'required',
             'status.*' => 'required',
-            
+
             // 'selected_db' => 'required'
         ]);
         if ($validator->fails()) {
@@ -51,7 +51,7 @@ class TaskController extends Controller
         }
         Task::where('id', $req->task_id)->update([
             // 'type' => 'task'
-            'status_master_id'=> $req->status['id']
+            'status_master_id' => $req->status['id']
         ]);
         $this->response['status'] = true;
         $this->response['message'] = 'Task status changed';
@@ -125,57 +125,57 @@ class TaskController extends Controller
 
     public function index(Request $request)
     {
-        $route= $_GET['route'];
-        if($route == 'leads' || $route == 'leads-inner'){
+        $route = $_GET['route'];
+        if ($route == 'leads' || $route == 'leads-inner') {
             $route = 'lead';
-        }elseif($route == 'tasks' || $route == 'tasks-inner'){
-            $route= 'task';
+        } elseif ($route == 'tasks' || $route == 'tasks-inner') {
+            $route = 'task';
         }
 
-        
+
         $dbname = $request->header('X-Tenant');
-        $dbname = config('tenancy.database.prefix').strtolower($dbname);
+        $dbname = config('tenancy.database.prefix') . strtolower($dbname);
         // return   $dbname;
         $this->switchingDB($dbname);
-    
-            $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type','mailbox_id', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
-                'selfUser',
-                'branch' => function ($q) {
-                    $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
-                },
-                'mailbox',
-                'category' => function ($q) {
-                    $q->select('id', 'name');
-                },
-                'Company' => function ($q) {
-                    $q->select('id', 'name');
-                },
-                'contactPerson' => function ($q) {
-                    $q->select('id', 'name')->with(['emails']);
-                },
-                'users' => function ($q) {
-                    $q->select('users.id', 'name','avatar');
-                },
-                'comments' => function($q){
-                    $q->select('id', 'comment', 'task_id', 'user_id', 'created_at');
-                },
-                'attachments',
-                'status_master',
-                'audits',
-                // 'priorities' => function($q){
-                //     $q->select('id', 'icons');
-                // },
 
-            ])->latest()->get();
-        
+        $tasks = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'mailbox_id', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
+            'selfUser',
+            'branch' => function ($q) {
+                $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
+            },
+            'mailbox',
+            'category' => function ($q) {
+                $q->select('id', 'name');
+            },
+            'Company' => function ($q) {
+                $q->select('id', 'name');
+            },
+            'contactPerson' => function ($q) {
+                $q->select('id', 'name')->with(['emails']);
+            },
+            'users' => function ($q) {
+                $q->select('users.id', 'name', 'avatar');
+            },
+            'comments' => function ($q) {
+                $q->select('id', 'comment', 'task_id', 'user_id', 'created_at');
+            },
+            'attachments',
+            'status_master',
+            'audits',
+            // 'priorities' => function($q){
+            //     $q->select('id', 'icons');
+            // },
+
+        ])->latest()->get();
+
         // $user_details = CentralUser::find($)
 
         $this->response["status"] = true;
-        if($_GET['route'] == 'leads'){
+        if ($_GET['route'] == 'leads') {
 
             $this->response["message"] = 'Leads Fetched';
         }
-        if($_GET['route'] == 'tasks'){
+        if ($_GET['route'] == 'tasks') {
 
             $this->response["message"] = 'Tasks Fetched';
         }
@@ -185,13 +185,13 @@ class TaskController extends Controller
     public function filterData2(Request $request)
     {
         // return $request->all();
-        $route= $_GET['route'];
-        if($route == 'leads'){
+        $route = $_GET['route'];
+        if ($route == 'leads') {
             $route = 'lead';
-        }elseif($route == 'tasks'){
-            $route= 'task';
+        } elseif ($route == 'tasks') {
+            $route = 'task';
         }
-        
+
         $filters = [
             'branch' => $request->input('branch') ?? '',
             'category' => $request->input('category') ?? '',
@@ -203,27 +203,27 @@ class TaskController extends Controller
             'route' => $route,
             'user' => $request->input('user') ?? ''
         ];
-       
-            if($filters['branch']){
 
-                $filters['branch'] =  Branch::where('name','LIKE','%'.$filters['branch'].'%')->first()['id'];
-            }
-            if($filters['category']){
+        if ($filters['branch']) {
 
-                $filters['category'] =  Category::where('name','LIKE','%'.$filters['category'].'%')->first()['id'];
-            }
-            if($filters['company']){
+            $filters['branch'] =  Branch::where('name', 'LIKE', '%' . $filters['branch'] . '%')->first()['id'];
+        }
+        if ($filters['category']) {
 
-                $filters['company'] =  Company::where('name','LIKE','%'.$filters['company'].'%')->first()['id'];
-            }
-            if($filters['contact']){
+            $filters['category'] =  Category::where('name', 'LIKE', '%' . $filters['category'] . '%')->first()['id'];
+        }
+        if ($filters['company']) {
 
-                $filters['contact'] =  ContactPerson::where('name','LIKE','%'.$filters['contact'].'%')->first()['id'];
-            }
-            if($filters['user']){
+            $filters['company'] =  Company::where('name', 'LIKE', '%' . $filters['company'] . '%')->first()['id'];
+        }
+        if ($filters['contact']) {
 
-                $filters['user'] =  User::where('name','LIKE','%'.$filters['user'].'%')->first()['id'];
-            }
+            $filters['contact'] =  ContactPerson::where('name', 'LIKE', '%' . $filters['contact'] . '%')->first()['id'];
+        }
+        if ($filters['user']) {
+
+            $filters['user'] =  User::where('name', 'LIKE', '%' . $filters['user'] . '%')->first()['id'];
+        }
 
 
         // return $filters;
@@ -236,105 +236,105 @@ class TaskController extends Controller
         // })
 
 
-        
-        $tasks = Task::
-                   where('type', $route)
-                //    ->where('business_type','!=',3)
-                //    ->where('parent_id','=',null)
-                   ->where(function($query) use ($filters){
-                       if(!empty($filters['status'])){
-                        $query
 
-                        ->where('status_master_id','LIKE','%'.$filters['status'].'%');
-                    }
+        $tasks = Task::where('type', $route)
+            //    ->where('business_type','!=',3)
+            //    ->where('parent_id','=',null)
+            ->where(function ($query) use ($filters) {
+                if (!empty($filters['status'])) {
+                    $query
 
-                    if(!empty($filters['priority'])){
-                        $query
+                        ->where('status_master_id', 'LIKE', '%' . $filters['status'] . '%');
+                }
 
-                        ->where('priority',$filters['priority']);
-                    }   if(!empty($filters['branch'])){
-                        $query
+                if (!empty($filters['priority'])) {
+                    $query
 
-                        ->where('branch_id',$filters['branch']);
-                    }   if(!empty($filters['category'])){
-                        $query
+                        ->where('priority', $filters['priority']);
+                }
+                if (!empty($filters['branch'])) {
+                    $query
 
-                        ->where('category_id',$filters['category']);
-                    }
+                        ->where('branch_id', $filters['branch']);
+                }
+                if (!empty($filters['category'])) {
+                    $query
 
-                    if(!empty($filters['company'])){
-                        $query
-                        ->where('company_id',$filters['company']);
-                    }
-                    if(!empty($filters['contact'])){
-                        $query
-                        ->where('contact_person_id',$filters['contact']);
-                    }
-                    // if(!empty($filters['search'])){
-                    //     $query
-                    //     // ->where('description','LIKE','%'.$filters['search'].'%')
-                    //     ->where('subject','LIKE','%'.$filters['search'].'%');
-                    //     // ->where(function($query) use($filters){
-                    //     //     if(!empty($filters['search'])){
-                    //     //         $query->where('subject','LIKE','%'.$filters['search'].'%');
-                    //     //     }
-                    //     //     if(!empty($filters['search'])){
-                    //     //         $query->where('description','LIKE','%'.$filters['search'].'%');
-                    //     //     }
-                    //     // });
+                        ->where('category_id', $filters['category']);
+                }
 
-                    //     // ->where('description','LIKE','%'.$filters['search'].'%');
-                    // }
-                    if(!empty($filters['search'])){
-                        $search = $filters['search'];
+                if (!empty($filters['company'])) {
+                    $query
+                        ->where('company_id', $filters['company']);
+                }
+                if (!empty($filters['contact'])) {
+                    $query
+                        ->where('contact_person_id', $filters['contact']);
+                }
+                // if(!empty($filters['search'])){
+                //     $query
+                //     // ->where('description','LIKE','%'.$filters['search'].'%')
+                //     ->where('subject','LIKE','%'.$filters['search'].'%');
+                //     // ->where(function($query) use($filters){
+                //     //     if(!empty($filters['search'])){
+                //     //         $query->where('subject','LIKE','%'.$filters['search'].'%');
+                //     //     }
+                //     //     if(!empty($filters['search'])){
+                //     //         $query->where('description','LIKE','%'.$filters['search'].'%');
+                //     //     }
+                //     // });
 
-                        $query->where(function($query) use($search){
+                //     // ->where('description','LIKE','%'.$filters['search'].'%');
+                // }
+                if (!empty($filters['search'])) {
+                    $search = $filters['search'];
 
-                            $query->where('description','LIKE','%'.$search.'%')
-                            
-                            ->orWhere('subject', 'LIKE', '%'.$search.'%');
-                        });
-                    }
-                        //    ->where('priority', 'LIKE', '%'.$filters['priority'].'%')
-                        //    ->where('branch_id', $filters['branch'])
-                        //    ->where('category_id', $filters['category'])
-                        //    ->where('company_id', 'LIKE', '%'.$filters['company'].'%')
-                        //    ->where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')
-                        //    ->where('subject', 'LIKE', '%'.$filters['search'].'%')
-                        //    ->where('description', 'LIKE', '%'.$filters['search'].'%');
+                    $query->where(function ($query) use ($search) {
 
-                           
-                        //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
-                        //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
-                        //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
-                       })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
-                        'branch' => function ($q) {
-                            $q->select('id', 'name');
+                        $query->where('description', 'LIKE', '%' . $search . '%')
 
-                        },
-                        'category' => function ($q) {
-                            $q->select('id', 'name');
-                        },
-                        'Company' => function ($q) {
-                            $q->select('id', 'name');
-                        },
-                        'contactPerson' => function ($q) {
-                            $q->select('id', 'name');
-                        },
-                        'users' => function ($q) use($filters) {
-                            
-                            $q->where('users.id', 'LIKE', '%'. $filters['user']. '%')->select('users.id', 'name', 'avatar');
-                        },
-                        'audits',
-                        'attachments',
-                        // 'priorities' => function($q){
-                        //     $q->select('id', 'icons');
-                        // },
-            
-                    ])
-                    //    ->orderBy('created_at', 'desc')
-                       ->get();
-                    //    return $tasks;
+                            ->orWhere('subject', 'LIKE', '%' . $search . '%');
+                    });
+                }
+                //    ->where('priority', 'LIKE', '%'.$filters['priority'].'%')
+                //    ->where('branch_id', $filters['branch'])
+                //    ->where('category_id', $filters['category'])
+                //    ->where('company_id', 'LIKE', '%'.$filters['company'].'%')
+                //    ->where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')
+                //    ->where('subject', 'LIKE', '%'.$filters['search'].'%')
+                //    ->where('description', 'LIKE', '%'.$filters['search'].'%');
+
+
+                //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
+                //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
+                //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
+            })->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at')->with([
+                'branch' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'category' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'Company' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'contactPerson' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'users' => function ($q) use ($filters) {
+
+                    $q->where('users.id', 'LIKE', '%' . $filters['user'] . '%')->select('users.id', 'name', 'avatar');
+                },
+                'audits',
+                'attachments',
+                // 'priorities' => function($q){
+                //     $q->select('id', 'icons');
+                // },
+
+            ])
+            //    ->orderBy('created_at', 'desc')
+            ->get();
+        //    return $tasks;
         // return Task::where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')->first();
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -465,7 +465,7 @@ class TaskController extends Controller
         // }
         // $search = $request->search ?? null;
         // if($search){
-            
+
         //     $tasks = Task::where(['subject'=>$search, 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
         //         'branch' => function ($q) {
         //             $q->select('id', 'name');
@@ -543,7 +543,7 @@ class TaskController extends Controller
         //         'tasks' => function ($q) {
         //             $q->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at');
         //         },
-                
+
         //         // 'users' => function ($q) {
         //         //     $q->select('users.id', 'name');
         //         // },
@@ -576,22 +576,22 @@ class TaskController extends Controller
 
         //     // ])->latest()->get();
         // }
-       
+
         // $this->response["status"] = true;
         // $this->response["message"] = __('strings.get_all_success');
         // $this->response["data"] = $tasks ?? [];
         // return response()->json($this->response);
     }
-  public function filterData(Request $request)
+    public function filterData(Request $request)
     {
         // return $request->all();
-        $route= $_GET['route'];
-        if($route == 'leads'){
+        $route = $_GET['route'];
+        if ($route == 'leads') {
             $route = 'lead';
-        }elseif($route == 'tasks'){
-            $route= 'task';
+        } elseif ($route == 'tasks') {
+            $route = 'task';
         }
-        
+
         $filters = [
             'branch' => $request->input('branch') ?? '',
             'category' => $request->input('category') ?? '',
@@ -603,27 +603,27 @@ class TaskController extends Controller
             'route' => $route,
             'user' => $request->input('user') ?? ''
         ];
-       
-            if($filters['branch']){
 
-                $filters['branch'] =  Branch::where('name','LIKE','%'.$filters['branch'].'%')->first()['id'];
-            }
-            if($filters['category']){
+        if ($filters['branch']) {
 
-                $filters['category'] =  Category::where('name','LIKE','%'.$filters['category'].'%')->first()['id'];
-            }
-            if($filters['company']){
+            $filters['branch'] =  Branch::where('name', 'LIKE', '%' . $filters['branch'] . '%')->first()['id'];
+        }
+        if ($filters['category']) {
 
-                $filters['company'] =  Company::where('name','LIKE','%'.$filters['company'].'%')->first()['id'];
-            }
-            if($filters['contact']){
+            $filters['category'] =  Category::where('name', 'LIKE', '%' . $filters['category'] . '%')->first()['id'];
+        }
+        if ($filters['company']) {
 
-                $filters['contact'] =  ContactPerson::where('name','LIKE','%'.$filters['contact'].'%')->first()['id'];
-            }
-            // if($filters['user']){
+            $filters['company'] =  Company::where('name', 'LIKE', '%' . $filters['company'] . '%')->first()['id'];
+        }
+        if ($filters['contact']) {
 
-            //     $filters['user'] =  User::where('name','LIKE','%'.$filters['user'].'%')->first()['n'];
-            // }
+            $filters['contact'] =  ContactPerson::where('name', 'LIKE', '%' . $filters['contact'] . '%')->first()['id'];
+        }
+        // if($filters['user']){
+
+        //     $filters['user'] =  User::where('name','LIKE','%'.$filters['user'].'%')->first()['n'];
+        // }
 
 
         // return $filters;
@@ -635,133 +635,132 @@ class TaskController extends Controller
         //             });
         // })
 
-                
 
-        $tasks = Task::
-                   where('type', $route)
-                //    ->where('business_type','!=',3)
-                //    ->where('parent_id','=',null)
-                   ->where(function($query) use ($filters){
-                    //    if(!empty($filters['status'])){
-                    //     $query
 
-                    //     ->where('status','LIKE','%'.$filters['status'].'%');
-                    // }
+        $tasks = Task::where('type', $route)
+            //    ->where('business_type','!=',3)
+            //    ->where('parent_id','=',null)
+            ->where(function ($query) use ($filters) {
+                //    if(!empty($filters['status'])){
+                //     $query
 
-                    if(!empty($filters['priority'])){
-                        $query
+                //     ->where('status','LIKE','%'.$filters['status'].'%');
+                // }
 
-                        ->where('priority',$filters['priority']);
-                    }   if(!empty($filters['branch'])){
-                        $query
+                if (!empty($filters['priority'])) {
+                    $query
 
-                        ->where('branch_id',$filters['branch']);
-                    }   if(!empty($filters['category'])){
-                        $query
+                        ->where('priority', $filters['priority']);
+                }
+                if (!empty($filters['branch'])) {
+                    $query
 
-                        ->where('category_id',$filters['category']);
-                    }
+                        ->where('branch_id', $filters['branch']);
+                }
+                if (!empty($filters['category'])) {
+                    $query
 
-                    if(!empty($filters['company'])){
-                        $query
-                        ->where('company_id',$filters['company']);
-                    }
-                    if(!empty($filters['contact'])){
-                        $query
-                        ->where('contact_person_id',$filters['contact']);
-                    }
-                    // if(!empty($filters['search'])){
-                    //     $query
-                    //     // ->where('description','LIKE','%'.$filters['search'].'%')
-                    //     ->where('subject','LIKE','%'.$filters['search'].'%');
-                    //     // ->where(function($query) use($filters){
-                    //     //     if(!empty($filters['search'])){
-                    //     //         $query->where('subject','LIKE','%'.$filters['search'].'%');
-                    //     //     }
-                    //     //     if(!empty($filters['search'])){
-                    //     //         $query->where('description','LIKE','%'.$filters['search'].'%');
-                    //     //     }
-                    //     // });
+                        ->where('category_id', $filters['category']);
+                }
 
-                    //     // ->where('description','LIKE','%'.$filters['search'].'%');
-                    // }
-                    if(!empty($filters['search'])){
-                        $search = $filters['search'];
+                if (!empty($filters['company'])) {
+                    $query
+                        ->where('company_id', $filters['company']);
+                }
+                if (!empty($filters['contact'])) {
+                    $query
+                        ->where('contact_person_id', $filters['contact']);
+                }
+                // if(!empty($filters['search'])){
+                //     $query
+                //     // ->where('description','LIKE','%'.$filters['search'].'%')
+                //     ->where('subject','LIKE','%'.$filters['search'].'%');
+                //     // ->where(function($query) use($filters){
+                //     //     if(!empty($filters['search'])){
+                //     //         $query->where('subject','LIKE','%'.$filters['search'].'%');
+                //     //     }
+                //     //     if(!empty($filters['search'])){
+                //     //         $query->where('description','LIKE','%'.$filters['search'].'%');
+                //     //     }
+                //     // });
 
-                        $search_id = Str::contains($search,'#');
-                        if($search_id){
-                            $searchData1 = explode('#',$search);
-                            $serachdata2 = explode(',',$searchData1[1]);
-                            $query->whereIn('id',$serachdata2);
-                            // return $serachdata2;
-                        }else{
-                        $query->where(function($query) use($search){
+                //     // ->where('description','LIKE','%'.$filters['search'].'%');
+                // }
+                if (!empty($filters['search'])) {
+                    $search = $filters['search'];
 
-                            $query->where('description','LIKE','%'.$search.'%')
-                            ->orWhereHas('comments', function($q) use($search){
-                                $q->where('comment', 'LIKE', '%'.$search.'%');
-                            })
-                            // ->comments()->orWhere('comment','LIKE', '%'.$search.'%')
-                            ->orWhere('subject', 'LIKE', '%'.$search.'%');
+                    $search_id = Str::contains($search, '#');
+                    if ($search_id) {
+                        $searchData1 = explode('#', $search);
+                        $serachdata2 = explode(',', $searchData1[1]);
+                        $query->whereIn('id', $serachdata2);
+                        // return $serachdata2;
+                    } else {
+                        $query->where(function ($query) use ($search) {
+
+                            $query->where('description', 'LIKE', '%' . $search . '%')
+                                ->orWhereHas('comments', function ($q) use ($search) {
+                                    $q->where('comment', 'LIKE', '%' . $search . '%');
+                                })
+                                // ->comments()->orWhere('comment','LIKE', '%'.$search.'%')
+                                ->orWhere('subject', 'LIKE', '%' . $search . '%');
                         });
                     }
+                }
+                //    ->where('priority', 'LIKE', '%'.$filters['priority'].'%')
+                //    ->where('branch_id', $filters['branch'])
+                //    ->where('category_id', $filters['category'])
+                //    ->where('company_id', 'LIKE', '%'.$filters['company'].'%')
+                //    ->where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')
+                //    ->where('subject', 'LIKE', '%'.$filters['search'].'%')
+                //    ->where('description', 'LIKE', '%'.$filters['search'].'%');
 
-                    }
-                        //    ->where('priority', 'LIKE', '%'.$filters['priority'].'%')
-                        //    ->where('branch_id', $filters['branch'])
-                        //    ->where('category_id', $filters['category'])
-                        //    ->where('company_id', 'LIKE', '%'.$filters['company'].'%')
-                        //    ->where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')
-                        //    ->where('subject', 'LIKE', '%'.$filters['search'].'%')
-                        //    ->where('description', 'LIKE', '%'.$filters['search'].'%');
 
-                           
-                        //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
-                        //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
-                        //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
-                       })->select('id', 'branch_id', 'category_id', 'company_id','mailbox_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
-                        'selfUser',
-                        'branch' => function ($q) {
-                            $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
+                //    ->orWhere('company_name', 'LIKE', '%'.$filters.'%')
+                //    ->orWhere('email', 'LIKE', '%'.$filters.'%')
+                //    ->orWhere('mobile', 'LIKE', '%'.$filters.'%');
+            })->select('id', 'branch_id', 'category_id', 'company_id', 'mailbox_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
+                'selfUser',
+                'branch' => function ($q) {
+                    $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
+                },
+                'category' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'Company' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'mailbox',
+                'contactPerson' => function ($q) {
+                    $q->select('id', 'name')->with(['emails']);
+                },
+                'users' => function ($q) use ($filters) {
 
-                        },
-                        'category' => function ($q) {
-                            $q->select('id', 'name');
-                        },
-                        'Company' => function ($q) {
-                            $q->select('id', 'name');
-                        },
-                        'mailbox',
-                        'contactPerson' => function ($q) {
-                            $q->select('id', 'name')->with(['emails']);
-                        },
-                        'users' => function ($q) use($filters) {
-                            
-                            $q->where('users.name', 'LIKE', '%'. $filters['user']. '%')->select('users.id', 'name', 'avatar');
-                        },
-                        'status_master' => function($q) use($filters){
-                            $q->where('type', 'LIKE', '%' . $filters['status'].'%')->select('id', 'type');
-                        },
-                        'comments' ,
-                        // => function($q) use($filters){
-                        //     if(!empty($filters['search'])){
-                        //         $search = $filters['search'];
+                    $q->where('users.name', 'LIKE', '%' . $filters['user'] . '%')->select('users.id', 'name', 'avatar');
+                },
+                'status_master' => function ($q) use ($filters) {
+                    $q->where('type', 'LIKE', '%' . $filters['status'] . '%')->select('id', 'type');
+                },
+                'comments',
+                // => function($q) use($filters){
+                //     if(!empty($filters['search'])){
+                //         $search = $filters['search'];
 
-                        //         $q->where(function($q) use($search){
-                        //         $q->where('comment', 'LIKE', '%' . $search. '%')->select('id', 'comment', 'task_id', 'user_id');
-                        //         });
-                        //     }
-                        // },
-                        'audits',
-                        // 'priorities' => function($q){
-                        //     $q->select('id', 'icons');
-                        // },
-                        'attachments',
-            
-                    ])->latest()
-                    //    ->orderBy('created_at', 'desc')
-                       ->get();
-                    //    return $tasks;
+                //         $q->where(function($q) use($search){
+                //         $q->where('comment', 'LIKE', '%' . $search. '%')->select('id', 'comment', 'task_id', 'user_id');
+                //         });
+                //     }
+                // },
+                'audits',
+                // 'priorities' => function($q){
+                //     $q->select('id', 'icons');
+                // },
+                'attachments',
+
+            ])->latest()
+            //    ->orderBy('created_at', 'desc')
+            ->get();
+        //    return $tasks;
         // return Task::where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')->first();
         $this->response["status"] = true;
         $this->response["message"] = __('strings.get_all_success');
@@ -892,7 +891,7 @@ class TaskController extends Controller
         // }
         // $search = $request->search ?? null;
         // if($search){
-            
+
         //     $tasks = Task::where(['subject'=>$search, 'type' => $route])->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at')->with([
         //         'branch' => function ($q) {
         //             $q->select('id', 'name');
@@ -970,7 +969,7 @@ class TaskController extends Controller
         //         'tasks' => function ($q) {
         //             $q->select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status', 'created_at');
         //         },
-                
+
         //         // 'users' => function ($q) {
         //         //     $q->select('users.id', 'name');
         //         // },
@@ -1003,7 +1002,7 @@ class TaskController extends Controller
 
         //     // ])->latest()->get();
         // }
-       
+
         // $this->response["status"] = true;
         // $this->response["message"] = __('strings.get_all_success');
         // $this->response["data"] = $tasks ?? [];
@@ -1012,66 +1011,62 @@ class TaskController extends Controller
     public function inline_update(Request $request)
     {
         $valueOfassignedUser = 0;
-        
-        // return $original_date;
-        if($request->route == 'leads'){
-            $route = 'lead';
-        }else{
-            $route = 'task';
 
+        // return $original_date;
+        if ($request->route == 'leads') {
+            $route = 'lead';
+        } else {
+            $route = 'task';
         }
-        if($request->data){
+        if ($request->data) {
 
             $priority_id = $request->data['id'];
             $task_id = $request->data['task_id'];
-            
+
             $updateTask = Task::where(['type' =>  $route, 'id' => $task_id])->update([
                 'priority' => $priority_id
             ]);
         }
-        if($request->date){
+        if ($request->date) {
             $task_id = $request->date['task_id'];
-            if($request->date['due_date'] == 'today'){
+            if ($request->date['due_date'] == 'today') {
                 $datetime = new DateTime('today');
 
                 $due_date = $datetime->format('Y-m-d');
-
-            }else if($request->date['due_date'] == 'tomorrow'){
+            } else if ($request->date['due_date'] == 'tomorrow') {
                 $datetime = new DateTime('tomorrow');
 
                 $due_date = $datetime->format('Y-m-d');
-            }else{
+            } else {
                 $due_date = $request->date['due_date'];
             }
             $updateTask = Task::where(['type' =>  $route, 'id' => $task_id])->update([
                 'due_date' => $due_date
             ]);
         }
-        if($request->user_data){
+        if ($request->user_data) {
             $task_id = $request->user_data['task_id'];
             $user_id = $request->user_data['user_id'];
             $check_exists = TaskUser::where(['user_id' =>  $user_id, 'task_id' => $task_id])->first() ?? null;
-            if($check_exists){
+            if ($check_exists) {
                 $valueOfassignedUser = 1;
                 TaskUser::where(['user_id' => $user_id, 'task_id' => $task_id])->forceDelete();
-
             }
-            if(!$check_exists){
+            if (!$check_exists) {
 
                 TaskUser::create([
                     'user_id' => $user_id,
                     'task_id' => $task_id,
-                    
+
                 ]);
             }
-         
+
             // return $request->user_data;
         }
-        $get = Task::where('type' , $route)->select('id', 'branch_id', 'category_id', 'mailbox_id','company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at','updated_at')->with([
+        $get = Task::where('type', $route)->select('id', 'branch_id', 'category_id', 'mailbox_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
             'selfUser',
             'branch' => function ($q) {
                 $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
-
             },
             'category' => function ($q) {
                 $q->select('id', 'name');
@@ -1083,11 +1078,11 @@ class TaskController extends Controller
             'contactPerson' => function ($q) {
                 $q->select('id', 'name')->with(['emails']);
             },
-            'users' => function ($q){
-                
+            'users' => function ($q) {
+
                 $q->select('users.id', 'name', 'avatar');
             },
-            'comments' => function($q){
+            'comments' => function ($q) {
                 $q->select('id', 'comment', 'task_id', 'user_id', 'created_at', 'updated_at');
             },
             'status_master',
@@ -1097,21 +1092,20 @@ class TaskController extends Controller
             // },
 
         ])->latest()
-        //    ->orderBy('created_at', 'desc')
-           ->get();
+            //    ->orderBy('created_at', 'desc')
+            ->get();
         //    return $tasks;
-// return Task::where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')->first();
-$this->response["status"] = true;
-if($valueOfassignedUser == 1){
+        // return Task::where('contact_person_id', 'LIKE', '%'.$filters['contact'].'%')->first();
+        $this->response["status"] = true;
+        if ($valueOfassignedUser == 1) {
 
-    $this->response["message"] = 'User Unassigned';
-}
-if($valueOfassignedUser == 0){
-    $this->response["message"] = 'Leads Updated!';
-
-}
-$this->response["data"] = $get ?? [];
-return response()->json($this->response);
+            $this->response["message"] = 'User Unassigned';
+        }
+        if ($valueOfassignedUser == 0) {
+            $this->response["message"] = 'Leads Updated!';
+        }
+        $this->response["data"] = $get ?? [];
+        return response()->json($this->response);
         // return [$route, $priority_id];
     }
     // public function leads(Request $request)
@@ -1219,7 +1213,7 @@ return response()->json($this->response);
     {
         // return Route::currentRouteName();
         $user = $request->user();
-       $user_id = $user->id;
+        $user_id = $user->id;
 
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required',
@@ -1244,13 +1238,11 @@ return response()->json($this->response);
 
         $task = new Task();
         $branch_id_new_one = $request->branch_id['b_id'] ?? null;
-        if($branch_id_new_one){
+        if ($branch_id_new_one) {
 
             $task->branch_id = (int)$request->branch_id['b_id'] ?? null;
-        }
-        else{
+        } else {
             $task->branch_id = $request->branch_id['id'] ?? null;
-
         }
         // return $task;
 
@@ -1275,182 +1267,180 @@ return response()->json($this->response);
         $task->status_master_id = $request->status['id'] ?? 1;
         // return $request->users[$i];
         $task->save();
-      $task_det = $task; 
-     
-      if($request->type == 'task'){
-        // create proposals, create todos, store attachments
-        if($request->proposals){
-            $proposal = new Proposal($request->all());
-            $proposal->task_id = $task_det->id;
-            $proposal->proposal_date = $request->proposals['proposal_date'];
-            $proposal->client_name = $request->proposals['client_name'];
-            $proposal->concerned_person = $request->proposals['concerned_person'];
-            $proposal->address = $request->proposals['address'];
-            $proposal->subject = $request->subject;
-            $proposal->prephase = $request->proposals['prephase'];
-            $proposal->internal_notes = $request->proposals['internal_notes'];
-            $proposal->footer_title = $request->proposals['footer_title'];
-            $proposal->footer_description = $request->proposals['footer_description'];
+        $task_det = $task;
 
-            $proposal->save();
-   
-           if($request->proposals['proposalSection'] ){
-               foreach($request->proposals['proposalSection'] as $row){
-                   $data_arr = [
-                       'proposal_id' => $proposal->id,
-                       'title' => $row['title'],
-                       'description' => $row['description']
-                   ];
-                   ProposalSection::create($data_arr);
-               }
-           }
-   
-           if($request->proposals['proposalFees'] ){
-               foreach($request->proposals['proposalFees'] as $row){
-                   $data_arr = [
-                       'proposal_id' => $proposal->id,
-                       'description' => $row['description'],
-                       'amount' => $row['amount'],
-                   ];
-                   ProposalFees::create($data_arr);
-               }
-           }
-           if($request->type){
-               $check_client = Task::where(['id'=> $task_det->id, 'company_id' => null])->get();
-               if(count($check_client) > 0){
-   
-               
-               $data_to_update = [
-                   'type' => 'task',
-                   'company_id' => $request->proposals['client_id']
-               ];
-               Task::where('id', $task_det->id)->update($data_to_update);
-           }else{
-               $data_to_update = [
-                   'type' => 'task',
-                   // 'company_id' => $request->client_id
-               ];
-               Task::where('id', $task_det->id)->update($data_to_update);
-           }
-        }
-        if($request->subtask){
-            $todos = $request->subtask['c_todo'];
-            $taskID = $task_det->id;
-            $user_ids = $request->user_ids;
-            
-            // $arr = [];
-            foreach ($todos as $key => $todo) {
-                // preg_match_all("/(@\w+)/", $todo['subtask_assignee'], $matches);
-                $real_todo = $todo;//trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
-            // return $matches;
-            $todo_array = [
-                // 'user_id' => Auth::user()->id,
-                'task_id' => $taskID,
-                'to_do' => $real_todo,
-                // 'mention_users' => $request->mention_users
-            ];
-        
-            $toDo = new ToDo($todo_array);
-            
-            $toDo->status = ToDo::STATUS_NOT_DONE;
-            $user->toDos()->save($toDo);
-        
-            if(!empty($user_ids)){
-                foreach ($user_ids as $key => $users) {
-                
-                    // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
-                    // $toDo->mentionUsers()->sync($users['id']);
-                    ToDoMention::create([
-                        'to_do_id' => $toDo->id,
-                        'user_id' => $users['id']
-                    ]);
-                    
+        if ($request->type == 'task') {
+            // create proposals, create todos, store attachments
+            if ($request->proposals) {
+                $proposal = new Proposal($request->all());
+                $proposal->task_id = $task_det->id;
+                $proposal->proposal_date = $request->proposals['proposal_date'];
+                $proposal->client_name = $request->proposals['client_name'];
+                $proposal->concerned_person = $request->proposals['concerned_person'];
+                $proposal->address = $request->proposals['address'];
+                $proposal->subject = $request->subject;
+                $proposal->prephase = $request->proposals['prephase'];
+                $proposal->internal_notes = $request->proposals['internal_notes'];
+                $proposal->footer_title = $request->proposals['footer_title'];
+                $proposal->footer_description = $request->proposals['footer_description'];
+
+                $proposal->save();
+
+                if ($request->proposals['proposalSection']) {
+                    foreach ($request->proposals['proposalSection'] as $row) {
+                        $data_arr = [
+                            'proposal_id' => $proposal->id,
+                            'title' => $row['title'],
+                            'description' => $row['description']
+                        ];
+                        ProposalSection::create($data_arr);
+                    }
+                }
+
+                if ($request->proposals['proposalFees']) {
+                    foreach ($request->proposals['proposalFees'] as $row) {
+                        $data_arr = [
+                            'proposal_id' => $proposal->id,
+                            'description' => $row['description'],
+                            'amount' => $row['amount'],
+                        ];
+                        ProposalFees::create($data_arr);
+                    }
+                }
+                if ($request->type) {
+                    $check_client = Task::where(['id' => $task_det->id, 'company_id' => null])->get();
+                    if (count($check_client) > 0) {
+
+
+                        $data_to_update = [
+                            'type' => 'task',
+                            'company_id' => $request->proposals['client_id']
+                        ];
+                        Task::where('id', $task_det->id)->update($data_to_update);
+                    } else {
+                        $data_to_update = [
+                            'type' => 'task',
+                            // 'company_id' => $request->client_id
+                        ];
+                        Task::where('id', $task_det->id)->update($data_to_update);
+                    }
+                }
+                if ($request->subtask) {
+                    $todos = $request->subtask['c_todo'];
+                    $taskID = $task_det->id;
+                    $user_ids = $request->user_ids;
+
+                    // $arr = [];
+                    foreach ($todos as $key => $todo) {
+                        // preg_match_all("/(@\w+)/", $todo['subtask_assignee'], $matches);
+                        $real_todo = $todo; //trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
+                        // return $matches;
+                        $todo_array = [
+                            // 'user_id' => Auth::user()->id,
+                            'task_id' => $taskID,
+                            'to_do' => $real_todo,
+                            // 'mention_users' => $request->mention_users
+                        ];
+
+                        $toDo = new ToDo($todo_array);
+
+                        $toDo->status = ToDo::STATUS_NOT_DONE;
+                        $user->toDos()->save($toDo);
+
+                        if (!empty($user_ids)) {
+                            foreach ($user_ids as $key => $users) {
+
+                                // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+                                // $toDo->mentionUsers()->sync($users['id']);
+                                ToDoMention::create([
+                                    'to_do_id' => $toDo->id,
+                                    'user_id' => $users['id']
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+            if ($request->task_attachments) {
+                foreach ($request->task_attachments as $row) {
+                    $data_arr = [
+                        'attachment' => $row['url'],
+                        'type' => $request->type,
+                        'task_id' => $task_det->id,
+                        'company_id' => $request->company_id['id'] ?? ''
+                    ];
+                    Attachments::create($data_arr);
+                }
+            }
+        } else {
+            // create todos, store attachments
+
+            if ($request->subtask) {
+                $todos = $request->subtask['c_todo'];
+                $taskID = $task_det->id;
+                $user_ids = $request->user_ids;
+
+                // $arr = [];
+                foreach ($todos as $key => $todo) {
+                    // preg_match_all("/(@\w+)/", $todo['subtask_assignee'], $matches);
+                    $real_todo = $todo; //trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
+                    // return $matches;
+                    $todo_array = [
+                        // 'user_id' => Auth::user()->id,
+                        'task_id' => $taskID,
+                        'to_do' => $real_todo,
+                        // 'mention_users' => $request->mention_users
+                    ];
+
+                    $toDo = new ToDo($todo_array);
+
+                    $toDo->status = ToDo::STATUS_NOT_DONE;
+                    $user->toDos()->save($toDo);
+
+                    if (!empty($user_ids)) {
+                        foreach ($user_ids as $key => $users) {
+
+                            // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
+                            // $toDo->mentionUsers()->sync($users['id']);
+                            ToDoMention::create([
+                                'to_do_id' => $toDo->id,
+                                'user_id' => $users['id']
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            if ($request->task_attachments) {
+                foreach ($request->task_attachments as $row) {
+                    $data_arr = [
+                        'attachment' => $row['url'],
+                        'type' => $request->type,
+                        'task_id' => $task_det->id,
+                        'company_id' => $request->company_id['id'] ?? ''
+                    ];
+                    Attachments::create($data_arr);
                 }
             }
         }
-        }
-    }
-        if($request->task_attachments){
-            foreach($request->task_attachments as $row){
-                $data_arr = [
-                    'attachment'=>$row['url'],
-                    'type'=> $request->type,
-                    'task_id'=>$task_det->id,
-                    'company_id'=>$request->company_id['id'] ?? ''
-                ];
-                Attachments::create($data_arr);
+
+
+        if ($request->users && count($request->users) > 0) {
+
+
+            for ($i = 0; $i < count($request->users); $i++) {
+
+                $taskss = Task::find($task->id);
+
+                $taskUser = $taskss->users()->find($request->users[$i]['id']);
+                // if($taskUser){
+                //     $this->response["message"] = __('strings.store_failed');
+                //     return response()->json($this->response);
+                // }
+
+                $taskss->users()->attach($request->users[$i]['id']);
             }
         }
-      }else{
-        // create todos, store attachments
-       
-        if($request->subtask){
-            $todos = $request->subtask['c_todo'];
-            $taskID = $task_det->id;
-            $user_ids = $request->user_ids;
-            
-            // $arr = [];
-            foreach ($todos as $key => $todo) {
-                // preg_match_all("/(@\w+)/", $todo['subtask_assignee'], $matches);
-                $real_todo = $todo;//trim(preg_replace("/(@\w+)/",'',$todo['subtask_assignee']));
-            // return $matches;
-            $todo_array = [
-                // 'user_id' => Auth::user()->id,
-                'task_id' => $taskID,
-                'to_do' => $real_todo,
-                // 'mention_users' => $request->mention_users
-            ];
-        
-            $toDo = new ToDo($todo_array);
-            
-            $toDo->status = ToDo::STATUS_NOT_DONE;
-            $user->toDos()->save($toDo);
-        
-            if(!empty($user_ids)){
-                foreach ($user_ids as $key => $users) {
-                
-                    // $toDo->mentionUsers()->sync($request->mention_users[0]['id']);
-                    // $toDo->mentionUsers()->sync($users['id']);
-                    ToDoMention::create([
-                        'to_do_id' => $toDo->id,
-                        'user_id' => $users['id']
-                    ]);
-                    
-                }
-            }
-            }
-        }
-        
-        if($request->attachments){
-            foreach($request->task_attachments as $row){
-                $data_arr = [
-                    'attachment'=>$row['url'],
-                    'type'=> $request->type,
-                    'task_id'=>$task_det->id,
-                    'company_id'=>$request->company_id['id'] ?? ''
-                ];
-                Attachments::create($data_arr);
-            }
-        }
-      }
-
-
-        if($request->users && count($request->users) > 0){
-
-        
-        for ($i = 0; $i < count($request->users); $i++) {
-
-            $taskss = Task::find($task->id);
-
-            $taskUser = $taskss->users()->find($request->users[$i]['id']);
-            // if($taskUser){
-            //     $this->response["message"] = __('strings.store_failed');
-            //     return response()->json($this->response);
-            // }
-
-            $taskss->users()->attach($request->users[$i]['id']);
-        }
-    }
 
 
         $data = [
@@ -1460,9 +1450,9 @@ return response()->json($this->response);
         $Category = Category::where(['id' => $request->category_id])->update($data);
         $Company = Company::where(['id' => $request->company_id])->update($data);
         $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id])->update($data);
-        if($request->mailbox_id && $task_det){
-            $lead_task_id = $task_det->type.'_'.$task_det->id;
-            Mailbox::where('id',$request->mailbox_id)->update(['task_lead_id' => $lead_task_id,'task_id'=>$task_det->id]);
+        if ($request->mailbox_id && $task_det) {
+            $lead_task_id = $task_det->type . '_' . $task_det->id;
+            Mailbox::where('id', $request->mailbox_id)->update(['task_lead_id' => $lead_task_id, 'task_id' => $task_det->id]);
             Task::where('id', $task_det->id)->update([
                 'mailbox_id' => $request->mailbox_id
             ]);
@@ -1471,7 +1461,7 @@ return response()->json($this->response);
         $this->response["status"] = true;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
-      }
+    }
 
 
     /**
@@ -1549,8 +1539,8 @@ return response()->json($this->response);
             return response()->json($this->response, 422);
         }
 
-        
-        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type','mailbox_id', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
+
+        $task = Task::select('id', 'branch_id', 'category_id', 'company_id', 'contact_person_id', 'user_id', 'type', 'mailbox_id', 'subject', 'description', 'due_date', 'priority', 'status_master_id', 'created_at', 'updated_at')->with([
             'selfUser',
             'branch' => function ($q) {
                 $q->with(['bankDetails'])->select('id', 'name', 'bank_id');
@@ -1566,9 +1556,9 @@ return response()->json($this->response);
                 $q->select('id', 'name')->with(['emails']);
             },
             'users' => function ($q) {
-                $q->select('users.id', 'name','avatar');
+                $q->select('users.id', 'name', 'avatar');
             },
-            'comments' => function($q){
+            'comments' => function ($q) {
                 $q->select('id', 'comment', 'task_id', 'user_id', 'created_at');
             },
             'attachments',
@@ -1684,10 +1674,10 @@ return response()->json($this->response);
         // UPDATE TASK TABLE
 
         // return $request->all();
-        
+
         $updateTask = Task::find($id);
         $updateTask->update([
-            'subject' => $request->subject, 
+            'subject' => $request->subject,
             'description' => $request->description,
             'branch_id' => $request->branch_id['id'] ?? null,
             'company_id' => $request->company_id['id'] ?? null,
@@ -1705,20 +1695,20 @@ return response()->json($this->response);
 
         // UPDATE FOREIGN KEY TABLES
 
-        if($request->branch_id){
+        if ($request->branch_id) {
 
             $branch = Branch::where(['id' => $request->branch_id['id']])->update(['type' => 'dont_delete']);
         }
-        if($request->category_id){
+        if ($request->category_id) {
 
             $Category = Category::where(['id' => $request->category_id['id']])->update(['type' => 'dont_delete']);
         }
-        if($request->company_id){
-            
+        if ($request->company_id) {
+
             $Company = Company::where(['id' => $request->company_id['id']])->update(['type' => 'dont_delete']);
         }
-        if($request->contact_person_id){
-            
+        if ($request->contact_person_id) {
+
             $ContactPerson = ContactPerson::where(['id' => $request->contact_person_id['id']])->update(['type' => 'dont_delete']);
         }
 
@@ -1868,87 +1858,87 @@ return response()->json($this->response);
 
     private function getFileName($image, $name, $index)
     {
-      list($type, $file) = explode(';', $image);
-      list(, $extension) = explode('/', $type);
-      list(, $file) = explode(',', $file);
-      // $result['name'] = 'oas36ty'.now()->timestamp . '.' . $extension;
-      $result['name'] = str_replace(' ', '', explode('.', $name)[0]) . now()->timestamp . '.' . $extension;
-      // $result['data'] = ;
-      $result['file'] = $file;
-      return $result;
+        list($type, $file) = explode(';', $image);
+        list(, $extension) = explode('/', $type);
+        list(, $file) = explode(',', $file);
+        // $result['name'] = 'oas36ty'.now()->timestamp . '.' . $extension;
+        $result['name'] = str_replace(' ', '', explode('.', $name)[0]) . now()->timestamp . '.' . $extension;
+        // $result['data'] = ;
+        $result['file'] = $file;
+        return $result;
     }
-    
-  public function deleteS3File(Request $request)
-  {
-    try {
-      $filePath = $request->data['attach_url'];
-      $file_path = explode('.com/',$filePath);
-      if (Storage::disk('s3')->exists($file_path[1])) {
-        $check = Storage::disk('s3')->delete($file_path[1]);
-        if ($check) {
-          $this->response['status'] = true;
-          $this->response['status_code'] = 200;
-          $this->response['message'] = "Attachment deleted successfully";
-        } else {
-          $this->response['status'] = true;
-          $this->response['status_code'] = 201;
-          $this->response['message'] = "Something went wrong";
+
+    public function deleteS3File(Request $request)
+    {
+        try {
+            $filePath = $request->data['attach_url'];
+            $file_path = explode('.com/', $filePath);
+            if (Storage::disk('s3')->exists($file_path[1])) {
+                $check = Storage::disk('s3')->delete($file_path[1]);
+                if ($check) {
+                    $this->response['status'] = true;
+                    $this->response['status_code'] = 200;
+                    $this->response['message'] = "Attachment deleted successfully";
+                } else {
+                    $this->response['status'] = true;
+                    $this->response['status_code'] = 201;
+                    $this->response['message'] = "Something went wrong";
+                }
+            } else {
+                $this->response['status'] = true;
+                $this->response['status_code'] = 201;
+                $this->response['message'] = "Something went wrong";
+            }
+        } catch (Exception $ex) {
+            $this->response['status'] = false;
+            $this->response['status_code'] = 500;
+            $this->response['data'] = $ex;
+            $this->response['message'] = "Something went wrong";
         }
-      } else {
-        $this->response['status'] = true;
-        $this->response['status_code'] = 201;
-        $this->response['message'] = "Something went wrong";
-      }
-    } catch (Exception $ex) {
-      $this->response['status'] = false;
-      $this->response['status_code'] = 500;
-      $this->response['data'] = $ex;
-      $this->response['message'] = "Something went wrong";
+        return response()->json($this->response);
     }
-    return response()->json($this->response);
-  }
 
-  public function addAttachS3File(Request $request)
-  {
-    try {
-      if ($request->data['attach']) {
+    public function addAttachS3File(Request $request)
+    {
+        try {
+            if ($request->data['attach']) {
 
-        $base64String = $request->data['attach'];
+                $base64String = $request->data['attach'];
 
-        foreach ($base64String as $in => $file) {
-          $slug = time(); //name prefix
-          $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
+                foreach ($base64String as $in => $file) {
+                    $slug = time(); //name prefix
+                    $avatar = $this->getFileName($file['file'], trim($file['name']), $in);
 
-          Storage::disk('s3')->put('task-files/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
+                    Storage::disk('s3')->put('task-files/' . $avatar['name'],  base64_decode($avatar['file']), 'public');
 
-          $url = Storage::disk('s3')->url('task-files/' . $avatar['name']);
-          $attach[] = ['url' => $url ?? '', 'fileName' => $file['name'] ?? ''];
+                    $url = Storage::disk('s3')->url('task-files/' . $avatar['name']);
+                    $attach[] = ['url' => $url ?? '', 'fileName' => $file['name'] ?? ''];
+                }
+
+                if ($attach) {
+                    $this->response['status'] = true;
+                    $this->response['status_code'] = 200;
+                    $this->response['data'] = $attach;
+                    $this->response['message'] = "Attachments uploaded successfully";
+                } else {
+                    $this->response['status'] = true;
+                    $this->response['status_code'] = 201;
+                    $this->response['data'] = $attach;
+                    $this->response['message'] = "Something went wrong";
+                }
+            }
+        } catch (Exception $ex) {
+            $this->response['status'] = false;
+            $this->response['status_code'] = 500;
+            $this->response['data'] = $ex;
+            $this->response['message'] = "Something went wrong";
         }
-
-        if ($attach) {
-          $this->response['status'] = true;
-          $this->response['status_code'] = 200;
-          $this->response['data'] = $attach;
-          $this->response['message'] = "Attachments uploaded successfully";
-        } else {
-          $this->response['status'] = true;
-          $this->response['status_code'] = 201;
-          $this->response['data'] = $attach;
-          $this->response['message'] = "Something went wrong";
-        }
-      }
-    } catch (Exception $ex) {
-      $this->response['status'] = false;
-      $this->response['status_code'] = 500;
-      $this->response['data'] = $ex;
-      $this->response['message'] = "Something went wrong";
+        return response()->json($this->response);
     }
-    return response()->json($this->response);
-  }
 
 
 
-   /**
+    /**
      *
      * @OA\Post(
      *     security={{"bearerAuth":{}}},
@@ -2017,8 +2007,9 @@ return response()->json($this->response);
      * )
      */
 
-  public function uploadAttachments(Request $request){
-   
+    public function uploadAttachments(Request $request)
+    {
+
         $validator = Validator::make($request->all(), [
             'attachment' => 'required',
             'type' => 'required',
@@ -2031,23 +2022,21 @@ return response()->json($this->response);
             $this->response["errors"] = $validator->errors();
             return response()->json($this->response, 422);
         }
-        if($request->attachment){
-            foreach($request->attachment as $row){
+        if ($request->attachment) {
+            foreach ($request->attachment as $row) {
                 $data_arr = [
-                    'attachment'=>$row['attachment_url'],
-                    'type'=> $request->type,
-                    'task_id'=>$request->task_id,
-                    'company_id'=>$request->company_id ?? ''
+                    'attachment' => $row['attachment_url'],
+                    'type' => $request->type,
+                    'task_id' => $request->task_id,
+                    'company_id' => $request->company_id ?? ''
                 ];
                 Attachments::create($data_arr);
             }
         }
-        $result = Attachments::where(['task_id'=>$request->task_id,'type'=> $request->type])->get();
+        $result = Attachments::where(['task_id' => $request->task_id, 'type' => $request->type])->get();
         $this->response["status"] = true;
         $this->response['data'] = $result;
         $this->response["message"] = __('strings.store_success');
         return response()->json($this->response);
-
-  }
-     
+    }
 }
