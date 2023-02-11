@@ -741,16 +741,16 @@ class TaskController extends Controller
                 'status_master' => function ($q) use ($filters) {
                     $q->where('type', 'LIKE', '%' . $filters['status'] . '%')->select('id', 'type');
                 },
-                'comments',
-                // => function($q) use($filters){
-                //     if(!empty($filters['search'])){
-                //         $search = $filters['search'];
+                'comments'
+                => function($q) use($filters){
+                    if(!empty($filters['search'])){
+                        $search = $filters['search'];
 
-                //         $q->where(function($q) use($search){
-                //         $q->where('comment', 'LIKE', '%' . $search. '%')->select('id', 'comment', 'task_id', 'user_id');
-                //         });
-                //     }
-                // },
+                        $q->where(function($q) use($search){
+                        $q->where('comment', 'LIKE', '%' . $search. '%')->select('id', 'comment', 'task_id', 'user_id');
+                        });
+                    }
+                },
                 'audits',
                 // 'priorities' => function($q){
                 //     $q->select('id', 'icons');
