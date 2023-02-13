@@ -16,6 +16,7 @@ use App\Models\User;
 
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\OrganizationResource;
+use App\Models\UserRole;
 use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -146,6 +147,9 @@ class LoginController extends Controller
                 'email' => $user->email,
                 'current_tenant' => new TenantResource($tenant),
                 'all_tenants' => TenantResource::collection($centralUser->tenants()->with('organization')->get()),
+                'UserAccess' => UserRole::where('id',$user->user_role_id)->with(['masters',
+                'privileges',
+                'audits'])->get(),
             );
             // Session::put(';key', 'value');
             // session()->save();
