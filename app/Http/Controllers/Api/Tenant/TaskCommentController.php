@@ -222,7 +222,7 @@ class TaskCommentController extends Controller
                     },
                     'audits',
                     'mentions'
-                    ])->select('id', 'user_id', 'comment', 'created_at')->orderBy('id', 'ASC')->get();
+                    ])->select('id', 'user_id', 'comment', 'created_at','parent_id')->orderBy('id', 'ASC')->get();
                     // if($original_task_id != undefined)
                     $assignedUsers = Task::where(['id' => $original_task_id])->with([
                         'users' => function ($q) {
@@ -342,7 +342,8 @@ class TaskCommentController extends Controller
         $task = Task::find($taskID);
         $comment_arr = [
             'comment' => $request->comment,//trim(preg_replace("/(@\w+)/",'',$request->comment)),
-            'task_id' => $request->task_id
+            'task_id' => $request->task_id,
+            'parent_id' =>$request->parent_id ?? '',
         ];
         // return $comment_arr
         $taskComment = new TaskComment($comment_arr);

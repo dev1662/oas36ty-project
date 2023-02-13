@@ -18,6 +18,7 @@ class CreateTaskCommentsTable extends Migration
             $table->foreignId('task_id')->constrained();
             $table->foreignId('user_id')->constrained();
             $table->longText('comment')->nullable();
+            $table->unsignedInteger('parent_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
             // $table->enum('status', ['active', 'inactive'])->default('inactive');
