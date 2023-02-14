@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBussinessTypeTable extends Migration
+class UpdateBusinessTypeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,13 +14,8 @@ class CreateBussinessTypeTable extends Migration
      */
     public function up()
     {
-        Schema::create('bussiness_type', function (Blueprint $table) {
-            $table->id();
-            $table->string('bussiness_type')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
+        if(Schema::hasColumn('bussiness_type','bussiness_type')){
+        DB::table('bussiness_type')->truncate();
         DB::table('bussiness_type')->insert(
             [
 
@@ -57,6 +52,7 @@ class CreateBussinessTypeTable extends Migration
             
             ]
         );
+      }
     }
 
     /**
@@ -66,6 +62,6 @@ class CreateBussinessTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bussiness_type');
+        //
     }
 }
