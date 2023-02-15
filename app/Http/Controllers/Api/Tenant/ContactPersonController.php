@@ -990,6 +990,18 @@ class ContactPersonController extends Controller
         //     $contact_emails, $contactPerson, $contact_phone
         // ];
         foreach($contact_emails as $contact_email){
+            if ( $contact_email->forceDelete() && $contactPerson->forceDelete() ) {
+                $this->response["status"] = true;
+                $this->response["message"] = __('strings.destroy_success');
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                
+                return response()->json($this->response);
+            }
+            
+            $this->response["message"] = __('strings.destroy_failed');
+            return response()->json($this->response, 422);
+            if(count($contact_phones) > 0){
+
             foreach ($contact_phones as $contact_phone) {
                 # code...
                 if ( $contact_email->forceDelete() && $contact_phone->forceDelete() && $contactPerson->forceDelete() ) {
@@ -1003,6 +1015,8 @@ class ContactPersonController extends Controller
                 $this->response["message"] = __('strings.destroy_failed');
                 return response()->json($this->response, 422);
             }
+        }
+
             }
         }
     }
